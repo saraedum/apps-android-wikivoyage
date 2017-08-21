@@ -51,12 +51,9 @@ android {
     }
 
     defaultConfig {
-        applicationId 'org.wikipedia'
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 198
-        testApplicationId 'org.wikipedia.test'
-        testInstrumentationRunner 'org.wikipedia.test.AndroidTestRunner'
         vectorDrawables.useSupportLibrary = true
 
         javaCompileOptions {
@@ -92,45 +89,66 @@ android {
         }
     }
 
+    flavorDimensions "backend", "deployment"
+
     productFlavors {
         dev {
+            dimension "deployment"
             versionName computeVersionName('dev')
             applicationIdSuffix 'dev'
             signingConfig signingConfigs.debug
-            testInstrumentationRunner 'org.wikipedia.test.AndroidTestRunner'
         }
         prod {
+            dimension "deployment"
             versionName computeVersionName('r')
             signingConfig signingConfigs.prod
         }
         releasesprod {
+            dimension "deployment"
             versionName computeVersionName('releasesprod')
             signingConfig signingConfigs.prod
         }
         alpha {
+            dimension "deployment"
             versionName computeVersionName('alpha')
             applicationIdSuffix 'alpha'
             signingConfig signingConfigs.debug
-            testInstrumentationRunner 'org.wikipedia.test.AndroidTestRunner'
         }
         beta {
+            dimension "deployment"
             versionName computeVersionName('beta')
             applicationIdSuffix 'beta'
             signingConfig signingConfigs.prod
         }
         amazon {
+            dimension "deployment"
             versionName computeVersionName('amazon')
             signingConfig signingConfigs.prod
         }
         fdroid {
+            dimension "deployment"
             versionName computeVersionName('fdroid')
             signingConfig signingConfigs.prod
         }
         custom {
+            dimension "deployment"
             versionName computeVersionName(customChannel)
             // next line is for injecting a custom channel value into the custom/AndroidManifest.xml
             manifestPlaceholders = [customChannel:getProperty('customChannel').toString()]
             signingConfig signingConfigs.prod
+        }
+
+        wikipedia {
+            dimension "backend"
+            applicationId 'org.wikipedia'
+            testApplicationId 'org.wikipedia.test'
+            testInstrumentationRunner 'org.wikipedia.test.AndroidTestRunner'
+        }
+        wikivoyage {
+            dimension "backend"
+            applicationId 'tm.info.drugtestbots.wikivoyage'
+            testApplicationId 'tm.info.drugtestbots.wikivoyage.test'
+            testInstrumentationRunner 'tm.info.drugtestbots.wikivoyage.test.AndroidTestRunner'
         }
     }
 
