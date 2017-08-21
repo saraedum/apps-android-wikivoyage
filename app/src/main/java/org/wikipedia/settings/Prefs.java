@@ -10,6 +10,7 @@ import com.google.gson.reflect.TypeToken;
 
 import org.wikipedia.Constants;
 import org.wikipedia.R;
+import org.wikipedia.WikipediaApp;
 import org.wikipedia.analytics.SessionData;
 import org.wikipedia.analytics.SessionFunnel;
 import org.wikipedia.dataclient.SharedPreferenceCookieManager;
@@ -332,7 +333,7 @@ public final class Prefs {
     @NonNull
     public static Uri getMediaWikiBaseUri() {
         return Uri.parse(defaultIfBlank(getString(R.string.preference_key_mediawiki_base_uri, null),
-                Constants.WIKIPEDIA_URL));
+                WikipediaApp.getInstance().getApplicationContext().getString(R.string.media_wiki_base_uri)));
     }
 
     public static boolean getMediaWikiBaseUriSupportsLangCode() {
