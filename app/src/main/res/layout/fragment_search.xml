@@ -10,30 +10,23 @@
     android:orientation="vertical"
     tools:visibility="visible">
 
-    <org.wikipedia.views.StatusBarBlankView
-        android:id="@+id/empty_status_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/main_toolbar_background" />
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/main_toolbar_background"
+        android:background="?attr/page_toolbar_color"
         android:elevation="6dp">
 
         <android.support.v7.widget.Toolbar
-            android:theme="@style/AppTheme.ToolbarTheme"
             android:id="@+id/search_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:navigationIcon="@drawable/abc_ic_ab_back_material">
+            android:theme="@style/PageToolbarTheme"
+            app:navigationIcon="@drawable/ic_arrow_back_themed_24dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="36dp"
-                android:layout_gravity="center_vertical"
-                style="@style/AppTheme.SearchViewStyle">
+                android:layout_gravity="center_vertical">
 
                 <org.wikipedia.views.CabSearchView
                     android:id="@+id/search_cab_view"
@@ -41,7 +34,6 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_gravity="center_vertical"
-                    android:textSize="12sp"
                     android:focusable="true"
                     android:inputType="text"
                     android:imeOptions="actionGo|flagNoExtractUi"
@@ -68,7 +60,7 @@
                         android:clickable="false"
                         android:focusable="false"
                         android:background="@drawable/lang_button_shape"
-                        style="@style/AppTheme.ActionModeStyle"
+                        style="@style/ActionModeStyle"
                         android:textColor="@android:color/white" />
                 </FrameLayout>
 
@@ -81,21 +73,44 @@
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="-6.5dp"
-            android:layout_gravity="bottom"
-            android:elevation="4dp"
+            android:layout_marginTop="-6.5dp"
             android:indeterminate="true"
             android:indeterminateTint="?attr/colorAccent"
-            android:progressBackgroundTint="@color/dark_blue"
+            android:progressBackgroundTint="@color/accent30"
             android:visibility="gone"
             tools:visibility="visible"/>
 
     </FrameLayout>
 
     <FrameLayout
+        android:id="@+id/search_offline_library_state"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="6dp"
+        android:background="?attr/page_toolbar_color">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:textColor="?attr/page_toolbar_icon_color"
+            android:textStyle="italic"
+            android:text="@string/offline_library_search_results_state"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="?attr/material_theme_border_color"/>
+
+    </FrameLayout>
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/feed_window_background_color">
+        android:background="?android:windowBackground">
 
         <fragment
             android:id="@+id/fragment_search_results"

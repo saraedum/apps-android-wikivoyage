@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/window_background_color"
     tools:context=".activity.SingleFragmentToolbarActivity">
 
     <FrameLayout
@@ -17,9 +16,9 @@
         android:id="@+id/single_fragment_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        style="@style/AppTheme.ToolbarStyle"
+        style="@style/ToolbarStyle"
         android:background="?attr/main_toolbar_color"
-        android:theme="@style/AppTheme.ToolbarTheme"
+        android:theme="@style/ToolbarTheme"
         app:titleTextColor="@android:color/white"
         android:elevation="4dp">
 

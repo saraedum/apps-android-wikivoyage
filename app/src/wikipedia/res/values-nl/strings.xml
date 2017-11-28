@@ -4,8 +4,6 @@
   <string name="app_name_beta">Wikipedia Beta</string>
   <string name="app_name_alpha">Wikipedia Alpha</string>
   <string name="wikimedia">Wikimedia</string>
-  <string name="yes">Ja</string>
-  <string name="no">Nee</string>
   <string name="search_hint">In Wikipedia zoeken</string>
   <string name="search_hint_search_history">Zoekgeschiedenis</string>
   <string name="search_hint_search_my_lists">Zoek in mijn lijsten</string>
@@ -18,9 +16,10 @@
   <string name="history_item_deleted">%s verwijderd uit geheugen</string>
   <string name="history_items_deleted">%d artikels verwijderd uit geheugen</string>
   <string name="history_item_delete_undo">Ongedaan maken</string>
-  <string name="page_does_not_exist_error">Deze pagina bestaat niet.</string>
   <string name="dialog_title_clear_history">Browsergeschiedenis wissen</string>
   <string name="dialog_message_clear_history">Hierdoor wordt uw volledige browsergeschiedenis gewist en worden alle huidige open tabbladen gesloten. Weet u het zeker?</string>
+  <string name="dialog_message_clear_history_yes">Ja</string>
+  <string name="dialog_message_clear_history_no">Nee</string>
   <string name="nav_item_saved_pages">Opgeslagen pagina\'s</string>
   <string name="share_via">Delen via</string>
   <string name="search_redirect_from">Doorverwezen vanaf %s</string>
@@ -39,12 +38,9 @@
   <string name="menu_text_select_share">Delen</string>
   <string name="menu_text_select_edit_here">Hier bewerken</string>
   <string name="nav_item_nearby">In de buurt</string>
-  <string name="nearby_distance_in_meters">%d m</string>
-  <string name="nearby_distance_in_kilometers">%.2f km</string>
   <string name="nearby_zoom_to_location">Inzoomen op een locatie op de kaart</string>
   <string name="nearby_osm_license">&amp;copy; &amp;nbsp;&lt;a href=\"https://www.openstreetmap.org/copyright/\"&gt;OpenStreetMap&lt;/a&gt; bijdragers</string>
   <string name="last_updated_text">%1$s voor het laatst bijgewerkt</string>
-  <string name="bottom_content_date_downloaded">Gedownload %s</string>
   <string name="talk_page_link_text">Overleg</string>
   <string name="content_license_html">Inhoud is beschikbaar onder de licentie &lt;a href=\"%1$s\"&gt;CC BY-SA 3.0&lt;/a&gt; tenzij anders aangegeven</string>
   <string name="edit_save_action_license_logged_in">Door op te slaan, gaat u akkoord met de &lt;a href=\"%1$s\"&gt;Gebruiksvoorwaarden&lt;/a&gt;, en het onherroepelijk vrijgeven van uw bijdragen onder de &lt;a href=\"%2$s\"&gt;CC-BY-SA-3.0&lt;/a&gt; licentie.</string>
@@ -74,6 +70,8 @@
   <string name="title_captcha">Voer CAPTCHA in</string>
   <string name="edit_section_captcha_reload">Klik om opnieuw te laden</string>
   <string name="edit_saved_page_refresh">Deze opgeslagen pagina is mogelijk verouderd, en moet vernieuwd worden voordat bewerken mogelijk is. Wilt u de pagina vernieuwen?</string>
+  <string name="edit_saved_page_refresh_yes">Ja</string>
+  <string name="edit_saved_page_refresh_no">Nee</string>
   <string name="nav_item_login">Aanmelden bij Wikipedia</string>
   <string name="login_username_hint">Gebruikersnaam</string>
   <string name="login_password_hint">Wachtwoord</string>
@@ -95,8 +93,6 @@
   <string name="login_join_wikipedia">Vervoeg Wikipedia</string>
   <string name="login_forgot_password">Wachtwoord vergeten?</string>
   <string name="create_account_already_have">Heeft u al een account?</string>
-  <string name="create_account_login_link">Hebt u al een account? Meld u aan</string>
-  <string name="login_create_account_link">Nog niet geregistreerd? Word lid van Wikipedia</string>
   <string name="create_account_activity_title">Gebruiker aanmaken</string>
   <string name="dialog_create_account_checking_progress">Aan het controleren</string>
   <string name="create_account_email_hint">E-mailadres (optioneel)</string>
@@ -160,6 +156,8 @@
   <string name="about_wmf">Een product van de &lt;a href=\"http://wikimediafoundation.org/wiki/Home\"&gt;Wikimedia Foundation&lt;/a&gt;</string>
   <string name="about_activity_title">Over</string>
   <string name="edit_abandon_confirm">Deze pagina is bewerkt. Weet u zeker dat u wilt afsluiten zonder de wijzigingen op te slaan?</string>
+  <string name="edit_abandon_confirm_yes">Ja</string>
+  <string name="edit_abandon_confirm_no">Nee</string>
   <string name="user_blocked_from_editing_title">Geblokkeerd</string>
   <string name="user_logged_in_blocked_from_editing">Uw gebruiker is geblokkeerd en kan deze wiki niet bewerken.</string>
   <string name="user_anon_blocked_from_editing">Uw IP-adres is geblokkeerd en kan niet bewerken.</string>
@@ -186,6 +184,8 @@
   <string name="search_recent_header">Recente zoekopdrachten:</string>
   <string name="button_clear_all_recent_searches">Recente zoekopdrachten wissen</string>
   <string name="clear_recent_searches_confirm">Weet u zeker dat u uw zoekgeschiedenis wilt wissen?</string>
+  <string name="clear_recent_searches_confirm_yes">Ja</string>
+  <string name="clear_recent_searches_confirm_no">Nee</string>
   <string name="error_browser_not_found">De webpagina kon niet geopend worden. Er is geen browser beschikbaar.</string>
   <string name="table_infobox">Snelle feiten</string>
   <string name="table_other">Meer informatie</string>
@@ -208,7 +208,7 @@
   <string name="gallery_save_progress">Bestand downloaden…</string>
   <string name="gallery_save_success">Het bestand is opgeslagen.</string>
   <string name="gallery_error_video_failed">De video kan niet afgespeeld worden.</string>
-  <string name="gallery_save_image_write_permission_rationale">Er is toestemming vereist om naar de opslagmedia op uw apparaat te mogen schrijven. Probeer het nogmaals, en geefde vereiste toestemming.</string>
+  <string name="gallery_save_image_write_permission_rationale" fuzzy="true">Er is toestemming vereist om naar de opslagmedia op uw apparaat te mogen schrijven. Probeer het nogmaals, en geefde vereiste toestemming.</string>
   <string name="err_cannot_save_file">Het bestand kan niet opgeslagen worden</string>
   <string name="snippet_share_intro">\"%1$s\" op @Wikipedia: %2$s</string>
   <string name="expand_refs">Aantikken om te vergroten</string>
@@ -222,16 +222,16 @@
   <string name="menu_new_tab">Nieuw tabblad</string>
   <string name="menu_close_all_tabs">Alle tabbladen sluiten</string>
   <string name="close_all_tabs_confirm">Weet u zeker dat u alle tabbladen wilt sluiten?</string>
+  <string name="close_all_tabs_confirm_yes">Ja</string>
+  <string name="close_all_tabs_confirm_no">Nee</string>
   <string name="button_close_tab">Tabblad sluiten</string>
-  <string name="tool_tip_select_text">Druk en houd vast op een willekeurige plaats in de tekst om deze te kopiëren en te kunnen delen.</string>
+  <string name="tool_tip_select_text" fuzzy="true">Druk en houd vast op een willekeurige plaats in de tekst om deze te kopiëren en te kunnen delen.</string>
   <string name="tool_tip_share">Na het selecteren van een interessant feit, kunt u het delen op uw favoriete netwerken!</string>
   <string name="page_view_in_browser">Pagina in de browser weergeven</string>
   <string name="tool_tip_toc_button">U kunt op een willekeurig moment de inhoudsopgave bekijken door op deze knop de drukken of door op het scherm naar links te vegen.</string>
-  <string name="error_server_response">De server kon het verzoek niet voltooien.</string>
   <string name="error_response_malformed">Het antwoord van de server had geen correcte opmaak.</string>
   <string name="error_unknown">Er is een onbekende fout opgetreden.</string>
   <string name="format_error_server_message">Bericht: \"%s\"</string>
-  <string name="format_error_server_code">Code: \"%s\"</string>
   <string name="address_copied">Het adres is gekopieerd naar het klembord.</string>
   <string name="text_copied">De tekst is gekopieerd naar het klembord.</string>
   <string name="button_continue_to_article">Pagina lezen</string>
@@ -239,7 +239,7 @@
   <string name="page_offline_notice_cannot_load_while_offline">Artikel kan niet geladen worden in een offline-modus.</string>
   <string name="page_offline_notice_add_to_reading_list" fuzzy="true">Voeg het artikel toe aan een leeslijst en deze zal toegevoegd worden eens u terug online bent.</string>
   <string name="page_offline_notice_last_date">U bent een offline-versie aan het lezen van dit artikel opgeslaan in %s.</string>
-  <string name="page_offline_notice_compilation_download_date">U bent een offline versie aan het lezen van dit artikel vanuit een gedowloade samenstelling op %s.</string>
+  <string name="page_offline_notice_compilation_download_date" fuzzy="true">U bent een offline versie aan het lezen van dit artikel vanuit een gedowloade samenstelling op %1$s • %2$s.</string>
   <string name="button_get_directions">Routebeschrijving</string>
   <string name="error_no_maps_app">Er zijn geen apps gevonden die routebeschrijvingen bieden.</string>
   <string name="preference_title_show_link_previews">Voorvertoningen van koppelingen weergeven</string>
@@ -256,6 +256,7 @@
   <string name="view_link_preview_error_button_dismiss">Afwijzen</string>
   <string name="error_page_does_not_exist">Deze pagina bestaat niet.</string>
   <string name="view_wiki_error_message_offline">Er kan geen verbinding gemaakt worden met het internet.</string>
+  <string name="reference_title">Referentie %s</string>
   <string name="crash_report_dialog_title">De app is de laatste keer helaas gecrasht</string>
   <string name="crash_report_dialog_text">Wilt u crashrapporteren naar HockeyApp, een dienstverlener, sturen zodat Wikimedia de omstandigheden van uw crash kan analyseren en fouten die de crash heeft veroorzaakt kan herstellen?</string>
   <string name="crash_report_dialog_dont_send_button">Overslaan</string>
@@ -285,10 +286,10 @@
   <string name="reading_list_added_to_unnamed">Toegevoegd aan leeslijst.</string>
   <string name="reading_list_already_exists">Deze pagina staat al in die lijst.</string>
   <string name="reading_list_added_view_button">Lijst bekijken</string>
-  <string name="format_reading_list_statistical_summary_singular">1 artikel, %1$.2f MiB</string>
-  <string name="format_reading_list_statistical_summary_plural">%1$d artikels, %2$.2f MiB</string>
-  <string name="format_reading_list_statistical_detail_singular">%1$d of 1 artikels offline beschikbaar, %2$.2f MiB</string>
-  <string name="format_reading_list_statistical_detail_plural">%1$d of %2$d artikels beschikbaar offline, %3$.2f MiB</string>
+  <string name="format_reading_list_statistical_summary_singular" fuzzy="true">1 artikel, %1$.2f MiB</string>
+  <string name="format_reading_list_statistical_summary_plural" fuzzy="true">%1$d artikels, %2$.2f MiB</string>
+  <string name="format_reading_list_statistical_detail_singular" fuzzy="true">%1$d of 1 artikels offline beschikbaar, %2$.2f MiB</string>
+  <string name="format_reading_list_statistical_detail_plural" fuzzy="true">%1$d of %2$d artikels beschikbaar offline, %3$.2f MiB</string>
   <string name="reading_list_sort">Sorteren</string>
   <string name="reading_list_sort_by_name">Sorteren op naam</string>
   <string name="reading_list_sort_by_name_desc">Sorteren op naam (achterstevoren)</string>
@@ -319,7 +320,6 @@
   <string name="reading_list_empty">U heeft geen artikelen aan deze lijst toegevoegd.</string>
   <string name="reading_list_article_offline">Offline beschikbaar</string>
   <string name="reading_list_article_make_offline">Maak dit artikel offline beschikbaar</string>
-  <string name="reading_list_article_remove_offline">Maak dit artikel niet offline beschikbaar</string>
   <string name="reading_list_add_to_other_list">Voeg aan een andere leeslijst toe.</string>
   <string name="reading_list_remove_from_list">Verwijder uit %s</string>
   <string name="reading_list_remove_from_lists">Verwijder uit leeslijsten</string>
@@ -332,6 +332,8 @@
   <string name="reading_list_login_reminder_title">Synchroniseer de leeslijsten</string>
   <string name="reading_list_login_reminder_text">Uw leeslijsten zijn nu opgeslagen in uw Wikipedia-profiel. Log in op uw profiel, en uw leeslijsten zullen automatisch gesynchroniseerd worden.</string>
   <string name="reading_lists_confirm_remote_delete">Dit zal alle voorgaande gesynchroniseerde leeslijsten verwijderen van uw apparaat. Doorgaan?</string>
+  <string name="reading_lists_confirm_remote_delete_yes">Ja</string>
+  <string name="reading_lists_confirm_remote_delete_no">Nee</string>
   <string name="reading_list_article_save_in_progress">Het artikel wordt gedownload, het zal offline beschikbaar zijn eens het volledig is.</string>
   <plurals name="reading_list_article_offline_message">
     <item quantity="one">Dit artikel zal nu beschikbaar zijn in een offline-modus.</item>
@@ -352,8 +354,7 @@
   <string name="view_continue_reading_card_title">Verder lezen</string>
   <string name="view_because_you_read_card_title">Omdat u hebt gelezen</string>
   <string name="view_random_card_title">Randomizer</string>
-  <string name="view_random_card_subtitle">Een willekeurige pagina uit Wikipedia lezen</string>
-  <string name="view_random_card_error">Het is niet mogelijk om een willekeurige pagina te laden van het netwerk of van uw leeslijsten.</string>
+  <string name="view_random_card_subtitle" fuzzy="true">Een willekeurige pagina uit Wikipedia lezen</string>
   <string name="view_main_page_card_title">Vandaag op Wikipedia</string>
   <string name="view_main_page_card_subtitle">Hoofdpagina op %s</string>
   <string name="view_featured_image_card_title">Afbeelding van de dag</string>
@@ -374,6 +375,8 @@
   <string name="view_continue_reading_card_subtitle_today">Vandaag</string>
   <string name="view_announcement_card_negative_action">Nee, bedankt</string>
   <string name="view_offline_card_text">De inhoud kan niet offline geladen worden.</string>
+  <string name="view_featured_article_card_title">Uitgelichte pagina</string>
+  <string name="view_featured_article_footer_save_button_label">Opslaan</string>
   <string name="description_edit_text_hint">Titelbeschrijving</string>
   <string name="description_edit_save">Publiceer</string>
   <string name="description_edit_add_description">Titelbeschrijving toevoegen</string>
@@ -393,7 +396,6 @@
   <string name="description_edit_success_article_edit_hint">In deze app kunt u ook pagina\'s bewerken. Corrigeer typefouten en voeg zinnen toe door volgende keer op het pictogram ^1 te klikken.</string>
   <string name="description_edit_tutorial_title_descriptions">Titelbeschrijvingen</string>
   <string name="description_edit_tutorial_title_descriptions_summary">Samenvatting van een pagina om lezers te helpen bij het begrijpen van een onderwerp in een oogopslag.</string>
-  <string name="description_edit_tutorial_button_label_continue">Doorgaan</string>
   <string name="description_edit_tutorial_keep_it_short">Houd het kort</string>
   <string name="description_edit_tutorial_keep_it_short_instructions">Idealiter één regel, tussen twee en twaalf woorden</string>
   <string name="description_edit_tutorial_button_label_start_editing">Begin met bewerken</string>
@@ -414,9 +416,11 @@
   <string name="description_edit_revert_reason1">Uw bijdrage valt niet onder één van de &lt;a href=\"%1$s\"&gt;volgregels&lt;/a&gt;.</string>
   <string name="description_edit_revert_reason2">Uw bijdrage leek op een experiment of vandalisme.</string>
   <string name="description_edit_revert_history">Indien uw interesse is gewekt, bekijk dan &lt;a href=\"%1$s\"&gt;bewerk geschiedenis&lt;/a&gt;.</string>
-  <string name="offline_read_permission_rationale">Er is toestemming vereist om naar de opslagmedia op uw apparaat te mogen schrijven. Probeer het nogmaals, en geef vereiste toestemming.</string>
-  <string name="offline_card_text">U bent momenteel Wikipedia offline aan het bekijken. Hou er rekening mee dat de offline artikels niet helemaal up to date zijn met de online versie.</string>
-  <string name="offline_my_compilations">Mijn aanpassingen</string>
+  <string name="offline_read_permission_rationale" fuzzy="true">Er is toestemming vereist om naar de opslagmedia op uw apparaat te mogen schrijven. Probeer het nogmaals, en geef vereiste toestemming.</string>
+  <string name="offline_card_text" fuzzy="true">U bent momenteel Wikipedia offline aan het bekijken. Hou er rekening mee dat de offline artikels niet helemaal up to date zijn met de online versie.</string>
+  <string name="offline_my_compilations" fuzzy="true">Mijn aanpassingen</string>
+  <string name="offline_compilation_download_progress_text">%1$.2f GB / %2$.2f GB</string>
+  <string name="compilation_download_widget_button_cancel_hint">Annuleer download</string>
   <string name="onboarding_skip">Overslaan</string>
   <string name="onboarding_continue">Doorgaan</string>
   <string name="onboarding_get_started">Aan de slag</string>

@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/RtlAwareTextView"
-        android:textColor="?attr/feed_text_primary_color"
+        android:textColor="?attr/primary_text_color"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:layout_marginTop="16dp"
@@ -30,6 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
+        android:layout_marginBottom="12dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp">
 
@@ -40,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
             android:text="@string/view_announcement_card_negative_action"
-            android:textColor="?attr/feed_text_tertiary_color" />
+            android:textColor="?attr/secondary_text_color" />
 
         <TextView
             android:id="@+id/view_announcement_action_positive"
@@ -50,10 +51,10 @@
     </LinearLayout>
 
     <View
+        android:id="@+id/view_announcement_footer_border"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="12dp"
-        android:background="@color/feed_image_border"/>
+        android:background="?attr/material_theme_border_color"/>
 
     <TextView
         android:id="@+id/view_announcement_footer_text"
@@ -62,8 +63,7 @@
         style="@style/RtlAwareTextView"
         android:padding="16dp"
         android:textSize="12sp"
-        android:textColor="?attr/feed_text_tertiary_color"
-        android:textColorLink="?attr/colorAccent"
+        android:textColor="?attr/secondary_text_color"
         tools:text="Lorem ipsum"/>
 
 </LinearLayout>

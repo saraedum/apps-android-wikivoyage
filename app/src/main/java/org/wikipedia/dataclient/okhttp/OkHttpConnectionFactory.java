@@ -35,7 +35,7 @@ public final class OkHttpConnectionFactory {
 
     @NonNull
     private static OkHttpClient createClient() {
-        SharedPreferenceCookieManager cookieManager = WikipediaApp.getInstance().getCookieManager();
+        SharedPreferenceCookieManager cookieManager = SharedPreferenceCookieManager.getInstance();
         // TODO: consider using okhttp3.CookieJar implementation instead of JavaNetCookieJar wrapper
         CookieJar cookieJar = new JavaNetCookieJar(cookieManager);
 
@@ -48,7 +48,7 @@ public final class OkHttpConnectionFactory {
                 .addNetworkInterceptor(new StripMustRevalidateResponseInterceptor())
                 .addInterceptor(new CommonHeaderRequestInterceptor())
                 .addInterceptor(new DefaultMaxStaleRequestInterceptor())
-                .addInterceptor(new CacheIfErrorInterceptor())
+                .addInterceptor(new CacheControlRequestInterceptor())
                 .addInterceptor(new CacheDelegateInterceptor(CacheDelegate.internalCache(SAVE_CACHE), CacheDelegate.internalCache(NET_CACHE)))
                 .addInterceptor(new WikipediaZeroResponseInterceptor(WikipediaApp.getInstance().getWikipediaZeroHandler()))
                 .build();

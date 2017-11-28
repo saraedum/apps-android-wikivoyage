@@ -121,34 +121,20 @@ window.onload = function() {
 var bridge = require("./bridge");
 var pagelib = require("wikimedia-page-library");
 
-bridge.registerListener( 'toggleDarkMode', function() {
+bridge.registerListener( 'toggleDarkMode', function( payload ) {
     var theme;
 
     window.isDarkMode = !window.isDarkMode;
 
     theme = window.isDarkMode ? pagelib.ThemeTransform.THEME.DARK : pagelib.ThemeTransform.THEME.DEFAULT;
     pagelib.ThemeTransform.setTheme( document, theme );
-    pagelib.DimImagesTransform.dim( window, window.isDarkMode );
+    pagelib.DimImagesTransform.dim( window, window.isDarkMode && payload.dimImages );
+} );
+
+bridge.registerListener( 'toggleDimImages', function( payload ) {
+    pagelib.DimImagesTransform.dim( window, payload.dimImages );
 } );
 },{"./bridge":2,"wikimedia-page-library":20}],4:[function(require,module,exports){
-var transformer = require('./transformer');
-
-transformer.register( 'displayDisambigLink', function( content ) {
-    var hatnotes = content.querySelectorAll( "div.hatnote" );
-    if ( hatnotes.length > 0 ) {
-        var container = document.getElementById( "issues_container" );
-        var wrapper = document.createElement( 'div' );
-        var i = 0,
-            len = hatnotes.length;
-        for (; i < len; i++) {
-            wrapper.appendChild( hatnotes[i] );
-        }
-        container.appendChild( wrapper );
-    }
-    return content;
-} );
-
-},{"./transformer":12}],5:[function(require,module,exports){
 var actions = require('./actions');
 var bridge = require('./bridge');
 
@@ -157,7 +143,7 @@ actions.register( "edit_section", function( el, event ) {
     event.preventDefault();
 } );
 
-},{"./actions":1,"./bridge":2}],6:[function(require,module,exports){
+},{"./actions":1,"./bridge":2}],5:[function(require,module,exports){
 var transformer = require('./transformer');
 
 transformer.register( 'displayIssuesLink', function( content ) {
@@ -177,7 +163,7 @@ transformer.register( 'displayIssuesLink', function( content ) {
     return content;
 } );
 
-},{"./transformer":12}],7:[function(require,module,exports){
+},{"./transformer":11}],6:[function(require,module,exports){
 var bridge = require( "./bridge" );
 var transformer = require("./transformer");
 
@@ -201,7 +187,7 @@ bridge.registerListener( "setDecorOffset", function( payload ) {
     transformer.setDecorOffset(payload.offset);
 } );
 
-},{"./bridge":2,"./transformer":12}],8:[function(require,module,exports){
+},{"./bridge":2,"./transformer":11}],7:[function(require,module,exports){
 var bridge = require("./bridge");
 
 /*
@@ -223,7 +209,7 @@ function addIPAonClick( content ) {
 module.exports = {
     addIPAonClick: addIPAonClick
 };
-},{"./bridge":2}],9:[function(require,module,exports){
+},{"./bridge":2}],8:[function(require,module,exports){
 var bridge = require("./bridge");
 var pagelib = require("wikimedia-page-library");
 
@@ -238,7 +224,7 @@ bridge.registerListener( "displayPreviewHTML", function( payload ) {
         pagelib.ThemeTransform.classifyElements( content );
     }
 } );
-},{"./bridge":2,"wikimedia-page-library":20}],10:[function(require,module,exports){
+},{"./bridge":2,"wikimedia-page-library":20}],9:[function(require,module,exports){
 var bridge = require("./bridge");
 
 bridge.registerListener( "setDirectionality", function( payload ) {
@@ -254,7 +240,7 @@ bridge.registerListener( "setDirectionality", function( payload ) {
     html.classList.add( "ui-" + payload.uiDirection );
 } );
 
-},{"./bridge":2}],11:[function(require,module,exports){
+},{"./bridge":2}],10:[function(require,module,exports){
 var bridge = require("./bridge");
 var transformer = require("./transformer");
 var clickHandlerSetup = require("./onclick");
@@ -276,11 +262,11 @@ bridge.registerListener( "setMargins", function( payload ) {
 });
 
 bridge.registerListener( "setPaddingTop", function( payload ) {
-    document.getElementById( "content" ).style.paddingTop = payload.paddingTop + "px";
+    document.body.style.paddingTop = payload.paddingTop + "px";
 });
 
 bridge.registerListener( "setPaddingBottom", function( payload ) {
-    document.getElementById( "content" ).style.paddingBottom = payload.paddingBottom + "px";
+    document.body.style.paddingBottom = payload.paddingBottom + "px";
 });
 
 bridge.registerListener( "beginNewPage", function( payload ) {
@@ -325,6 +311,7 @@ bridge.registerListener( "getTextSelection", function( payload ) {
 function setWindowAttributes( payload ) {
     document.head.getElementsByTagName("base")[0].setAttribute("href", payload.siteBaseUrl);
 
+    window.sequence = payload.sequence;
     window.apiLevel = payload.apiLevel;
     window.string_table_infobox = payload.string_table_infobox;
     window.string_table_other = payload.string_table_other;
@@ -336,7 +323,7 @@ function setWindowAttributes( payload ) {
     window.fromRestBase = payload.fromRestBase;
     window.isBeta = payload.isBeta;
     window.siteLanguage = payload.siteLanguage;
-    window.isNetworkMetered = payload.isNetworkMetered;
+    window.showImages = payload.showImages;
 }
 
 function setTitleElement( parentNode ) {
@@ -375,12 +362,12 @@ bridge.registerListener( "displayLeadSection", function( payload ) {
     content.innerHTML = payload.section.text;
     content.id = "content_block_0";
 
-    applySectionTransforms(content, true);
-
     // append the content to the DOM now, so that we can obtain
     // dimension measurements for items.
     document.getElementById( "content" ).appendChild( content );
     document.getElementById( "loading_sections").className = "loading";
+
+    applySectionTransforms(content, true);
 
     bridge.sendMessage( "pageInfo", {
       "issues" : collectIssues(),
@@ -390,8 +377,7 @@ bridge.registerListener( "displayLeadSection", function( payload ) {
     if (!issuesContainer.hasChildNodes()) {
         document.getElementById( "content" ).removeChild(issuesContainer);
     }
-
-    scrolledOnLoad = false;
+    lazyLoadTransformer.loadPlaceholders();
 });
 
 function clearContents() {
@@ -422,6 +408,10 @@ function elementsForSection( section ) {
 }
 
 function applySectionTransforms( content, isLeadSection ) {
+    if (!window.showImages) {
+        transformer.transform( "hideImages", content );
+    }
+
     if (!window.fromRestBase) {
         // Content service transformations
         if (isLeadSection) {
@@ -441,51 +431,92 @@ function applySectionTransforms( content, isLeadSection ) {
     }
     if (!window.isMainPage) {
         transformer.transform( "hideTables", content );
-
-        if (!window.isNetworkMetered) {
-            transformer.transform( "widenImages", content );
-        }
+        transformer.transform( "widenImages", content );
 
         if (!window.isFilePage) {
             lazyLoadTransformer.convertImagesToPlaceholders( content );
         }
     }
     if (isLeadSection) {
-        transformer.transform("displayDisambigLink", content);
         transformer.transform("displayIssuesLink", content);
     }
 }
 
-var scrolledOnLoad = false;
+function displayRemainingSections(json, sequence, scrollY, fragment) {
+    var contentWrapper = document.getElementById( "content" );
+    var scrolled = false;
 
-bridge.registerListener( "displaySection", function ( payload ) {
-    if ( payload.noMore ) {
-        // if we still haven't scrolled to our target offset (if we have one),
-        // then do it now.
-        if (payload.scrollY > 0 && !scrolledOnLoad) {
-            window.scrollTo( 0, payload.scrollY );
-            scrolledOnLoad = true;
-        }
-        document.getElementById( "loading_sections").className = "";
-        lazyLoadTransformer.loadPlaceholders();
-        bridge.sendMessage( "pageLoadComplete", {
-          "sequence": payload.sequence });
-    } else {
-        var contentWrapper = document.getElementById( "content" );
-        elementsForSection(payload.section).forEach(function (element) {
+    json.sections.forEach(function (section) {
+        elementsForSection(section).forEach(function (element) {
             contentWrapper.appendChild(element);
             // do we have a y-offset to scroll to?
-            if (payload.scrollY > 0 && payload.scrollY < element.offsetTop && !scrolledOnLoad) {
-                window.scrollTo( 0, payload.scrollY );
-                scrolledOnLoad = true;
+            if (scrollY > 0 && scrollY < element.offsetTop && !scrolled) {
+                window.scrollTo( 0, scrollY );
+                scrolled = true;
             }
         });
         // do we have a section to scroll to?
-        if ( typeof payload.fragment === "string" && payload.fragment.length > 0 && payload.section.anchor === payload.fragment) {
-            scrollToSection( payload.fragment );
+        if ( typeof fragment === "string" && fragment.length > 0 && section.anchor === fragment) {
+            scrollToSection( fragment );
         }
-        bridge.sendMessage( "requestSection", { "sequence": payload.sequence, "index": payload.section.id + 1 });
+    });
+
+    // if we still haven't scrolled to our target offset (if we have one), then do it now.
+    if (scrollY > 0 && !scrolled) {
+        window.scrollTo( 0, scrollY );
     }
+    document.getElementById( "loading_sections").className = "";
+    lazyLoadTransformer.loadPlaceholders();
+    bridge.sendMessage( "pageLoadComplete", { "sequence": sequence });
+}
+
+var remainingRequest;
+
+bridge.registerListener( "queueRemainingSections", function ( payload ) {
+    if (remainingRequest) {
+        remainingRequest.abort();
+    }
+    remainingRequest = new XMLHttpRequest();
+    remainingRequest.open('GET', payload.url);
+    remainingRequest.sequence = payload.sequence;
+    remainingRequest.scrollY = payload.scrollY;
+    remainingRequest.fragment = payload.fragment;
+    if (window.apiLevel > 19 && window.responseType !== 'json') {
+        remainingRequest.responseType = 'json';
+    }
+    remainingRequest.onreadystatechange = function() {
+        if (this.readyState !== XMLHttpRequest.DONE) {
+            return;
+        }
+        if (this.sequence !== window.sequence) {
+            return;
+        }
+        if (this.status !== 200) {
+            bridge.sendMessage( "loadRemainingError", { "status": this.status, "sequence": this.sequence });
+            return;
+        }
+        try {
+            // On API <20, the XMLHttpRequest does not support responseType = json,
+            // so we have to call JSON.parse() ourselves.
+            var sectionsObj = window.apiLevel > 19 ? this.response : JSON.parse(this.response);
+            if (sectionsObj.mobileview) {
+                // If it's a mobileview response, the "sections" object will be one level deeper.
+                sectionsObj = sectionsObj.mobileview;
+            }
+            displayRemainingSections(sectionsObj, this.sequence, this.scrollY, this.fragment);
+        } catch (e) {
+            // Catch any errors that might have come from deserializing or rendering the
+            // remaining sections.
+            // TODO: Boil this up to the Java layer more properly, even though this kind of error
+            // really shouldn't happen.
+            console.log(e);
+            // In case of such an error, send a completion event to the Java layer, so that the
+            // PageActivity can consider the page loaded, and enable the user to take additional
+            // actions that might have been dependent on page completion (e.g. refreshing).
+            bridge.sendMessage( "pageLoadComplete", { "sequence": this.sequence });
+        }
+    };
+    remainingRequest.send();
 });
 
 // -- Begin custom processing of ZIM html data --
@@ -495,10 +526,19 @@ bridge.registerListener( "displayFromZim", function( payload ) {
     clearContents();
     setWindowAttributes(payload);
     window.isOffline = true;
+    window.mainPageHint = payload.mainPageHint;
     window.offlineContentProvider = payload.offlineContentProvider;
 
     var contentElem = document.getElementById( "content" );
     setTitleElement(contentElem);
+
+    if (window.isMainPage) {
+        // TODO: remove this when the actual Main Pages in ZIM files contain more descriptive content.
+        var helperDiv = document.createElement( "div" );
+        helperDiv.innerHTML = window.mainPageHint;
+        helperDiv.style = "font-size: 85%; margin: 12px 0 20px 0; padding: 12px; line-height: 120%; background-color: rgba(0, 0, 0, 0.04); border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 2px;";
+        contentElem.appendChild( helperDiv );
+    }
 
     var issuesContainer = setIssuesElement(contentElem);
 
@@ -560,6 +600,13 @@ bridge.registerListener( "displayFromZim", function( payload ) {
 
     // perform transforms on the last section
     performZimSectionTransforms( sectionIndex, currentSectionNode );
+    if (currentSectionNode.childNodes && currentSectionNode.childNodes.length > 1) {
+        // In the current version of ZIM files, the last div in the last section is the
+        // manually-appended "issued from Wikipedia" disclaimer, which we need to remove.
+        // (Unfortunately this div doesn't have any identifying classes or ids, so we can't
+        // find it using a selector.)
+        currentSectionNode.removeChild(currentSectionNode.childNodes[currentSectionNode.childNodes.length - 1]);
+    }
 
     bridge.sendMessage( "pageInfo", {
       "issues" : collectIssues(),
@@ -593,7 +640,7 @@ function performZimSectionTransforms( sectionIndex, currentSectionNode ) {
         }
     }
 
-    var placeholderTags = currentSectionNode.querySelectorAll( 'span.pagelib-lazy-load-placeholder' );
+    var placeholderTags = currentSectionNode.querySelectorAll( 'span.pagelib_lazy_load_placeholder' );
     for ( i = 0; i < placeholderTags.length; i++ ) {
         var dataSrc = placeholderTags[i].getAttribute( 'data-src' );
         if (dataSrc !== null) {
@@ -644,16 +691,21 @@ function scrollToSection( anchor ) {
     }
 }
 
-bridge.registerListener( "scrollToBottom", function () {
-    window.scrollTo(0, document.body.scrollHeight);
+bridge.registerListener( "scrollToBottom", function ( payload ) {
+    window.scrollTo(0, document.body.scrollHeight - payload.offset - transformer.getDecorOffset());
 });
 
 /**
- * Returns the section id of the section that has the header closest to but above midpoint of screen
+ * Returns the section id of the section that has the header closest to but above midpoint of screen,
+ * or -1 if the page is scrolled all the way to the bottom (i.e. native bottom content should be shown).
  */
 function getCurrentSection() {
     var sectionHeaders = document.getElementsByClassName( "section_heading" );
+    var bottomDiv = document.getElementById( "bottom_stopper" );
     var topCutoff = window.scrollY + ( document.documentElement.clientHeight / 2 );
+    if (topCutoff > bottomDiv.offsetTop) {
+        return -1;
+    }
     var curClosest = null;
     for ( var i = 0; i < sectionHeaders.length; i++ ) {
         var el = sectionHeaders[i];
@@ -676,7 +728,7 @@ bridge.registerListener( "requestCurrentSection", function() {
     bridge.sendMessage( "currentSectionResponse", { sectionID: getCurrentSection() } );
 } );
 
-},{"./bridge":2,"./onclick":8,"./transformer":12,"wikimedia-page-library":20}],12:[function(require,module,exports){
+},{"./bridge":2,"./onclick":7,"./transformer":11,"wikimedia-page-library":20}],11:[function(require,module,exports){
 function Transformer() {
 }
 
@@ -707,7 +759,7 @@ Transformer.prototype.setDecorOffset = function(offset) {
 };
 
 module.exports = new Transformer();
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var pagelib = require("wikimedia-page-library");
 var transformer = require("../transformer");
 
@@ -730,53 +782,46 @@ module.exports = {
     handleTableCollapseOrExpandClick: toggleCollapseClickCallback
 };
 
-},{"../transformer":12,"wikimedia-page-library":20}],14:[function(require,module,exports){
+},{"../transformer":11,"wikimedia-page-library":20}],13:[function(require,module,exports){
 var transformer = require("../transformer");
-var collapseTables = require("./collapseTables");
+
+transformer.register( "hideImages", function( content ) {
+    var minImageSize = 64;
+    var images = content.querySelectorAll( 'img' );
+    for (var i = 0; i < images.length; i++) {
+        var img = images[i];
+        if (img.width < minImageSize && img.height < minImageSize) {
+            continue;
+        }
+        // Just replace the src of the image with a placeholder image from our assets.
+        img.src = "file:///android_asset/checkerboard.png";
+        img.srcset = "";
+    }
+} );
+
+},{"../transformer":11}],14:[function(require,module,exports){
+var transformer = require("../transformer");
 
 transformer.register( "hideRefs", function( content ) {
     var refLists = content.querySelectorAll( "div.reflist" );
     for (var i = 0; i < refLists.length; i++) {
-        var caption = "<strong class='app_table_collapsed_caption'>" + window.string_expand_refs + "</strong>";
+        // Wrap this div in a <table>, so that it will be caught by the pagelibrary for collapsing.
+        var table = document.createElement( 'table' );
+        var tr = document.createElement( 'tr' );
+        var th = document.createElement( 'th' );
+        var td = document.createElement( 'td' );
+        th.style.display = "none";
+        th.innerHTML = window.string_expand_refs;
+        table.appendChild(th);
+        table.appendChild(tr);
+        tr.appendChild(td);
 
-        //create the container div that will contain both the original table
-        //and the collapsed version.
-        var containerDiv = document.createElement( 'div' );
-        containerDiv.className = 'app_table_container';
-        refLists[i].parentNode.insertBefore(containerDiv, refLists[i]);
+        refLists[i].parentNode.insertBefore(table, refLists[i]);
         refLists[i].parentNode.removeChild(refLists[i]);
-
-        //create the collapsed div
-        var collapsedDiv = document.createElement( 'div' );
-        collapsedDiv.classList.add('app_table_collapsed_container');
-        collapsedDiv.classList.add('app_table_collapsed_open');
-        collapsedDiv.innerHTML = caption;
-
-        //create the bottom collapsed div
-        var bottomDiv = document.createElement( 'div' );
-        bottomDiv.classList.add('app_table_collapsed_bottom');
-        bottomDiv.classList.add('app_table_collapse_icon');
-        bottomDiv.innerHTML = window.string_table_close;
-
-        //add our stuff to the container
-        containerDiv.appendChild(collapsedDiv);
-        containerDiv.appendChild(refLists[i]);
-        containerDiv.appendChild(bottomDiv);
-
-        //give it just a little padding
-        refLists[i].style.padding = "4px";
-
-        //set initial visibility
-        refLists[i].style.display = 'none';
-        collapsedDiv.style.display = 'block';
-        bottomDiv.style.display = 'none';
-
-        //assign click handler to the collapsed divs
-        collapsedDiv.onclick = collapseTables.handleTableCollapseOrExpandClick;
-        bottomDiv.onclick = collapseTables.handleTableCollapseOrExpandClick;
+        td.appendChild(refLists[i]);
     }
 } );
-},{"../transformer":12,"./collapseTables":13}],15:[function(require,module,exports){
+},{"../transformer":11}],15:[function(require,module,exports){
 var transformer = require("../../transformer");
 
 transformer.register( "anchorPopUpMediaTransforms", function( content ) {
@@ -809,7 +854,7 @@ transformer.register( "anchorPopUpMediaTransforms", function( content ) {
     }
 } );
 
-},{"../../transformer":12}],16:[function(require,module,exports){
+},{"../../transformer":11}],16:[function(require,module,exports){
 var transformer = require("../../transformer");
 var bridge = require("../../bridge");
 
@@ -858,7 +903,7 @@ transformer.register( "hideIPA", function( content ) {
         containerSpan.onclick = ipaClickHandler;
     }
 } );
-},{"../../bridge":2,"../../transformer":12}],17:[function(require,module,exports){
+},{"../../bridge":2,"../../transformer":11}],17:[function(require,module,exports){
 var transformer = require("../../transformer");
 
 // Move the first non-empty paragraph (and related elements) to the top of the section.
@@ -942,7 +987,7 @@ function addTrailingNodes( span, nodes, startIndex ) {
     }
 }
 
-},{"../../transformer":12}],18:[function(require,module,exports){
+},{"../../transformer":11}],18:[function(require,module,exports){
 var maybeWidenImage = require('wikimedia-page-library').WidenImage.maybeWidenImage;
 var transformer = require("../transformer");
 
@@ -964,7 +1009,7 @@ transformer.register( "widenImages", function( content ) {
     }
 } );
 
-},{"../transformer":12,"wikimedia-page-library":20}],19:[function(require,module,exports){
+},{"../transformer":11,"wikimedia-page-library":20}],19:[function(require,module,exports){
 function ancestorContainsClass( element, className ) {
     var contains = false;
     var curNode = element;
@@ -1162,6 +1207,90 @@ var elementUtilities = {
   copyDataAttributesToAttributes: copyDataAttributesToAttributes
 };
 
+// Elements marked with these classes indicate certain ancestry constraints that are
+// difficult to describe as CSS selectors.
+var CONSTRAINT = {
+  IMAGE_PRESUMES_WHITE_BACKGROUND: 'pagelib_theme_image_presumes_white_background',
+  DIV_DO_NOT_APPLY_BASELINE: 'pagelib_theme_div_do_not_apply_baseline'
+};
+
+// Theme to CSS classes.
+var THEME = {
+  DEFAULT: 'pagelib_theme_default', DARK: 'pagelib_theme_dark', SEPIA: 'pagelib_theme_sepia'
+};
+
+/**
+ * @param {!Document} document
+ * @param {!string} theme
+ * @return {void}
+ */
+var setTheme = function setTheme(document, theme) {
+  var html = document.querySelector('html');
+
+  // Set the new theme.
+  html.classList.add(theme);
+
+  // Clear any previous theme.
+  for (var key in THEME) {
+    if (Object.prototype.hasOwnProperty.call(THEME, key) && THEME[key] !== theme) {
+      html.classList.remove(THEME[key]);
+    }
+  }
+};
+
+/**
+ * Football template image filename regex.
+ * https://en.wikipedia.org/wiki/Template:Football_kit/pattern_list
+ * @type {RegExp}
+ */
+var footballTemplateImageFilenameRegex = new RegExp('Kit_(body|socks|shorts|right_arm|left_arm)(.*).png$');
+
+/* en > Away colours > 793128975 */
+/* en > Manchester United F.C. > 793244653 */
+/**
+ * Determines whether white background should be added to image.
+ * @param  {!HTMLImageElement} image
+ * @return {!boolean}
+ */
+var imagePresumesWhiteBackground = function imagePresumesWhiteBackground(image) {
+  if (footballTemplateImageFilenameRegex.test(image.src)) {
+    return false;
+  }
+  if (image.classList.contains('mwe-math-fallback-image-inline')) {
+    return false;
+  }
+  return !elementUtilities.closestInlineStyle(image, 'background');
+};
+
+/**
+ * Annotate elements with CSS classes that can be used by CSS rules. The classes themselves are not
+ * theme-dependent so classification only need only occur once after the content is loaded, not
+ * every time the theme changes.
+ * @param {!Element} element
+ * @return {void}
+ */
+var classifyElements = function classifyElements(element) {
+  Polyfill.querySelectorAll(element, 'img').filter(imagePresumesWhiteBackground).forEach(function (image) {
+    image.classList.add(CONSTRAINT.IMAGE_PRESUMES_WHITE_BACKGROUND);
+  });
+  /* en > Away colours > 793128975 */
+  /* en > Manchester United F.C. > 793244653 */
+  /* en > Pantone > 792312384 */
+  /* en > Wikipedia:Graphs_and_charts > 801754530 */
+  /* en > PepsiCo > 807406166 */
+  var selector = ['div.color_swatch div', 'div[style*="position: absolute"]', 'div.barbox table div[style*="background:"]', 'div.chart div[style*="background-color"]', 'div.chart ul li span[style*="background-color"]', 'span.legend-color'].join();
+  Polyfill.querySelectorAll(element, selector).forEach(function (element) {
+    return element.classList.add(CONSTRAINT.DIV_DO_NOT_APPLY_BASELINE);
+  });
+};
+
+var ThemeTransform = {
+  CONSTRAINT: CONSTRAINT,
+  THEME: THEME,
+  setTheme: setTheme,
+  classifyElements: classifyElements
+};
+
 var SECTION_TOGGLED_EVENT_TYPE = 'section-toggled';
 
 /**
@@ -1174,45 +1303,21 @@ var SECTION_TOGGLED_EVENT_TYPE = 'section-toggled';
  */
 var getTableHeader = function getTableHeader(element, pageTitle) {
   var thArray = [];
-
-  if (!element.children) {
-    return thArray;
-  }
-
-  for (var i = 0; i < element.children.length; i++) {
-    var el = element.children[i];
-
-    if (el.tagName === 'TH') {
-      // ok, we have a TH element!
-      // However, if it contains more than two links, then ignore it, because
-      // it will probably appear weird when rendered as plain text.
-      var aNodes = el.querySelectorAll('a');
-      // todo: these conditionals are very confusing. Rewrite by extracting a
-      //       method or simplify.
-      if (aNodes.length < 3) {
-        // todo: remove nonstandard Element.innerText usage
-        // Also ignore it if it's identical to the page title.
-        if ((el.innerText && el.innerText.length || el.textContent.length) > 0 && el.innerText !== pageTitle && el.textContent !== pageTitle && el.innerHTML !== pageTitle) {
-          thArray.push(el.innerText || el.textContent);
-        }
+  var headers = Polyfill.querySelectorAll(element, 'th');
+  for (var i = 0; i < headers.length; ++i) {
+    var header = headers[i];
+    var anchors = Polyfill.querySelectorAll(header, 'a');
+    if (anchors.length < 3) {
+      // Also ignore it if it's identical to the page title.
+      if ((header.textContent && header.textContent.length) > 0 && header.textContent !== pageTitle && header.innerHTML !== pageTitle) {
+        thArray.push(header.textContent);
       }
     }
-
-    // if it's a table within a table, don't worry about it
-    if (el.tagName === 'TABLE') {
-      continue;
-    }
-
-    // todo: why do we need to recurse?
-    // recurse into children of this element
-    var ret = getTableHeader(el, pageTitle);
-
-    // did we get a list of TH from this child?
-    if (ret.length > 0) {
-      thArray = thArray.concat(ret);
+    if (thArray.length === 2) {
+      // 'newCaption' only ever uses the first 2 items.
+      break;
     }
   }
-
   return thArray;
 };
 
@@ -1239,9 +1344,9 @@ var toggleCollapseClickCallback = function toggleCollapseClickCallback(footerDiv
   var collapsed = table.style.display !== 'none';
   if (collapsed) {
     table.style.display = 'none';
-    header.classList.remove('app_table_collapse_close'); // todo: use app_table_collapsed_collapsed
-    header.classList.remove('app_table_collapse_icon'); // todo: use app_table_collapsed_icon
-    header.classList.add('app_table_collapsed_open'); // todo: use app_table_collapsed_expanded
+    header.classList.remove('pagelib_collapse_table_collapsed');
+    header.classList.remove('pagelib_collapse_table_icon');
+    header.classList.add('pagelib_collapse_table_expanded');
     if (caption) {
       caption.style.visibility = 'visible';
     }
@@ -1252,9 +1357,9 @@ var toggleCollapseClickCallback = function toggleCollapseClickCallback(footerDiv
     }
   } else {
     table.style.display = 'block';
-    header.classList.remove('app_table_collapsed_open'); // todo: use app_table_collapsed_expanded
-    header.classList.add('app_table_collapse_close'); // todo: use app_table_collapsed_collapsed
-    header.classList.add('app_table_collapse_icon'); // todo: use app_table_collapsed_icon
+    header.classList.remove('pagelib_collapse_table_expanded');
+    header.classList.add('pagelib_collapse_table_collapsed');
+    header.classList.add('pagelib_collapse_table_icon');
     if (caption) {
       caption.style.visibility = 'hidden';
     }
@@ -1290,8 +1395,8 @@ var isInfobox = function isInfobox(element) {
  */
 var newCollapsedHeaderDiv = function newCollapsedHeaderDiv(document, content) {
   var div = document.createElement('div');
-  div.classList.add('app_table_collapsed_container');
-  div.classList.add('app_table_collapsed_open');
+  div.classList.add('pagelib_collapse_table_collapsed_container');
+  div.classList.add('pagelib_collapse_table_expanded');
   div.innerHTML = content || '';
   return div;
 };
@@ -1303,8 +1408,8 @@ var newCollapsedHeaderDiv = function newCollapsedHeaderDiv(document, content) {
  */
 var newCollapsedFooterDiv = function newCollapsedFooterDiv(document, content) {
   var div = document.createElement('div');
-  div.classList.add('app_table_collapsed_bottom');
-  div.classList.add('app_table_collapse_icon'); // todo: use collapsed everywhere
+  div.classList.add('pagelib_collapse_table_collapsed_bottom');
+  div.classList.add('pagelib_collapse_table_icon');
   div.innerHTML = content || '';
   return div;
 };
@@ -1317,7 +1422,7 @@ var newCollapsedFooterDiv = function newCollapsedFooterDiv(document, content) {
 var newCaption = function newCaption(title, headerText) {
   var caption = '<strong>' + title + '</strong>';
 
-  caption += '<span class=app_span_collapse_text>';
+  caption += '<span class=pagelib_collapse_table_collapse_text>';
   if (headerText.length > 0) {
     caption += ': ' + headerText[0];
   }
@@ -1353,7 +1458,7 @@ var collapseTables = function collapseTables(window, content, pageTitle, isMainP
   var _loop = function _loop(i) {
     var table = tables[i];
 
-    if (elementUtilities.findClosestAncestor(table, '.app_table_container') || !shouldTableBeCollapsed(table)) {
+    if (elementUtilities.findClosestAncestor(table, '.pagelib_collapse_table_container') || !shouldTableBeCollapsed(table)) {
       return 'continue';
     }
 
@@ -1367,7 +1472,7 @@ var collapseTables = function collapseTables(window, content, pageTitle, isMainP
     // create the container div that will contain both the original table
     // and the collapsed version.
     var containerDiv = window.document.createElement('div');
-    containerDiv.className = 'app_table_container';
+    containerDiv.className = 'pagelib_collapse_table_container';
     table.parentNode.insertBefore(containerDiv, table);
     table.parentNode.removeChild(table);
 
@@ -1429,11 +1534,11 @@ var collapseTables = function collapseTables(window, content, pageTitle, isMainP
 */
 var expandCollapsedTableIfItContainsElement = function expandCollapsedTableIfItContainsElement(element) {
   if (element) {
-    var containerSelector = '[class*="app_table_container"]';
+    var containerSelector = '[class*="pagelib_collapse_table_container"]';
     var container = elementUtilities.findClosestAncestor(element, containerSelector);
     if (container) {
       var collapsedDiv = container.firstElementChild;
-      if (collapsedDiv && collapsedDiv.classList.contains('app_table_collapsed_open')) {
+      if (collapsedDiv && collapsedDiv.classList.contains('pagelib_collapse_table_expanded')) {
         collapsedDiv.click();
       }
     }
@@ -1456,15 +1561,16 @@ var CollapseTable = {
 };
 
 var COMPATIBILITY = {
-  FILTER: 'pagelib-compatibility-filter'
+  FILTER: 'pagelib_compatibility_filter'
+};
 
-  /**
-   * @param {!Document} document
-   * @param {!Array.<string>} properties
-   * @param {!string} value
-   * @return {void}
-   */
-};var isStyleSupported = function isStyleSupported(document, properties, value) {
+/**
+ * @param {!Document} document
+ * @param {!Array.<string>} properties
+ * @param {!string} value
+ * @return {void}
+ */
+var isStyleSupported = function isStyleSupported(document, properties, value) {
   var element = document.createElement('span');
   return properties.some(function (property) {
     element.style[property] = value;
@@ -1498,6 +1604,7 @@ var CompatibilityTransform = {
 
 var CLASS = 'pagelib_dim_images';
 
+// todo: only require a Document
 /**
  * @param {!Window} window
  * @param {!boolean} enable
@@ -1507,6 +1614,7 @@ var dim = function dim(window, enable) {
   window.document.querySelector('html').classList[enable ? 'add' : 'remove'](CLASS);
 };
 
+// todo: only require a Document
 /**
  * @param {!Window} window
  * @return {boolean}
@@ -1537,6 +1645,7 @@ var ACTION_EDIT_SECTION = 'edit_section';
  */
 var newEditSectionLink = function newEditSectionLink(document, index) {
   var link = document.createElement('a');
+  link.href = '';
   link.setAttribute(DATA_ATTRIBUTE.SECTION_INDEX, index);
   link.setAttribute(DATA_ATTRIBUTE.ACTION, ACTION_EDIT_SECTION);
   link.classList.add(CLASS$1.LINK);
@@ -1764,7 +1873,8 @@ var updateBottomPaddingToAllowReadMoreToScrollToTop = function updateBottomPaddi
  * @return {void}
  */
 var updateLeftAndRightMargin = function updateLeftAndRightMargin(margin, document) {
-  var elements = Polyfill.querySelectorAll(document, '\n    #pagelib_footer_container_menu_heading,\n    #pagelib_footer_container_readmore,\n    #pagelib_footer_container_legal\n  ');
+  var selectors = ['#pagelib_footer_container_menu_heading', '#pagelib_footer_container_readmore', '#pagelib_footer_container_legal'];
+  var elements = Polyfill.querySelectorAll(document, selectors.join());
   elements.forEach(function (element) {
     element.style.marginLeft = margin + 'px';
     element.style.marginRight = margin + 'px';
@@ -1801,7 +1911,7 @@ var isContainerAttached = function isContainerAttached(document) {
 
 var FooterContainer = {
   containerFragment: containerFragment,
-  isContainerAttached: isContainerAttached,
+  isContainerAttached: isContainerAttached, // todo: rename isAttached()?
   updateBottomPaddingToAllowReadMoreToScrollToTop: updateBottomPaddingToAllowReadMoreToScrollToTop,
   updateLeftAndRightMargin: updateLeftAndRightMargin
 };
@@ -1812,22 +1922,34 @@ var FooterContainer = {
  */
 
 /**
+  * @typedef {function} FooterBrowserClickCallback
+  * @return {void}
+  */
+
+/**
  * Adds legal footer html to 'containerID' element.
  * @param {!Element} content
  * @param {?string} licenseString
  * @param {?string} licenseSubstitutionString
  * @param {!string} containerID
- * @param {?FooterLegalClickCallback} licenseLinkClickHandler
+ * @param {!FooterLegalClickCallback} licenseLinkClickHandler
+ * @param {!string} viewInBrowserString
+ * @param {!FooterBrowserClickCallback} browserLinkClickHandler
  * @return {void}
  */
-var add = function add(content, licenseString, licenseSubstitutionString, containerID, licenseLinkClickHandler) {
+var add = function add(content, licenseString, licenseSubstitutionString, containerID, licenseLinkClickHandler, viewInBrowserString, browserLinkClickHandler) {
+  // todo: don't manipulate the selector. The client can make this an ID if they want it to be.
   var container = content.querySelector('#' + containerID);
   var licenseStringHalves = licenseString.split('$1');
 
-  container.innerHTML = '<div class=\'pagelib_footer_legal_contents\'>\n    <hr class=\'pagelib_footer_legal_divider\'>\n    <span class=\'pagelib_footer_legal_license\'>\n      ' + licenseStringHalves[0] + '\n      <a class=\'pagelib_footer_legal_license_link\'>\n        ' + licenseSubstitutionString + '\n      </a>\n      ' + licenseStringHalves[1] + '\n    </span>\n  </div>';
+  container.innerHTML = '<div class=\'pagelib_footer_legal_contents\'>\n    <hr class=\'pagelib_footer_legal_divider\'>\n    <span class=\'pagelib_footer_legal_license\'>\n      ' + licenseStringHalves[0] + '\n      <a class=\'pagelib_footer_legal_license_link\'>\n        ' + licenseSubstitutionString + '\n      </a>\n      ' + licenseStringHalves[1] + '\n      <br>\n      <div class="pagelib_footer_browser">\n        <a class=\'pagelib_footer_browser_link\'>\n          ' + viewInBrowserString + '\n        </a>\n      </div>\n    </span>\n  </div>';
 
   container.querySelector('.pagelib_footer_legal_license_link').addEventListener('click', function () {
     licenseLinkClickHandler();
+  });
+
+  container.querySelector('.pagelib_footer_browser_link').addEventListener('click', function () {
+    browserLinkClickHandler();
   });
 };
 
@@ -1893,12 +2015,14 @@ var MenuItemType = {
   lastEdited: 2,
   pageIssues: 3,
   disambiguation: 4,
-  coordinate: 5
-
-  /**
-   * Menu item model.
-   */
+  coordinate: 5,
+  talkPage: 6
 };
+
+/**
+ * Menu item model.
+ */
+
 var MenuItem = function () {
   /**
    * MenuItem constructor.
@@ -1932,6 +2056,8 @@ var MenuItem = function () {
           return 'pagelib_footer_menu_icon_languages';
         case MenuItemType.lastEdited:
           return 'pagelib_footer_menu_icon_last_edited';
+        case MenuItemType.talkPage:
+          return 'pagelib_footer_menu_icon_talk_page';
         case MenuItemType.pageIssues:
           return 'pagelib_footer_menu_icon_page_issues';
         case MenuItemType.disambiguation:
@@ -2056,7 +2182,7 @@ var setHeading = function setHeading(headingString, headingID, document) {
 };
 
 var FooterMenu = {
-  MenuItemType: MenuItemType,
+  MenuItemType: MenuItemType, // todo: rename to just ItemType?
   setHeading: setHeading,
   maybeAddItem: maybeAddItem
 };
@@ -2075,16 +2201,16 @@ var FooterMenu = {
 
 /**
  * Display fetched read more pages.
- * @typedef {function} ShownReadMorePagesHandler
+ * @typedef {function} ShowReadMorePagesHandler
  * @param {!Array.<object>} pages
  * @param {!string} containerID
- * @param {SaveButtonClickHandler} saveButtonClickHandler
- * @param {TitlesShownHandler} titlesShownHandler
+ * @param {!SaveButtonClickHandler} saveButtonClickHandler
+ * @param {!TitlesShownHandler} titlesShownHandler
  * @param {!Document} document
  * @return {void}
  */
 
-var SAVE_BUTTON_ID_PREFIX = 'readmore:save:';
+var SAVE_BUTTON_ID_PREFIX = 'pagelib_footer_read_more_save_';
 
 /**
  * Removes parenthetical enclosures from string.
@@ -2145,7 +2271,7 @@ function ReadMorePage(title, thumbnail, terms, extract) {
  * Makes document fragment for a read more page.
  * @param {!ReadMorePage} readMorePage
  * @param {!number} index
- * @param {SaveButtonClickHandler} saveButtonClickHandler
+ * @param {!SaveButtonClickHandler} saveButtonClickHandler
  * @param {!Document} document
  * @return {!DocumentFragment}
  */
@@ -2209,7 +2335,7 @@ var documentFragmentForReadMorePage = function documentFragmentForReadMorePage(r
 
 // eslint-disable-next-line valid-jsdoc
 /**
- * @type {ShownReadMorePagesHandler}
+ * @type {ShowReadMorePagesHandler}
  */
 var showReadMorePages = function showReadMorePages(pages, containerID, saveButtonClickHandler, titlesShownHandler, document) {
   var shownTitles = [];
@@ -2233,29 +2359,32 @@ var showReadMorePages = function showReadMorePages(pages, containerID, saveButto
 var queryParameters = function queryParameters(title, count) {
   return {
     action: 'query',
-    continue: '',
-    exchars: 256,
-    exintro: 1,
-    exlimit: count,
-    explaintext: '',
     format: 'json',
+    formatversion: 2,
+    prop: 'extracts|pageimages|pageterms',
+
+    // https://www.mediawiki.org/wiki/API:Search
+    // https://www.mediawiki.org/wiki/Help:CirrusSearch
     generator: 'search',
-    gsrinfo: '',
-    gsrlimit: count,
-    gsrnamespace: 0,
-    gsroffset: 0,
-    gsrprop: 'redirecttitle',
-    gsrsearch: 'morelike:' + title,
-    gsrwhat: 'text',
-    ns: 'ppprop',
-    pilimit: count,
-    piprop: 'thumbnail',
-    pithumbsize: 120,
-    prop: 'pageterms|pageimages|pageprops|revisions|extracts',
-    rrvlimit: 1,
-    rvprop: 'ids',
-    wbptterms: 'description',
-    formatversion: 2
+    gsrlimit: count, // Limit search results by count.
+    gsrprop: 'redirecttitle', // Include a a parsed snippet of the redirect title property.
+    gsrsearch: 'morelike:' + title, // Weight search with the title.
+    gsrwhat: 'text', // Search the text then titles of pages.
+
+    // https://www.mediawiki.org/wiki/Extension:TextExtracts
+    exchars: 256, // Limit number of characters returned.
+    exintro: '', // Only content before the first section.
+    exlimit: count, // Limit extract results by count.
+    explaintext: '', // Strip HTML.
+
+    // https://www.mediawiki.org/wiki/Extension:PageImages
+    pilicense: 'any', // Include non-free images.
+    pilimit: count, // Limit thumbnail results by count.
+    piprop: 'thumbnail', // Include URL and dimensions of thumbnail.
+    pithumbsize: 120, // Limit thumbnail dimensions.
+
+    // https://en.wikipedia.org/w/api.php?action=help&modules=query%2Bpageterms
+    wbptterms: 'description'
   };
 };
 
@@ -2287,7 +2416,24 @@ var readMoreQueryURL = function readMoreQueryURL(title, count, baseURL) {
  * @param {!string} statusText
  * @return {void}
  */
-var fetchErrorHandler = function fetchErrorHandler(statusText) {};var fetchReadMore = function fetchReadMore(title, count, containerID, baseURL, showReadMorePagesHandler, saveButtonClickHandler, titlesShownHandler, document) {
+var fetchErrorHandler = function fetchErrorHandler(statusText) {
+  // TODO: figure out if we want to hide the 'Read more' header in cases when fetch fails.
+  console.log('statusText = ' + statusText); // eslint-disable-line no-console
+};
+
+/**
+ * Fetches 'Read more' pages.
+ * @param {!string} title
+ * @param {!number} count
+ * @param {!string} containerID
+ * @param {?string} baseURL
+ * @param {!ShowReadMorePagesHandler} showReadMorePagesHandler
+ * @param {!SaveButtonClickHandler} saveButtonClickHandler
+ * @param {!TitlesShownHandler} titlesShownHandler
+ * @param {!Document} document
+ * @return {void}
+ */
+var fetchReadMore = function fetchReadMore(title, count, containerID, baseURL, showReadMorePagesHandler, saveButtonClickHandler, titlesShownHandler, document) {
   var xhr = new XMLHttpRequest(); // eslint-disable-line no-undef
   xhr.open('GET', readMoreQueryURL(title, count, baseURL), true);
   xhr.onload = function () {
@@ -2303,7 +2449,11 @@ var fetchErrorHandler = function fetchErrorHandler(statusText) {};var fetchReadM
   xhr.onerror = function () {
     return fetchErrorHandler(xhr.statusText);
   };
-  xhr.send();
+  try {
+    xhr.send();
+  } catch (error) {
+    fetchErrorHandler(error.toString());
+  }
 };
 
 /**
@@ -2341,8 +2491,8 @@ var updateSaveButtonForTitle = function updateSaveButtonForTitle(title, text, is
  * @param {!number} count
  * @param {!string} containerID
  * @param {?string} baseURL
- * @param {SaveButtonClickHandler} saveButtonClickHandler
- * @param {TitlesShownHandler} titlesShownHandler
+ * @param {!SaveButtonClickHandler} saveButtonClickHandler
+ * @param {!TitlesShownHandler} titlesShownHandler
  * @param {!Document} document
  * @return {void}
  */
@@ -2371,178 +2521,6 @@ var FooterReadMore = {
     cleanExtract: cleanExtract,
     safelyRemoveEnclosures: safelyRemoveEnclosures
   }
-};
-
-// CSS classes used to identify and present lazily loaded images. Placeholders are members of
-// PLACEHOLDER_CLASS and one state class: pending, loading, or error. Images are members of either
-// loading or loaded state classes. Class names should match those in LazyLoadTransform.css.
-var PLACEHOLDER_CLASS = 'pagelib-lazy-load-placeholder';
-var PLACEHOLDER_PENDING_CLASS = 'pagelib-lazy-load-placeholder-pending'; // Download pending.
-var PLACEHOLDER_LOADING_CLASS = 'pagelib-lazy-load-placeholder-loading'; // Download started.
-var PLACEHOLDER_ERROR_CLASS = 'pagelib-lazy-load-placeholder-error'; // Download failure.
-var IMAGE_LOADING_CLASS = 'pagelib-lazy-load-image-loading'; // Download started.
-var IMAGE_LOADED_CLASS = 'pagelib-lazy-load-image-loaded'; // Download completed.
-
-// Attributes copied from images to placeholders via data-* attributes for later restoration. The
-// image's classes and dimensions are also set on the placeholder.
-var COPY_ATTRIBUTES = ['class', 'style', 'src', 'srcset', 'width', 'height', 'alt'];
-
-// Small images, especially icons, are quickly downloaded and may appear in many places. Lazily
-// loading these images degrades the experience with little gain. Always eagerly load these images.
-// Example: flags in the medal count for the "1896 Summer Olympics medal table."
-// https://en.m.wikipedia.org/wiki/1896_Summer_Olympics_medal_table?oldid=773498394#Medal_count
-var UNIT_TO_MINIMUM_LAZY_LOAD_SIZE = {
-  px: 50, // https://phabricator.wikimedia.org/diffusion/EMFR/browse/master/includes/MobileFormatter.php;c89f371ea9e789d7e1a827ddfec7c8028a549c12$22
-  ex: 10, // ''
-  em: 5 // 1ex ≈ .5em; https://developer.mozilla.org/en-US/docs/Web/CSS/length#Units
-
-
-  /**
-   * Replace an image with a placeholder.
-   * @param {!Document} document
-   * @param {!HTMLImageElement} image The image to be replaced.
-   * @return {!HTMLSpanElement} The placeholder replacing image.
-   */
-};var convertImageToPlaceholder = function convertImageToPlaceholder(document, image) {
-  // There are a number of possible implementations for placeholders including:
-  //
-  // - [MobileFrontend] Replace the original image with a span and replace the span with a new
-  //   downloaded image.
-  //   This option has a good fade-in but has some CSS concerns for the placeholder, particularly
-  //   `max-width`, and causes significant reflows when used with image widening.
-  //
-  // - [Previous] Replace the original image with a span and append a new downloaded image to the
-  //   span.
-  //   This option has the best cross-fading and extensibility but makes duplicating all the CSS
-  //   rules for the appended image impractical.
-  //
-  // - [Previous] Replace the original image's source with a transparent image and update the source
-  //   from a new downloaded image.
-  //   This option has a good fade-in and minimal CSS concerns for the placeholder and image but
-  //   causes significant reflows when used with image widening.
-  //
-  // - [Current] Replace the original image with a couple spans and replace the spans with a new
-  //   downloaded image.
-  //   This option is about the same as MobileFrontend but supports image widening without reflows.
-
-  // Create the root placeholder.
-  var placeholder = document.createElement('span');
-
-  // Copy the image's classes and append the placeholder and current state (pending) classes.
-  if (image.hasAttribute('class')) {
-    placeholder.setAttribute('class', image.getAttribute('class'));
-  }
-  placeholder.classList.add(PLACEHOLDER_CLASS);
-  placeholder.classList.add(PLACEHOLDER_PENDING_CLASS);
-
-  // Match the image's width, if specified. If image widening is used, this width will be overridden
-  // by !important priority.
-  var geometry = ElementGeometry.from(image);
-  if (geometry.width) {
-    placeholder.style.setProperty('width', '' + geometry.width);
-  }
-
-  // Save the image's attributes to data-* attributes for later restoration.
-  elementUtilities.copyAttributesToDataAttributes(image, placeholder, COPY_ATTRIBUTES);
-
-  // Create a spacer and match the aspect ratio of the original image, if determinable. If image
-  // widening is used, this spacer will scale with the width proportionally.
-  var spacing = document.createElement('span');
-  if (geometry.width && geometry.height) {
-    // Assume units are identical.
-    var ratio = geometry.heightValue / geometry.widthValue;
-    spacing.style.setProperty('padding-top', ratio * 100 + '%');
-  }
-
-  // Append the spacer to the placeholder and replace the image with the placeholder.
-  placeholder.appendChild(spacing);
-  image.parentNode.replaceChild(placeholder, image);
-
-  return placeholder;
-};
-
-/**
- * @param {!HTMLImageElement} image The image to be considered.
- * @return {!boolean} true if image download can be deferred, false if image should be eagerly
- *                    loaded.
- */
-var isLazyLoadable = function isLazyLoadable(image) {
-  var geometry = ElementGeometry.from(image);
-  if (!geometry.width || !geometry.height) {
-    return true;
-  }
-  return geometry.widthValue >= UNIT_TO_MINIMUM_LAZY_LOAD_SIZE[geometry.widthUnit] && geometry.heightValue >= UNIT_TO_MINIMUM_LAZY_LOAD_SIZE[geometry.heightUnit];
-};
-
-/**
- * @param {!Element} element
- * @return {!Array.<HTMLImageElement>} Convertible images descendent from but not including element.
- */
-var queryLazyLoadableImages = function queryLazyLoadableImages(element) {
-  return Polyfill.querySelectorAll(element, 'img').filter(function (image) {
-    return isLazyLoadable(image);
-  });
-};
-
-/**
- * Convert images with placeholders. The transformation is inverted by calling loadImage().
- * @param {!Document} document
- * @param {!Array.<HTMLImageElement>} images The images to lazily load.
- * @return {!Array.<HTMLSpanElement>} The placeholders replacing images.
- */
-var convertImagesToPlaceholders = function convertImagesToPlaceholders(document, images) {
-  return images.map(function (image) {
-    return convertImageToPlaceholder(document, image);
-  });
-};
-
-/**
- * Start downloading image resources associated with a given placeholder and replace the placeholder
- * with a new image element when the download is complete.
- * @param {!Document} document
- * @param {!HTMLSpanElement} placeholder
- * @return {!HTMLImageElement} A new image element.
- */
-var loadPlaceholder = function loadPlaceholder(document, placeholder) {
-  placeholder.classList.add(PLACEHOLDER_LOADING_CLASS);
-  placeholder.classList.remove(PLACEHOLDER_PENDING_CLASS);
-
-  var image = document.createElement('img');
-
-  var retryListener = function retryListener(event) {
-    // eslint-disable-line require-jsdoc
-    image.setAttribute('src', image.getAttribute('src'));
-    event.stopPropagation();
-    event.preventDefault();
-  };
-
-  // Add the download listener prior to setting the src attribute to avoid missing the load event.
-  image.addEventListener('load', function () {
-    placeholder.removeEventListener('click', retryListener);
-    placeholder.parentNode.replaceChild(image, placeholder);
-    image.classList.add(IMAGE_LOADED_CLASS);
-    image.classList.remove(IMAGE_LOADING_CLASS);
-  }, { once: true });
-
-  image.addEventListener('error', function () {
-    placeholder.classList.add(PLACEHOLDER_ERROR_CLASS);
-    placeholder.classList.remove(PLACEHOLDER_LOADING_CLASS);
-    placeholder.addEventListener('click', retryListener);
-  }, { once: true });
-
-  // Set src and other attributes, triggering a download.
-  elementUtilities.copyDataAttributesToAttributes(placeholder, image, COPY_ATTRIBUTES);
-
-  // Append to the class list after copying over any preexisting classes.
-  image.classList.add(IMAGE_LOADING_CLASS);
-
-  return image;
-};
-
-var LazyLoadTransform = {
-  queryLazyLoadableImages: queryLazyLoadableImages,
-  convertImagesToPlaceholders: convertImagesToPlaceholders,
-  loadPlaceholder: loadPlaceholder
 };
 
 /** Function rate limiter. */
@@ -2699,6 +2677,259 @@ var Throttle = function () {
   return Throttle;
 }();
 
+var RESIZE_EVENT_TYPE = 'resize';
+var RESIZE_LISTENER_THROTTLE_PERIOD_MILLISECONDS = 100;
+
+var ID_CONTAINER = 'pagelib_footer_container';
+var ID_LEGAL_CONTAINER = 'pagelib_footer_container_legal';
+
+var ID_READ_MORE_CONTAINER = 'pagelib_footer_container_readmore_pages';
+var ID_READ_MORE_HEADER = 'pagelib_footer_container_readmore_heading';
+
+/** */
+
+var _class = function () {
+  /** */
+  function _class() {
+    classCallCheck(this, _class);
+
+    this._resizeListener = undefined;
+  }
+
+  /**
+   * @param {!Window} window
+   * @param {!Element} container
+   * @param {!string} baseURL
+   * @param {!string} title
+   * @param {!string} readMoreHeader
+   * @param {!number} readMoreLimit
+   * @param {!string} license
+   * @param {!string} licenseSubstitutionString
+   * @param {!FooterLegalClickCallback} licenseLinkClickHandler
+   * @param {!string} viewInBrowserString
+   * @param {!FooterBrowserClickCallback} browserLinkClickHandler
+   * @param {!TitlesShownHandler} titlesShownHandler
+   * @param {!SaveButtonClickHandler} saveButtonClickHandler
+   * @return {void}
+   */
+
+
+  createClass(_class, [{
+    key: 'add',
+    value: function add(window, container, baseURL, title, readMoreHeader, readMoreLimit, license, licenseSubstitutionString, licenseLinkClickHandler, viewInBrowserString, browserLinkClickHandler, titlesShownHandler, saveButtonClickHandler) {
+      this.remove(window);
+      container.appendChild(FooterContainer.containerFragment(window.document));
+
+      FooterLegal.add(window.document, license, licenseSubstitutionString, ID_LEGAL_CONTAINER, licenseLinkClickHandler, viewInBrowserString, browserLinkClickHandler);
+
+      FooterReadMore.setHeading(readMoreHeader, ID_READ_MORE_HEADER, window.document);
+      FooterReadMore.add(title, readMoreLimit, ID_READ_MORE_CONTAINER, baseURL, saveButtonClickHandler, function (titles) {
+        FooterContainer.updateBottomPaddingToAllowReadMoreToScrollToTop(window);
+        titlesShownHandler(titles);
+      }, window.document);
+
+      this._resizeListener = Throttle.wrap(window, RESIZE_LISTENER_THROTTLE_PERIOD_MILLISECONDS, function () {
+        return FooterContainer.updateBottomPaddingToAllowReadMoreToScrollToTop(window);
+      });
+      window.addEventListener(RESIZE_EVENT_TYPE, this._resizeListener);
+    }
+
+    /**
+     * @param {!Window} window
+     * @return {void}
+     */
+
+  }, {
+    key: 'remove',
+    value: function remove(window) {
+      if (this._resizeListener) {
+        window.removeEventListener(RESIZE_EVENT_TYPE, this._resizeListener);
+        this._resizeListener.cancel();
+        this._resizeListener = undefined;
+      }
+
+      var footer = window.document.getElementById(ID_CONTAINER);
+      if (footer) {
+        // todo: support recycling.
+        footer.parentNode.removeChild(footer);
+      }
+    }
+  }]);
+  return _class;
+}();
+
+// CSS classes used to identify and present lazily loaded images. Placeholders are members of
+// PLACEHOLDER_CLASS and one state class: pending, loading, or error. Images are members of either
+// loading or loaded state classes. Class names should match those in LazyLoadTransform.css.
+var PLACEHOLDER_CLASS = 'pagelib_lazy_load_placeholder';
+var PLACEHOLDER_PENDING_CLASS = 'pagelib_lazy_load_placeholder_pending'; // Download pending.
+var PLACEHOLDER_LOADING_CLASS = 'pagelib_lazy_load_placeholder_loading'; // Download started.
+var PLACEHOLDER_ERROR_CLASS = 'pagelib_lazy_load_placeholder_error'; // Download failure.
+var IMAGE_LOADING_CLASS = 'pagelib_lazy_load_image_loading'; // Download started.
+var IMAGE_LOADED_CLASS = 'pagelib_lazy_load_image_loaded'; // Download completed.
+
+// Attributes copied from images to placeholders via data-* attributes for later restoration. The
+// image's classes and dimensions are also set on the placeholder.
+var COPY_ATTRIBUTES = ['class', 'style', 'src', 'srcset', 'width', 'height', 'alt'];
+
+// Small images, especially icons, are quickly downloaded and may appear in many places. Lazily
+// loading these images degrades the experience with little gain. Always eagerly load these images.
+// Example: flags in the medal count for the "1896 Summer Olympics medal table."
+// https://en.m.wikipedia.org/wiki/1896_Summer_Olympics_medal_table?oldid=773498394#Medal_count
+var UNIT_TO_MINIMUM_LAZY_LOAD_SIZE = {
+  px: 50, // https://phabricator.wikimedia.org/diffusion/EMFR/browse/master/includes/MobileFormatter.php;c89f371ea9e789d7e1a827ddfec7c8028a549c12$22
+  ex: 10, // ''
+  em: 5 // 1ex ≈ .5em; https://developer.mozilla.org/en-US/docs/Web/CSS/length#Units
+};
+
+/**
+ * Replace an image with a placeholder.
+ * @param {!Document} document
+ * @param {!HTMLImageElement} image The image to be replaced.
+ * @return {!HTMLSpanElement} The placeholder replacing image.
+ */
+var convertImageToPlaceholder = function convertImageToPlaceholder(document, image) {
+  // There are a number of possible implementations for placeholders including:
+  //
+  // - [MobileFrontend] Replace the original image with a span and replace the span with a new
+  //   downloaded image.
+  //   This option has a good fade-in but has some CSS concerns for the placeholder, particularly
+  //   `max-width`, and causes significant reflows when used with image widening.
+  //
+  // - [Previous] Replace the original image with a span and append a new downloaded image to the
+  //   span.
+  //   This option has the best cross-fading and extensibility but makes duplicating all the CSS
+  //   rules for the appended image impractical.
+  //
+  // - [Previous] Replace the original image's source with a transparent image and update the source
+  //   from a new downloaded image.
+  //   This option has a good fade-in and minimal CSS concerns for the placeholder and image but
+  //   causes significant reflows when used with image widening.
+  //
+  // - [Current] Replace the original image with a couple spans and replace the spans with a new
+  //   downloaded image.
+  //   This option is about the same as MobileFrontend but supports image widening without reflows.
+
+  // Create the root placeholder.
+  var placeholder = document.createElement('span');
+
+  // Copy the image's classes and append the placeholder and current state (pending) classes.
+  if (image.hasAttribute('class')) {
+    placeholder.setAttribute('class', image.getAttribute('class'));
+  }
+  placeholder.classList.add(PLACEHOLDER_CLASS);
+  placeholder.classList.add(PLACEHOLDER_PENDING_CLASS);
+
+  // Match the image's width, if specified. If image widening is used, this width will be overridden
+  // by !important priority.
+  var geometry = ElementGeometry.from(image);
+  if (geometry.width) {
+    placeholder.style.setProperty('width', '' + geometry.width);
+  }
+
+  // Save the image's attributes to data-* attributes for later restoration.
+  elementUtilities.copyAttributesToDataAttributes(image, placeholder, COPY_ATTRIBUTES);
+
+  // Create a spacer and match the aspect ratio of the original image, if determinable. If image
+  // widening is used, this spacer will scale with the width proportionally.
+  var spacing = document.createElement('span');
+  if (geometry.width && geometry.height) {
+    // Assume units are identical.
+    var ratio = geometry.heightValue / geometry.widthValue;
+    spacing.style.setProperty('padding-top', ratio * 100 + '%');
+  }
+
+  // Append the spacer to the placeholder and replace the image with the placeholder.
+  placeholder.appendChild(spacing);
+  image.parentNode.replaceChild(placeholder, image);
+
+  return placeholder;
+};
+
+/**
+ * @param {!HTMLImageElement} image The image to be considered.
+ * @return {!boolean} true if image download can be deferred, false if image should be eagerly
+ *                    loaded.
+ */
+var isLazyLoadable = function isLazyLoadable(image) {
+  var geometry = ElementGeometry.from(image);
+  if (!geometry.width || !geometry.height) {
+    return true;
+  }
+  return geometry.widthValue >= UNIT_TO_MINIMUM_LAZY_LOAD_SIZE[geometry.widthUnit] && geometry.heightValue >= UNIT_TO_MINIMUM_LAZY_LOAD_SIZE[geometry.heightUnit];
+};
+
+/**
+ * @param {!Element} element
+ * @return {!Array.<HTMLImageElement>} Convertible images descendent from but not including element.
+ */
+var queryLazyLoadableImages = function queryLazyLoadableImages(element) {
+  return Polyfill.querySelectorAll(element, 'img').filter(function (image) {
+    return isLazyLoadable(image);
+  });
+};
+
+/**
+ * Convert images with placeholders. The transformation is inverted by calling loadImage().
+ * @param {!Document} document
+ * @param {!Array.<HTMLImageElement>} images The images to lazily load.
+ * @return {!Array.<HTMLSpanElement>} The placeholders replacing images.
+ */
+var convertImagesToPlaceholders = function convertImagesToPlaceholders(document, images) {
+  return images.map(function (image) {
+    return convertImageToPlaceholder(document, image);
+  });
+};
+
+/**
+ * Start downloading image resources associated with a given placeholder and replace the placeholder
+ * with a new image element when the download is complete.
+ * @param {!Document} document
+ * @param {!HTMLSpanElement} placeholder
+ * @return {!HTMLImageElement} A new image element.
+ */
+var loadPlaceholder = function loadPlaceholder(document, placeholder) {
+  placeholder.classList.add(PLACEHOLDER_LOADING_CLASS);
+  placeholder.classList.remove(PLACEHOLDER_PENDING_CLASS);
+
+  var image = document.createElement('img');
+
+  var retryListener = function retryListener(event) {
+    // eslint-disable-line require-jsdoc
+    image.setAttribute('src', image.getAttribute('src'));
+    event.stopPropagation();
+    event.preventDefault();
+  };
+
+  // Add the download listener prior to setting the src attribute to avoid missing the load event.
+  image.addEventListener('load', function () {
+    placeholder.removeEventListener('click', retryListener);
+    placeholder.parentNode.replaceChild(image, placeholder);
+    image.classList.add(IMAGE_LOADED_CLASS);
+    image.classList.remove(IMAGE_LOADING_CLASS);
+  }, { once: true });
+
+  image.addEventListener('error', function () {
+    placeholder.classList.add(PLACEHOLDER_ERROR_CLASS);
+    placeholder.classList.remove(PLACEHOLDER_LOADING_CLASS);
+    placeholder.addEventListener('click', retryListener);
+  }, { once: true });
+
+  // Set src and other attributes, triggering a download.
+  elementUtilities.copyDataAttributesToAttributes(placeholder, image, COPY_ATTRIBUTES);
+
+  // Append to the class list after copying over any preexisting classes.
+  image.classList.add(IMAGE_LOADING_CLASS);
+
+  return image;
+};
+
+var LazyLoadTransform = {
+  queryLazyLoadableImages: queryLazyLoadableImages,
+  convertImagesToPlaceholders: convertImagesToPlaceholders,
+  loadPlaceholder: loadPlaceholder
+};
+
 var EVENT_TYPES = ['scroll', 'resize', CollapseTable.SECTION_TOGGLED_EVENT_TYPE];
 var THROTTLE_PERIOD_MILLISECONDS = 100;
 
@@ -2708,7 +2939,7 @@ var THROTTLE_PERIOD_MILLISECONDS = 100;
  * standard browser events: resize, scroll.
  */
 
-var _class = function () {
+var _class$1 = function () {
   /**
    * @param {!Window} window
    * @param {!number} loadDistanceMultiplier Images within this multiple of the screen height are
@@ -2776,6 +3007,7 @@ var _class = function () {
       EVENT_TYPES.forEach(function (eventType) {
         return _this2._window.removeEventListener(eventType, _this2._throttledLoadPlaceholders);
       });
+      this._throttledLoadPlaceholders.reset();
 
       this._placeholders = [];
       this._registered = false;
@@ -2849,14 +3081,14 @@ var _class = function () {
   return _class;
 }();
 
-var CLASS$2 = { ANDROID: 'pagelib-platform-android', IOS: 'pagelib-platform-ios'
+var CLASS$2 = { ANDROID: 'pagelib_platform_android', IOS: 'pagelib_platform_ios' };
 
-  // Regular expressions from https://phabricator.wikimedia.org/diffusion/EMFR/browse/master/resources/mobile.startup/browser.js;c89f371ea9e789d7e1a827ddfec7c8028a549c12.
-  /**
-   * @param {!Window} window
-   * @return {!boolean} true if the user agent is Android, false otherwise.
-   */
-};var isAndroid = function isAndroid(window) {
+// Regular expressions from https://phabricator.wikimedia.org/diffusion/EMFR/browse/master/resources/mobile.startup/browser.js;c89f371ea9e789d7e1a827ddfec7c8028a549c12.
+/**
+ * @param {!Window} window
+ * @return {!boolean} true if the user agent is Android, false otherwise.
+ */
+var isAndroid = function isAndroid(window) {
   return (/android/i.test(window.navigator.userAgent)
   );
 };
@@ -2958,65 +3190,11 @@ var RedLinks = {
   }
 };
 
-// Elements marked with either of these classes indicate certain ancestry constraints that are
-// difficult to describe as CSS selectors.
-var CONSTRAINT = {
-  IMAGE_NO_BACKGROUND: 'pagelib-theme-image-no-background',
-  IMAGE_NONTABULAR: 'pagelib-theme-image-nontabular'
-
-  // Theme to CSS classes.
-};var THEME = {
-  DEFAULT: 'pagelib-theme-default', DARK: 'pagelib-theme-dark', SEPIA: 'pagelib-theme-sepia'
-
-  /**
-   * @param {!Document} document
-   * @param {!string} theme
-   * @return {void}
-   */
-};var setTheme = function setTheme(document, theme) {
-  var html = document.querySelector('html');
-
-  // Set the new theme.
-  html.classList.add(theme);
-
-  // Clear any previous theme.
-  for (var key in THEME) {
-    if (Object.prototype.hasOwnProperty.call(THEME, key) && THEME[key] !== theme) {
-      html.classList.remove(THEME[key]);
-    }
-  }
-};
-
 /**
- * Annotate elements with CSS classes that can be used by CSS rules. The classes themselves are not
- * theme-dependent so classification only need only occur once after the content is loaded, not
- * every time the theme changes.
- * @param {!Element} element
- * @return {void}
- */
-var classifyElements = function classifyElements(element) {
-  Polyfill.querySelectorAll(element, 'img').forEach(function (image) {
-    if (!elementUtilities.closestInlineStyle(image, 'background')) {
-      image.classList.add(CONSTRAINT.IMAGE_NO_BACKGROUND);
-    }
-    if (!elementUtilities.isNestedInTable(image)) {
-      image.classList.add(CONSTRAINT.IMAGE_NONTABULAR);
-    }
-  });
-};
-
-var ThemeTransform = {
-  CONSTRAINT: CONSTRAINT,
-  THEME: THEME,
-  setTheme: setTheme,
-  classifyElements: classifyElements
-};
-
-/**
- * To widen an image element a css class called 'wideImageOverride' is applied to the image element,
- * however, ancestors of the image element can prevent the widening from taking effect. This method
- * makes minimal adjustments to ancestors of the image element being widened so the image widening
- * can take effect.
+ * To widen an image element a css class called 'pagelib_widen_image_override' is applied to the
+ * image element, however, ancestors of the image element can prevent the widening from taking
+ * effect. This method makes minimal adjustments to ancestors of the image element being widened so
+ * the image widening can take effect.
  * @param  {!HTMLElement} el Element whose ancestors will be widened
  * @return {void}
  */
@@ -3024,6 +3202,9 @@ var widenAncestors = function widenAncestors(el) {
   for (var parentElement = el.parentElement; parentElement && !parentElement.classList.contains('content_block'); parentElement = parentElement.parentElement) {
     if (parentElement.style.width) {
       parentElement.style.width = '100%';
+    }
+    if (parentElement.style.height) {
+      parentElement.style.height = 'auto';
     }
     if (parentElement.style.maxWidth) {
       parentElement.style.maxWidth = '100%';
@@ -3079,7 +3260,7 @@ var shouldWidenImage = function shouldWidenImage(image) {
  */
 var widenImage = function widenImage(image) {
   widenAncestors(image);
-  image.classList.add('wideImageOverride');
+  image.classList.add('pagelib_widen_image_override');
 };
 
 /**
@@ -3103,6 +3284,14 @@ var WidenImage = {
   }
 };
 
+/* eslint-disable sort-imports */
+
+// We want the theme transform to be first. This is because the theme transform CSS has to use
+// some '!important' CSS modifiers to reliably set themes on elements which may contain inline
+// styles. Moving it to the top of the file is necessary so other transforms can override
+// these '!important' themes transform CSS bits if needed. Note - if other transforms have trouble
+// overriding things changed by theme transform remember to match or exceed the selector specificity
+// used by the theme transform for whatever it is you are trying to override.
 var pagelib$1 = {
   // todo: rename CollapseTableTransform.
   CollapseTable: CollapseTable,
@@ -3115,8 +3304,9 @@ var pagelib$1 = {
   FooterLegal: FooterLegal,
   FooterMenu: FooterMenu,
   FooterReadMore: FooterReadMore,
+  FooterTransformer: _class,
   LazyLoadTransform: LazyLoadTransform,
-  LazyLoadTransformer: _class,
+  LazyLoadTransformer: _class$1,
   PlatformTransform: PlatformTransform,
   // todo: rename RedLinkTransform.
   RedLinks: RedLinks,
@@ -3140,4 +3330,4 @@ return pagelib$1;
 })));
 
 
-},{}]},{},[2,7,19,12,13,14,18,15,16,17,1,4,5,6,3,9,10,11]);
+},{}]},{},[2,6,19,11,12,13,14,18,15,16,17,1,4,5,3,8,9,10]);

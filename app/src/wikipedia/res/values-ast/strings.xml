@@ -4,8 +4,6 @@
   <string name="app_name_beta">Wikipedia Beta</string>
   <string name="app_name_alpha">Wikipedia Alfa</string>
   <string name="wikimedia">Wikimedia</string>
-  <string name="yes">Sí</string>
-  <string name="no">Non</string>
   <string name="search_hint">Guetar na Wikipedia</string>
   <string name="search_hint_search_history">Guetar nel historial</string>
   <string name="search_hint_search_my_lists">Guetar nes mios llistes</string>
@@ -18,9 +16,10 @@
   <string name="history_item_deleted">%s desaniciáu del historial</string>
   <string name="history_items_deleted">%d artículos desaniciaos del historial</string>
   <string name="history_item_delete_undo">Desfacer</string>
-  <string name="page_does_not_exist_error">Esta páxina nun esiste.</string>
   <string name="dialog_title_clear_history">Llimpiar l\'historial de navegación</string>
   <string name="dialog_message_clear_history">Esto desaniciará tol historial de navegación, y zarrará cualquier llingüeta abierta. ¿Tas seguru?</string>
+  <string name="dialog_message_clear_history_yes">Sí</string>
+  <string name="dialog_message_clear_history_no">Non</string>
   <string name="nav_item_saved_pages">Páxines guardaes</string>
   <string name="share_via">Compartir per</string>
   <string name="search_redirect_from">Redirixío dende %s</string>
@@ -39,13 +38,13 @@
   <string name="menu_text_select_share">Compartir</string>
   <string name="menu_text_select_edit_here">Editar equí</string>
   <string name="nav_item_nearby">Cercanu</string>
-  <string name="nearby_distance_in_meters">%d m</string>
-  <string name="nearby_distance_in_kilometers">%.2f km</string>
   <string name="nearby_zoom_to_location">Averar a un llugar del mapa</string>
   <string name="nearby_osm_license">&amp;copy; &amp;nbsp;Collaboradores de &lt;a href=\"https://www.openstreetmap.org/copyright/\"&gt;OpenStreetMap&lt;/a&gt;</string>
   <string name="last_updated_text">Caberu anovamientu %s</string>
-  <string name="bottom_content_date_downloaded">Descargóse %s</string>
   <string name="talk_page_link_text">Alderique</string>
+  <string name="edit_history_link_text">Historial d\'ediciones</string>
+  <string name="map_view_link_text">Ver nun mapa</string>
+  <string name="language_count_link_text">Disponible\'n %d idiomes más</string>
   <string name="content_license_html">El conteníu ta disponible baxo &lt;a href=\"%1$s\"&gt;CC BY-SA 3.0&lt;/a&gt; si nun se diz otra cosa</string>
   <string name="edit_save_action_license_logged_in">Al guardar, aceutes les &lt;a href=\"%1$s\"&gt;Condiciones d\'usu&lt;/a&gt;, y lliberar ensin torgues les tos collaboraciones baxo los términos de la llicencia &lt;a href=\"%2$s\"&gt;CC-BY-SA 3.0&lt;/a&gt;.</string>
   <string name="edit_save_action_license_anon">Al guardar, aceutes les &lt;a href=\"%1$s\"&gt;Condiciones d\'usu&lt;/a&gt;, y lliberar ensin torgues les tos collaboraciones baxo la llicencia &lt;a href=\"%2$s\"&gt;CC-BY-SA 3.0&lt;/a&gt;. Les ediciones atribuiránse a la dirección IP del to preséu. Si &lt;a href=\"https://#login\"&gt;anicies sesión&lt;/a&gt;, tendrás más intimidá.</string>
@@ -74,6 +73,8 @@
   <string name="title_captcha">Escribe\'l CAPTCHA</string>
   <string name="edit_section_captcha_reload">Toca nel CAPTCHA pa recargar</string>
   <string name="edit_saved_page_refresh">Esta páxina guardada pué tar anticuada, y tien d\'anovase p\'activar la edición. ¿Quies anovar la páxina?</string>
+  <string name="edit_saved_page_refresh_yes">Sí</string>
+  <string name="edit_saved_page_refresh_no">Non</string>
   <string name="nav_item_login">Aniciar sesión en Wikipedia</string>
   <string name="login_username_hint">Nome d\'usuariu</string>
   <string name="login_password_hint">Contraseña</string>
@@ -95,8 +96,6 @@
   <string name="login_join_wikipedia">Xúnite a Wikipedia</string>
   <string name="login_forgot_password">¿Escaecisti la contraseña?</string>
   <string name="create_account_already_have">¿Yá tienes una cuenta?</string>
-  <string name="create_account_login_link">¿Yá tienes una cuenta? Anicia sesión</string>
-  <string name="login_create_account_link">¿Nun tienes una cuenta? Xúnite a Wikipedia</string>
   <string name="create_account_activity_title">Crear una cuenta</string>
   <string name="dialog_create_account_checking_progress">Comprobando</string>
   <string name="create_account_email_hint">Corréu electrónicu (Opcional)</string>
@@ -160,6 +159,8 @@
   <string name="about_wmf">Un productu de la &lt;a href=\"http://m.wikimediafoundation.org/wiki/Home\"&gt;Fundación Wikimedia&lt;/a&gt;</string>
   <string name="about_activity_title">Tocante a</string>
   <string name="edit_abandon_confirm">Cambióse la páxina. ¿Seguro que quies salir ensin guardar los cambios?</string>
+  <string name="edit_abandon_confirm_yes">Sí</string>
+  <string name="edit_abandon_confirm_no">Non</string>
   <string name="user_blocked_from_editing_title">Bloquiáu</string>
   <string name="user_logged_in_blocked_from_editing">La to cuenta d\'usuariu ta bloquiada pa editar nesta wiki.</string>
   <string name="user_anon_blocked_from_editing">La to direición IP tien bloquiada la edición.</string>
@@ -186,6 +187,8 @@
   <string name="search_recent_header">Guetes recientes:</string>
   <string name="button_clear_all_recent_searches">Llimpiar guetes recientes</string>
   <string name="clear_recent_searches_confirm">¿Tas seguru de que quies llimpiar el to historial de guetes?</string>
+  <string name="clear_recent_searches_confirm_yes">Sí</string>
+  <string name="clear_recent_searches_confirm_no">Non</string>
   <string name="error_browser_not_found">Nun pudo abrise la páxina web (nun s\'alcontró una app de restolador).</string>
   <string name="table_infobox">Datos rápidos</string>
   <string name="table_other">Más información</string>
@@ -200,6 +203,7 @@
   <string name="preference_title_show_images">Amosar imaxes</string>
   <string name="preference_summary_show_images">Activar o desactivar la carga d\'imaxes nes páxines. Desmarca esta opción si la conexón a Internet va lenta, o si\'l to plan de datos tien llendes.</string>
   <string name="read_more_section">Lleer más</string>
+  <string name="about_article_section">Tocante a esti artículu</string>
   <string name="menu_gallery_visit_page">Dir a la páxina del ficheru</string>
   <string name="gallery_error_draw_failed">Nun pudo dibuxase la imaxe.</string>
   <string name="license_title">Llicencia pa %s</string>
@@ -208,7 +212,7 @@
   <string name="gallery_save_progress">Descargando ficheru…</string>
   <string name="gallery_save_success">Ficheru guardáu correutamente.</string>
   <string name="gallery_error_video_failed">Nun pudo reproducise\'l videu.</string>
-  <string name="gallery_save_image_write_permission_rationale">Ríquese permisu d\'escritura nel almacenamientu del preséu pa guardar imaxes. Vuelve a intentalo y concede\'l permisu riquíu.</string>
+  <string name="gallery_save_image_write_permission_rationale">Ríquese permisu d\'escritura nel almacenamientu del preséu pa guardar imaxes.</string>
   <string name="err_cannot_save_file">Nun pudo guardase\'l ficheru</string>
   <string name="snippet_share_intro">«%1$s» en @Wikipedia: %2$s</string>
   <string name="expand_refs">Toca pa espander</string>
@@ -222,24 +226,25 @@
   <string name="menu_new_tab">Llingüeta nueva</string>
   <string name="menu_close_all_tabs">Zarrar toles llingüetes</string>
   <string name="close_all_tabs_confirm">¿Ta seguru de que quies zarrar toles llingüetes?</string>
+  <string name="close_all_tabs_confirm_yes">Sí</string>
+  <string name="close_all_tabs_confirm_no">Non</string>
   <string name="button_close_tab">Zarrar llingüeta</string>
-  <string name="tool_tip_select_text">Calca y caltén en cualquier parte del testu pa resaltalu pa copiar y compartir.</string>
+  <string name="tool_tip_select_text_title">Caltener primíu pa escoyer</string>
+  <string name="tool_tip_select_text">Pulsia y aguanta pulsiáu en cualquier parte del testu pa escoyelu pa copiar y compartir.</string>
   <string name="tool_tip_share">Tres resaltar una información interesante, ¡intenta compartila nes tos redes favorites!</string>
   <string name="page_view_in_browser">Ver la páxina nel navegador</string>
   <string name="tool_tip_toc_button">Consulta la tabla de conteníu en cualquier momentu tocando esti botón, o abasnando dende\'l berbesu drechu de la pantalla.</string>
-  <string name="error_server_response">El sirvidor nun pudo completar la solicitú.</string>
   <string name="error_response_malformed">La respuesta del sirvidor nun tenía un formatu correutu.</string>
   <string name="error_unknown">Hebo un error desconocíu.</string>
   <string name="format_error_server_message">Mensaxe: «%s»</string>
-  <string name="format_error_server_code">Códigu: «%s»</string>
   <string name="address_copied">Direición copiada al cartafueyu.</string>
   <string name="text_copied">Testu copiáu al cartafueyu.</string>
   <string name="button_continue_to_article">Lleer el artículu</string>
   <string name="button_add_to_reading_list">Añadir a llista de llectura</string>
   <string name="page_offline_notice_cannot_load_while_offline">Nun pué cargase l\'artículu en tando sin conexón.</string>
-  <string name="page_offline_notice_add_to_reading_list" fuzzy="true">Añade l\'artículu a una llista de llectura y se descargará en coneutando.</string>
+  <string name="page_offline_notice_add_to_reading_list">Gabitu: Añade l\'artículu a una llista de llectura y se descargará en coneutando.</string>
   <string name="page_offline_notice_last_date">Tas lleyendo una versión sin conexón d\'esti artículu guardada el %s.</string>
-  <string name="page_offline_notice_compilation_download_date">Tas lleyendo una versión sin conexón d\'esti artículu d\'una compilación descargada el %s.</string>
+  <string name="page_offline_notice_compilation_download_date">Tas lleyendo la versión d\'esti artículu de %1$s • %2$s.</string>
   <string name="button_get_directions">Recibir indicaciones</string>
   <string name="error_no_maps_app">Nun pudo alcontrase nenguna app qu\'ufra indicaciones</string>
   <string name="preference_title_show_link_previews">Amosar vistes previes de los enllaces</string>
@@ -256,6 +261,14 @@
   <string name="view_link_preview_error_button_dismiss">Descartar</string>
   <string name="error_page_does_not_exist">Esta páxina nun esiste</string>
   <string name="view_wiki_error_message_offline">Nun pudo coneutase a internet</string>
+  <string name="reference_title">Referencia %s</string>
+  <string name="preference_title_dim_dark_mode_images">Amortecer imaxes na tema escura</string>
+  <string name="preference_summary_dim_dark_mode_images">Amenorgar el rellumu de les imaxes cuando s\'utiliza la tema escura</string>
+  <string name="theme_chooser_dialog_image_dimming_switch_label">Amortecimientu d\'imaxes (na tema escura)</string>
+  <string name="preference_title_prefer_offline_content">Preferir conteníu ensin conexón</string>
+  <string name="preference_summary_prefer_offline_content">Aforrar l\'usu de datos cargando artículos que tean disponibles ensin conexón, en llugar de cargar siempres la última versión d\'un artículu.</string>
+  <string name="preference_title_enable_offline_library">Activar la biblioteca ensin conexón</string>
+  <string name="preference_summary_enable_offline_library">Accesu a los paquetes d\'artículos de Wikipedia (amosaos como ficheros .ZIM) que se descargaren nel preséu pa lleer ensin conexón. &lt;a href=\"https://www.mediawiki.org/wiki/Wikimedia_Apps/Offline_support\"&gt;Más información&lt;/a&gt;</string>
   <string name="crash_report_dialog_title">Sentímoslo, l\'aplicación falló la última vez</string>
   <string name="crash_report_dialog_text">¿Quies unviar un informe de cuelgue a HockeyApp / un fornidor de serviciu d\'un terceru pa que Wikimedia pueda revisar el cuelgue ya iguar el fallu que lu causó?</string>
   <string name="crash_report_dialog_dont_send_button">Saltar</string>
@@ -275,6 +288,9 @@
   <string name="color_theme_dark">Escuru</string>
   <string name="preference_title_color_theme">Tema escura</string>
   <string name="preference_summary_color_theme">Camudar a la tema escura de l\'aplicación</string>
+  <string name="text_size_increase">Aumentar tamañu del testu</string>
+  <string name="text_size_decrease">Amenorgar tamañu del testu</string>
+  <string name="text_size_percent_default">%s (Predeterminao)</string>
   <string name="nav_item_reading_lists">Les mios llistes</string>
   <string name="reading_list_untitled">Ensin títulu</string>
   <string name="reading_list_save_to">Guardar na llista de llectura</string>
@@ -285,10 +301,10 @@
   <string name="reading_list_added_to_unnamed">Añadíu a llista de llectura.</string>
   <string name="reading_list_already_exists">Esti artículu yá ta nesa llista.</string>
   <string name="reading_list_added_view_button">Ver llista</string>
-  <string name="format_reading_list_statistical_summary_singular">1 artículu, %1$.2f MiB</string>
-  <string name="format_reading_list_statistical_summary_plural">%1$d artículos, %2$.2f MiB</string>
-  <string name="format_reading_list_statistical_detail_singular">%1$d de 1 artículu disponible sin conexón, %2$.2f MiB</string>
-  <string name="format_reading_list_statistical_detail_plural">%1$d de %2$d artículos disponibles sin conexón, %3$.2f MiB</string>
+  <string name="format_reading_list_statistical_summary_singular">1 artículu, %1$.2f MB</string>
+  <string name="format_reading_list_statistical_summary_plural">%1$d artículos, %2$.2f MB</string>
+  <string name="format_reading_list_statistical_detail_singular">%1$d de 1 artículu disponible sin conexón, %2$.2f MB</string>
+  <string name="format_reading_list_statistical_detail_plural">%1$d de %2$d artículos disponibles sin conexón, %3$.2f MB</string>
   <string name="reading_list_sort">Ordenar</string>
   <string name="reading_list_sort_by_name">Ordenar por nome</string>
   <string name="reading_list_sort_by_name_desc">Ordenar por nome (inversu)</string>
@@ -299,6 +315,8 @@
   <string name="reading_list_menu_edit_description">Editar la descripción</string>
   <string name="reading_list_action_menu_remove_from_offline">Quitar de les llistes sin conexón</string>
   <string name="reading_list_action_menu_save_for_offline">Guardar nes llistes sin conexón</string>
+  <string name="reading_list_action_menu_remove_all_from_offline">Quitar too de la llista sin conexón</string>
+  <string name="reading_list_action_menu_save_all_for_offline">Guardar too na llista sin conexón</string>
   <string name="reading_list_action_menu_add_to_another_list">Añadir a otra llista</string>
   <string name="reading_list_name_sample">La mio llista de llectura</string>
   <string name="reading_list_name_hint">Nome d\'esta llista</string>
@@ -319,7 +337,6 @@
   <string name="reading_list_empty">Nun añadisti artículos a esta llista.</string>
   <string name="reading_list_article_offline">Disponible sin conexón</string>
   <string name="reading_list_article_make_offline">Facer qu\'esti artículu tea disponible sin conexón</string>
-  <string name="reading_list_article_remove_offline">Nun facer qu\'esti artículu tea disponible sin conexón</string>
   <string name="reading_list_add_to_other_list">Añadir a otra llista de llectura</string>
   <string name="reading_list_remove_from_list">Quitar de %s</string>
   <string name="reading_list_remove_from_lists">Quitar de llistes de llectura</string>
@@ -332,7 +349,12 @@
   <string name="reading_list_login_reminder_title">Sincronizar llistes de llectura</string>
   <string name="reading_list_login_reminder_text">Agora les tos llistes de llectura pueden guardase na cuenta de Wikipedia. Sólo anicia sesión cola to cuenta, y les llistes de llectura van sincronizase automáticamente.</string>
   <string name="reading_lists_confirm_remote_delete">Esto desaniciará del almacenamientu remotu cualquier llista de llectura sincronizada con anterioidá. ¿Siguir?</string>
+  <string name="reading_lists_confirm_remote_delete_yes">Sí</string>
+  <string name="reading_lists_confirm_remote_delete_no">Non</string>
   <string name="reading_list_article_save_in_progress">L\'artículu ta descargándose, y tará disponible sin conexón cuando se complete.</string>
+  <string name="reading_list_already_contains_selection">La llista escoyida yá contien toles páxines seleicionaes.</string>
+  <string name="reading_list_added_articles_list_untitled">Añadiéronse %d artículos a la llista de llectura.</string>
+  <string name="reading_list_added_articles_list_titled">Añadiéronse %1$d artículos a %2$s</string>
   <plurals name="reading_list_article_offline_message">
     <item quantity="one">Esti artículu agora tará disponible sin conexón.</item>
     <item quantity="other">Estos artículos agora tarán disponibles sin conexón.</item>
@@ -352,10 +374,12 @@
   <string name="view_continue_reading_card_title">Siguir lleyendo</string>
   <string name="view_because_you_read_card_title">Porque lleísti</string>
   <string name="view_random_card_title">Al debalu</string>
-  <string name="view_random_card_subtitle">Lleer un artículu al debalu de Wikipedia</string>
-  <string name="view_random_card_error">Nun pudo cargase una páxina al debalu de la rede o de les tos llistes de llectura.</string>
+  <string name="view_random_card_subtitle">Echar una güeyada per artículos al debalu de Wikipedia pa lleer.</string>
+  <string name="view_random_card_action">Tirar los daos</string>
+  <string name="view_next_random_article">Cargar otru artículu al debalu</string>
   <string name="view_main_page_card_title">Güei en Wikipedia</string>
   <string name="view_main_page_card_subtitle">Páxina principal del %s</string>
+  <string name="view_main_page_card_action">Ver la portada</string>
   <string name="view_featured_image_card_title">Imaxen del día</string>
   <string name="view_featured_image_card_download">Descargar</string>
   <string name="menu_feed_card_dismiss">Despintar esta tarxeta</string>
@@ -374,6 +398,12 @@
   <string name="view_continue_reading_card_subtitle_today">Güei</string>
   <string name="view_announcement_card_negative_action">Non, gracies</string>
   <string name="view_offline_card_text">Nun puede cargase conteníu cuando nun hai conexón</string>
+  <string name="view_featured_article_card_title">Artículu destacáu</string>
+  <string name="view_featured_article_footer_save_button_label">Guardar</string>
+  <string name="view_featured_article_footer_saved_button_label">Guardáu</string>
+  <string name="feed_configure_menu_title">Configurar tarxetes</string>
+  <string name="feed_configure_activity_title">Configurar les tarxetes n\'Esplorar</string>
+  <string name="feed_configure_menu_reset">Volver a predeterminaos</string>
   <string name="description_edit_text_hint">Descripción del títulu</string>
   <string name="description_edit_save">Espublizar</string>
   <string name="description_edit_add_description">Amestar una descripción del títulu</string>
@@ -393,7 +423,6 @@
   <string name="description_edit_success_article_edit_hint">Tamién puedes editar artículos dientro d\'esta aplicación. Tenta iguar la ortografía y frases pequeñes faciendo clic nel iconu ^1 la próxima vegada</string>
   <string name="description_edit_tutorial_title_descriptions">Descripciones de títulos</string>
   <string name="description_edit_tutorial_title_descriptions_summary">Resume un artículu p\'ayudar a los llectores a entender la tema nuna güeyada</string>
-  <string name="description_edit_tutorial_button_label_continue">Siguir</string>
   <string name="description_edit_tutorial_keep_it_short">Que sía curtiu</string>
   <string name="description_edit_tutorial_keep_it_short_instructions">Idealmente, una llinia; ente dos y doce palabres</string>
   <string name="description_edit_tutorial_button_label_start_editing">Principiar a editar</string>
@@ -414,20 +443,55 @@
   <string name="description_edit_revert_reason1">la to contribución nun siguió dalgunes de les &lt;a href=\"%1$s\"&gt;directrices&lt;/a&gt;.</string>
   <string name="description_edit_revert_reason2">la to contribución paecía un esperimentu o vandalismu.</string>
   <string name="description_edit_revert_history">Si tas interesáu, consulta &lt;a href=\"%1$s\"&gt;l\'historial d\'ediciones&lt;/a&gt;.</string>
-  <string name="offline_read_permission_rationale">Ríquese permisu d\'accesu al almacenamientu del preséu pa restolar sin conexón. Vuelve a intentalo y concede\'l permisu riquíu.</string>
-  <string name="offline_card_text">Agora tas restolando Wikipedia en mou ensin conexón. Recuerda que los artículos ensin conexón pueden tar desfasaos respeuto a la versión en llinia.</string>
-  <string name="offline_my_compilations">Les mios compilaciones</string>
-  <string name="offline_compilations_title">Compilaciones sin conexón</string>
-  <string name="offline_compilations_search_by_name">Buscar compilaciones peol nome</string>
-  <string name="offline_compilations_found_count">Les mios compilaciones (%d)</string>
-  <string name="offline_compilations_add">Añadir compilaciones ensin conexón</string>
-  <string name="remote_compilations_title">Toles compilaciones</string>
-  <string name="remote_compilations_description">Les compilaciones ensin conexón son paquetes grandes d\'artículos que pueden descargase al preséu como un ficheru, pa poder siguir navegando cuando tas ensin conexón.</string>
-  <string name="storage_size_format">%.2f</string>
-  <string name="storage_size_gb">GB</string>
+  <string name="offline_compilation_download_device_offline">Nun hai conexón a Internet. Asegúrate de volver a conectate y tenta otra vuelta.</string>
+  <string name="offline_read_permission_rationale">Ríquese permisu d\'accesu al almacenamientu del preséu pa restolar sin conexón.</string>
+  <string name="offline_read_permission_error">Nun se dio permisu pa lleer dende\'l preséu d\'almacenamientu.</string>
+  <string name="offline_card_text">Agora tas restolando Wikipedia en mou ensin conexón con artículos de la Biblioteca ensin conexón.</string>
+  <string name="offline_my_compilations">Alministrar la mio biblioteca ensin conexón</string>
+  <string name="offline_compilations_title">Biblioteca ensin conexón</string>
+  <string name="offline_compilations_search_by_name">Buscar paquetes d\'artículos pol nome</string>
+  <string name="offline_compilations_found_count">Na Biblioteca ensin conexón (%d)</string>
+  <string name="offline_compilations_add">Añadir a la mio Biblioteca ensin conexón</string>
+  <string name="remote_compilations_title">Biblioteca ensin conexón</string>
+  <string name="remote_compilations_description">Cola Biblioteca ensin conexón, agora puedes descargar paquetes d\'artículos pa lleelos cuando nun tengas conexón a Internet.</string>
+  <string name="offline_compilation_detail_date_size">%1$s • %2$.2f GB</string>
+  <string name="offline_compilation_detail_button_download">Descargar • %.2f GB</string>
+  <string name="offline_compilation_detail_button_remove">Desaniciar</string>
+  <string name="remote_compilation_download">Descargar</string>
+  <string name="storage_size">%.2f GB</string>
   <string name="storage_size_free">%.2f GB llibres</string>
-  <string name="storage_used_by_compilations">usaos por Wikipedia</string>
+  <string name="storage_used_by_compilations">usaos por Biblioteca sin conexón</string>
   <string name="storage_other_apps">Otres aplicaciones</string>
+  <string name="offline_compilation_download_progress_text">%1$.2f GB / %2$.2f GB</string>
+  <plurals name="offline_compilation_download_time_remaining">
+    <item quantity="one">falta 1 minutu</item>
+    <item quantity="other">falten %d minutos</item>
+  </plurals>
+  <string name="compilation_download_widget_button_cancel_hint">Encaboxar descarga</string>
+  <string name="compilation_download_cancel_confirm">¿Tas seguru de que quies encaboxar la descarga d\'esti paquete d\'artículos?</string>
+  <string name="compilation_download_cancel_confirm_yes">Sí</string>
+  <string name="compilation_download_cancel_confirm_no">Non</string>
+  <string name="compilation_share">Compartir</string>
+  <string name="compilation_remove">Desaniciar</string>
+  <string name="compilation_remove_confirm">¿Quies quitar esti artículu de la Biblioteca ensin conexón?</string>
+  <string name="offline_library_title">Biblioteca ensin conexón</string>
+  <string name="offline_library_empty_title">Nun hai nada na biblioteca ensin conexón</string>
+  <string name="offline_library_empty_description">Escueyi un paquete d\'artículos de Wikipedia pa descargar agora, pa tener accesu sero ensin cargu de datos.</string>
+  <string name="offline_library_empty_description_sideload">Los “Paquetes d\'artículos” de la biblioteca ensin conexón son conxuntos d\'artículos empaquetaos p\'almacenar a conveniencia nel preséu pa poder siguir lleyendo cuándo teas ensin conexón.&lt;br /&gt;&lt;a href=\"https://www.mediawiki.org/wiki/Wikimedia_Apps/Offline_support\"&gt;Más información&lt;/a&gt;</string>
+  <string name="offline_library_packs_hint">Los paquetes d\'artículos de la biblioteca queden disponibles pa lleelos cuándo nun tengas conexón.&lt;a href=\"https://www.mediawiki.org/wiki/Wikimedia_Apps/Offline_support\"&gt;Más información&lt;/a&gt;</string>
+  <string name="offline_library_data_usage_hint">¿Quies aforrar datos? Escueye «Preferir conteníu ensin conexón» na configuración p\'amosar primero los artículos disponibles ensin conexón, inclusive cuando teas conectáu. &lt;a href=\"#settings\"&gt;Dir a la configuración&lt;/a&gt;</string>
+  <string name="offline_library_empty_search">Buscar na biblioteca ensin conexón</string>
+  <string name="offline_library_search_results_state">Resultaos de la gueta de la Biblioteca ensin conexón</string>
+  <string name="offline_library_onboarding_action">Más información</string>
+  <string name="offline_library_onboarding_text">Presentamos la Biblioteca ensin conexón: descarga paquetes d\'artículos pa lleelos dempués ensin conexón.</string>
+  <string name="offline_library_onboarding_button_done">Fecho</string>
+  <string name="offline_library_onboarding_build_library_title">Construir una Biblioteca ensin conexón</string>
+  <string name="offline_library_onboarding_build_library_subtitle">Descargar agora paquetes d\'artículos de Wikipedia pa velos sero ensin gastu de datos.</string>
+  <string name="offline_library_onboarding_uninterrupted_reading_title">Llectura sin interrupción</string>
+  <string name="offline_library_onboarding_uninterrupted_reading_subtitle">Siguir lleyendo y buscando artículos de la biblioteca ensin conexón cuando nun tengas accesu a internet.</string>
+  <string name="offline_library_onboarding_store_knowledge_title">Guardar más conocimientu</string>
+  <string name="offline_library_onboarding_store_knowledge_subtitle">Descargar tanta Wikipedia como pueda xestionar el to preséu. La Biblioteca ensin conexón tamién tien accesu a los paquetes d\'artículos del almacenamientu esternu.</string>
+  <string name="offline_library_main_page_hint_html">Esta Páxina principal ufre un resume del conteníu d\'esti paquete d\'artículos.&lt;br /&gt;&lt;br /&gt;Tamién puedes esplorar el conteníu de cualquier paquete d\'artículos de la Biblioteca ensin conexón buscando los artículos disponibles mentanto tas ensin conexón.</string>
   <string name="onboarding_skip">Saltar</string>
   <string name="onboarding_continue">Siguir</string>
   <string name="onboarding_get_started">Primeros pasos</string>
@@ -441,4 +505,18 @@
   <string name="onboarding_create_account_sync">Sincronizar les llistes de llectura</string>
   <string name="onboarding_create_account_contributions">Siguir el rastru a les tos contribuciones</string>
   <string name="onboarding_create_account_preferences">Guardar les preferencies</string>
+  <string name="app_shortcuts_random">Al debalu</string>
+  <string name="app_shortcuts_continue_reading">Siguir lleyendo</string>
+  <string name="app_shortcuts_search">Buscar</string>
+  <string name="all_trending_text">Tolos artículos en tendencia del %1$s</string>
+  <string name="top_on_this_day">Tendencies del %1$s</string>
+  <string name="on_this_day_card_title">Tal día como güei</string>
+  <string name="more_events_text">Más socesos históricos d\'esti día</string>
+  <string name="events_count_text">%1$s acontecimientos ente %2$s y %3$d</string>
+  <string name="on_this_day">Tal día como güei</string>
+  <string name="this_year">Anguaño</string>
+  <plurals name="diff_years">
+    <item quantity="one">L\'añu pasáu</item>
+    <item quantity="other">Fai %d años</item>
+  </plurals>
 </resources>

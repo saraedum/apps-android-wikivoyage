@@ -4,8 +4,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,15 +26,12 @@ import org.wikipedia.json.GsonUnmarshaller;
 import org.wikipedia.page.ExclusiveBottomSheetPresenter;
 import org.wikipedia.page.PageActivity;
 import org.wikipedia.readinglist.AddToReadingListDialog;
-import org.wikipedia.util.DimenUtil;
 import org.wikipedia.util.GradientUtil;
-import org.wikipedia.util.ResourceUtil;
 import org.wikipedia.util.ShareUtil;
 import org.wikipedia.views.DefaultRecyclerAdapter;
 import org.wikipedia.views.DefaultViewHolder;
 import org.wikipedia.views.DrawableItemDecoration;
 import org.wikipedia.views.FaceAndColorDetectImageView;
-import org.wikipedia.views.ViewUtil;
 
 import java.util.List;
 
@@ -45,13 +42,14 @@ import butterknife.Unbinder;
 import static org.wikipedia.feed.news.NewsActivity.EXTRA_NEWS_ITEM;
 import static org.wikipedia.feed.news.NewsActivity.EXTRA_WIKI;
 import static org.wikipedia.richtext.RichTextUtil.stripHtml;
-import static org.wikipedia.util.DimenUtil.newsFeatureImageHeightForDevice;
 
 public class NewsFragment extends Fragment {
     @BindView(R.id.view_news_fullscreen_header_image) FaceAndColorDetectImageView image;
     @BindView(R.id.view_news_fullscreen_story_text) TextView text;
     @BindView(R.id.view_news_fullscreen_link_card_list) RecyclerView links;
     @BindView(R.id.view_news_fullscreen_toolbar) Toolbar toolbar;
+    @BindView(R.id.news_app_bar) AppBarLayout appBarLayout;
+    @BindView(R.id.view_news_fullscreen_gradient) View gradientView;
 
     private ExclusiveBottomSheetPresenter bottomSheetPresenter = new ExclusiveBottomSheetPresenter();
     private Unbinder unbinder;
@@ -73,9 +71,7 @@ public class NewsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_news, container, false);
         unbinder = ButterKnife.bind(this, view);
 
-        ViewUtil.setTopPaddingDp(toolbar, (int) DimenUtil.getTranslucentStatusBarHeight(getContext()));
-        ViewUtil.setBackgroundDrawable(toolbar, GradientUtil.getCubicGradient(
-                ContextCompat.getColor(getContext(), R.color.lead_gradient_start), Gravity.TOP));
+        gradientView.setBackground(GradientUtil.getPowerGradient(R.color.black54, Gravity.TOP));
         getAppCompatActivity().setSupportActionBar(toolbar);
         getAppCompatActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getAppCompatActivity().getSupportActionBar().setTitle("");
@@ -84,11 +80,9 @@ public class NewsFragment extends Fragment {
         WikiSite wiki = GsonUnmarshaller.unmarshal(WikiSite.class, getActivity().getIntent().getStringExtra(EXTRA_WIKI));
 
         Uri imageUri = item.featureImage();
-        int height = imageUri == null ? DimenUtil.getContentTopOffsetPx(getContext()) : newsFeatureImageHeightForDevice();
         if (imageUri == null) {
-            toolbar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.main_toolbar_background));
+            appBarLayout.setExpanded(false, false);
         }
-        DimenUtil.setViewHeight(image, height);
         image.loadImage(imageUri);
         text.setText(stripHtml(item.story()));
         initRecycler();
@@ -108,8 +102,7 @@ public class NewsFragment extends Fragment {
 
     private void initRecycler() {
         links.setLayoutManager(new LinearLayoutManager(getContext()));
-        links.addItemDecoration(new DrawableItemDecoration(getContext(),
-                ResourceUtil.getThemedAttributeId(getContext(), R.attr.list_separator_drawable), true));
+        links.addItemDecoration(new DrawableItemDecoration(getContext(), R.attr.list_separator_drawable));
         links.setNestedScrollingEnabled(false);
     }
 
@@ -137,7 +130,7 @@ public class NewsFragment extends Fragment {
     private class Callback implements ListCardItemView.Callback {
         @Override
         public void onSelectPage(@NonNull Card card, @NonNull HistoryEntry entry) {
-            startActivity(PageActivity.newIntent(getContext(), entry, entry.getTitle()));
+            startActivity(PageActivity.newIntentForNewTab(getContext(), entry, entry.getTitle()));
         }
 
         @Override

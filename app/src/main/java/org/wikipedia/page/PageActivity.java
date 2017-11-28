@@ -1,7 +1,6 @@
 package org.wikipedia.page;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.SearchManager;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -10,26 +9,25 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
-import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
+import android.view.ActionMode;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -42,50 +40,61 @@ import org.apache.commons.lang3.StringUtils;
 import org.wikipedia.Constants;
 import org.wikipedia.R;
 import org.wikipedia.WikipediaApp;
-import org.wikipedia.activity.ThemedActionBarActivity;
+import org.wikipedia.activity.BaseActivity;
 import org.wikipedia.analytics.IntentFunnel;
 import org.wikipedia.analytics.LinkPreviewFunnel;
 import org.wikipedia.dataclient.WikiSite;
 import org.wikipedia.descriptions.DescriptionEditRevertHelpView;
 import org.wikipedia.events.ChangeTextSizeEvent;
+import org.wikipedia.feed.continuereading.ContinueReadingCard;
+import org.wikipedia.feed.continuereading.ContinueReadingClient;
+import org.wikipedia.feed.dataclient.FeedClient;
+import org.wikipedia.feed.mainpage.MainPageClient;
+import org.wikipedia.feed.model.Card;
 import org.wikipedia.gallery.GalleryActivity;
 import org.wikipedia.history.HistoryEntry;
 import org.wikipedia.language.LangLinksActivity;
 import org.wikipedia.page.linkpreview.LinkPreviewDialog;
-import org.wikipedia.page.snippet.CompatActionMode;
 import org.wikipedia.page.tabs.TabsProvider;
 import org.wikipedia.page.tabs.TabsProvider.TabPosition;
+import org.wikipedia.random.RandomArticleRequestHandler;
 import org.wikipedia.readinglist.AddToReadingListDialog;
 import org.wikipedia.search.SearchFragment;
 import org.wikipedia.search.SearchInvokeSource;
 import org.wikipedia.settings.SettingsActivity;
-import org.wikipedia.staticdata.MainPageNameData;
 import org.wikipedia.theme.ThemeChooserDialog;
-import org.wikipedia.tooltip.ToolTipUtil;
 import org.wikipedia.useroption.sync.UserOptionContentResolver;
 import org.wikipedia.util.ClipboardUtil;
 import org.wikipedia.util.DeviceUtil;
 import org.wikipedia.util.FeedbackUtil;
+import org.wikipedia.util.ResourceUtil;
 import org.wikipedia.util.ShareUtil;
 import org.wikipedia.util.log.L;
+import org.wikipedia.views.ObservableWebView;
 import org.wikipedia.widgets.WidgetProviderFeaturedPage;
 import org.wikipedia.wiktionary.WiktionaryDialog;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
-import static org.wikipedia.util.DeviceUtil.isBackKeyUp;
+import static org.wikipedia.settings.Prefs.isLinkPreviewEnabled;
 import static org.wikipedia.util.UriUtil.visitInExternalBrowser;
 
-public class PageActivity extends ThemedActionBarActivity implements PageFragment.Callback,
-        LinkPreviewDialog.Callback, SearchFragment.Callback, WiktionaryDialog.Callback {
+public class PageActivity extends BaseActivity implements PageFragment.Callback,
+        LinkPreviewDialog.Callback, SearchFragment.Callback, ThemeChooserDialog.Callback,
+        WiktionaryDialog.Callback {
 
-    public static final String ACTION_PAGE_FOR_TITLE = "org.wikipedia.page_for_title";
+    public static final String ACTION_LOAD_IN_NEW_TAB = "org.wikipedia.load_in_new_tab";
+    public static final String ACTION_LOAD_IN_CURRENT_TAB = "org.wikipedia.load_in_current_tab";
     public static final String ACTION_SHOW_TAB_LIST = "org.wikipedia.show_tab_list";
     public static final String ACTION_RESUME_READING = "org.wikipedia.resume_reading";
     public static final String EXTRA_PAGETITLE = "org.wikipedia.pagetitle";
     public static final String EXTRA_HISTORYENTRY  = "org.wikipedia.history.historyentry";
+    public static final String ACTION_APP_SHORTCUT = "org.wikipedia.app_shortcut";
 
     private static final String LANGUAGE_CODE_BUNDLE_KEY = "language";
 
@@ -93,6 +102,8 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
     @BindView(R.id.page_progress_bar) ProgressBar progressBar;
     @BindView(R.id.page_toolbar_container) View toolbarContainerView;
     @BindView(R.id.page_toolbar) Toolbar toolbar;
+    @BindView(R.id.page_toolbar_button_search) ImageView searchButton;
+    @BindView(R.id.page_toolbar_button_show_tabs) ImageView tabsButton;
     @Nullable private Unbinder unbinder;
 
     private PageFragment pageFragment;
@@ -100,17 +111,16 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
     private WikipediaApp app;
     @Nullable private Bus bus;
     private EventBusMethods busMethods;
-    private CompatActionMode currentActionMode;
+    private ActionMode currentActionMode;
 
     private PageToolbarHideHandler toolbarHideHandler;
 
     private ExclusiveBottomSheetPresenter bottomSheetPresenter = new ExclusiveBottomSheetPresenter();
-    @Nullable private PageLoadCallbacks pageLoadCallbacks;
 
     private DialogInterface.OnDismissListener listDialogDismissListener = new DialogInterface.OnDismissListener() {
         @Override
         public void onDismiss(DialogInterface dialogInterface) {
-            pageFragment.updateBookmark();
+            pageFragment.updateBookmarkAndMenuOptionsFromDao();
         }
     };
 
@@ -120,11 +130,6 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
         app = (WikipediaApp) getApplicationContext();
         MetricsManager.register(app, app);
         app.checkCrashes(this);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        }
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
@@ -152,11 +157,16 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
 
         pageFragment = (PageFragment) getSupportFragmentManager().findFragmentById(R.id.page_fragment);
 
+        setStatusBarColor(ResourceUtil.getThemedAttributeId(this, R.attr.page_status_bar_color));
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
+        clearActionBarTitle();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        toolbarHideHandler = new PageToolbarHideHandler(toolbarContainerView);
+        FeedbackUtil.setToolbarButtonLongPressToast(searchButton, tabsButton);
+        tabsButton.setImageDrawable(ContextCompat.getDrawable(pageFragment.getContext(),
+                ResourceUtil.getTabListIcon(pageFragment.getTabCount())));
+
+        toolbarHideHandler = new PageToolbarHideHandler(pageFragment, toolbarContainerView, toolbar, tabsButton);
 
         boolean languageChanged = false;
         if (savedInstanceState != null) {
@@ -185,23 +195,71 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (!isSearching()) {
+            getMenuInflater().inflate(R.menu.menu_page_actions, menu);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        if (isSearching()) {
+            return false;
+        }
+
+        MenuItem otherLangItem = menu.findItem(R.id.menu_page_other_languages);
+        MenuItem shareItem = menu.findItem(R.id.menu_page_share);
+        MenuItem addToListItem = menu.findItem(R.id.menu_page_add_to_list);
+        MenuItem removeFromListsItem = menu.findItem(R.id.menu_page_remove_from_list);
+        MenuItem findInPageItem = menu.findItem(R.id.menu_page_find_in_page);
+        MenuItem contentIssues = menu.findItem(R.id.menu_page_content_issues);
+        MenuItem similarTitles = menu.findItem(R.id.menu_page_similar_titles);
+        MenuItem themeChooserItem = menu.findItem(R.id.menu_page_font_and_theme);
+
+        if (pageFragment.isLoading() || pageFragment.getErrorState()) {
+            otherLangItem.setEnabled(false);
+            shareItem.setEnabled(false);
+            addToListItem.setEnabled(false);
+            findInPageItem.setEnabled(false);
+            contentIssues.setEnabled(false);
+            similarTitles.setEnabled(false);
+            themeChooserItem.setEnabled(false);
+            removeFromListsItem.setEnabled(false);
+        } else {
+            // Only display "Read in other languages" if the article is in other languages
+            otherLangItem.setVisible(pageFragment.getPage() != null && pageFragment.getPage().getPageProperties().getLanguageCount() != 0);
+            otherLangItem.setEnabled(true);
+            shareItem.setEnabled(pageFragment.getPage() != null && pageFragment.getPage().isArticle());
+            addToListItem.setEnabled(pageFragment.getPage() != null && pageFragment.getPage().isArticle());
+            removeFromListsItem.setVisible(pageFragment.isPresentInOfflineLists());
+            removeFromListsItem.setEnabled(pageFragment.isPresentInOfflineLists());
+            findInPageItem.setEnabled(true);
+            themeChooserItem.setEnabled(true);
+            updateMenuPageInfo(menu);
+        }
+        return true;
+    }
+
+    @OnClick(R.id.page_toolbar_button_search)
+    public void onSearchButtonClicked() {
+        openSearchFragment(SearchInvokeSource.TOOLBAR, null);
+    }
+
+    @OnClick(R.id.page_toolbar_button_show_tabs)
+    public void onShowTabsButtonClicked() {
+        pageFragment.enterTabMode(false);
+    }
+
     private void finishActionMode() {
         currentActionMode.finish();
     }
 
-    private void nullifyActionMode() {
-        currentActionMode = null;
-    }
-
     public void hideSoftKeyboard() {
         DeviceUtil.hideSoftKeyboard(this);
-    }
-
-    // Note: this method is invoked even when in CAB mode.
-    @Override
-    public boolean dispatchKeyEvent(@NonNull KeyEvent event) {
-        return isBackKeyUp(event) && ToolTipUtil.dismissToolTip(this)
-                || super.dispatchKeyEvent(event);
     }
 
     @Override
@@ -243,14 +301,23 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
     @NonNull
     public static Intent newIntent(@NonNull Context context, @NonNull String title) {
         PageTitle pageTitle = new PageTitle(title, WikipediaApp.getInstance().getWikiSite());
-        return newIntent(context, new HistoryEntry(pageTitle, HistoryEntry.SOURCE_INTERNAL_LINK), pageTitle);
+        return newIntentForNewTab(context, new HistoryEntry(pageTitle, HistoryEntry.SOURCE_INTERNAL_LINK), pageTitle);
     }
 
     @NonNull
-    public static Intent newIntent(@NonNull Context context,
-                                   @NonNull HistoryEntry entry,
-                                   @NonNull PageTitle title) {
-        return new Intent(ACTION_PAGE_FOR_TITLE)
+    public static Intent newIntentForNewTab(@NonNull Context context,
+                                            @NonNull HistoryEntry entry,
+                                            @NonNull PageTitle title) {
+        return new Intent(ACTION_LOAD_IN_NEW_TAB)
+                .setClass(context, PageActivity.class)
+                .putExtra(EXTRA_HISTORYENTRY, entry)
+                .putExtra(EXTRA_PAGETITLE, title);
+    }
+
+    public static Intent newIntentForCurrentTab(@NonNull Context context,
+                                                @NonNull HistoryEntry entry,
+                                                @NonNull PageTitle title) {
+        return new Intent(ACTION_LOAD_IN_CURRENT_TAB)
                 .setClass(context, PageActivity.class)
                 .putExtra(EXTRA_HISTORYENTRY, entry)
                 .putExtra(EXTRA_PAGETITLE, title);
@@ -270,14 +337,19 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
 
     private void handleIntent(@NonNull Intent intent) {
         if (Intent.ACTION_VIEW.equals(intent.getAction()) && intent.getData() != null) {
-            WikiSite wiki = new WikiSite(intent.getData().getAuthority());
+            WikiSite wiki = new WikiSite(intent.getData());
             PageTitle title = wiki.titleForUri(intent.getData());
             HistoryEntry historyEntry = new HistoryEntry(title, HistoryEntry.SOURCE_EXTERNAL_LINK);
             loadPageInForegroundTab(title, historyEntry);
-        } else if (ACTION_PAGE_FOR_TITLE.equals(intent.getAction())) {
+        } else if (ACTION_LOAD_IN_NEW_TAB.equals(intent.getAction())
+                || ACTION_LOAD_IN_CURRENT_TAB.equals(intent.getAction())) {
             PageTitle title = intent.getParcelableExtra(EXTRA_PAGETITLE);
             HistoryEntry historyEntry = intent.getParcelableExtra(EXTRA_HISTORYENTRY);
-            loadPageInForegroundTab(title, historyEntry);
+            if (ACTION_LOAD_IN_NEW_TAB.equals(intent.getAction())) {
+                loadPageInForegroundTab(title, historyEntry);
+            } else if (ACTION_LOAD_IN_CURRENT_TAB.equals(intent.getAction())) {
+                loadPageInCurrentTab(title, historyEntry);
+            }
             if (intent.hasExtra(Constants.INTENT_EXTRA_REVERT_QNUMBER)) {
                 showDescriptionEditRevertDialog(intent.getStringExtra(Constants.INTENT_EXTRA_REVERT_QNUMBER));
             }
@@ -292,6 +364,10 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
         } else if (intent.hasExtra(Constants.INTENT_FEATURED_ARTICLE_FROM_WIDGET)) {
             new IntentFunnel(app).logFeaturedArticleWidgetTap();
             loadMainPageInForegroundTab();
+        } else if (intent.hasExtra(Constants.INTENT_APP_SHORTCUT_RANDOM)) {
+            loadRandomPage();
+        } else if (intent.hasExtra(Constants.INTENT_APP_SHORTCUT_CONTINUE_READING)) {
+            loadContinueReadingPage();
         } else {
             loadMainPageInCurrentTab();
         }
@@ -338,7 +414,6 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
      * @param position Whether to open this page in the current tab, a new background tab, or new
      *                 foreground tab.
      */
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void loadPage(@NonNull final PageTitle title,
                          @NonNull final HistoryEntry entry,
                          @NonNull final TabPosition position) {
@@ -346,7 +421,7 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
             return;
         }
 
-        if (entry.getSource() != HistoryEntry.SOURCE_INTERNAL_LINK || !app.isLinkPreviewEnabled()) {
+        if (entry.getSource() != HistoryEntry.SOURCE_INTERNAL_LINK || !isLinkPreviewEnabled()) {
             new LinkPreviewFunnel(app, entry.getSource()).logNavigate();
         }
 
@@ -384,6 +459,10 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
         loadPage(title, entry, TabPosition.NEW_TAB_FOREGROUND);
     }
 
+    public void loadPageInCurrentTab(@NonNull PageTitle title, @NonNull HistoryEntry entry) {
+        loadPage(title, entry, TabPosition.CURRENT_TAB);
+    }
+
     public void loadMainPageInForegroundTab() {
         loadMainPage(TabPosition.NEW_TAB_FOREGROUND);
     }
@@ -397,9 +476,39 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
      * fragment manager. Useful for when this function is called from an AsyncTask result.
      */
     public void loadMainPage(TabPosition position) {
-        PageTitle title = new PageTitle(MainPageNameData.valueFor(app.getAppOrSystemLanguageCode()), app.getWikiSite());
+        PageTitle title = MainPageClient.getMainPageTitle();
         HistoryEntry historyEntry = new HistoryEntry(title, HistoryEntry.SOURCE_MAIN_PAGE);
         loadPage(title, historyEntry, position);
+    }
+
+    private void loadContinueReadingPage() {
+        new ContinueReadingClient().request(this, app.getWikiSite(), 1, new FeedClient.Callback() {
+            @Override
+            public void success(@NonNull List<? extends Card> cards) {
+                ContinueReadingCard card = (ContinueReadingCard) cards.get(0); // top?
+                loadPageInForegroundTab(card.pageTitle(), new HistoryEntry(card.pageTitle(), HistoryEntry.SOURCE_APP_SHORTCUT_CONTINUE_READING));
+            }
+
+            @Override
+            public void error(@NonNull Throwable caught) {
+                loadMainPageInForegroundTab();
+            }
+        });
+    }
+
+    private void loadRandomPage() {
+        RandomArticleRequestHandler.getRandomPage(new RandomArticleRequestHandler.Callback() {
+            @Override
+            public void onSuccess(@NonNull PageTitle pageTitle) {
+                loadPageInForegroundTab(pageTitle, new HistoryEntry(pageTitle, HistoryEntry.SOURCE_APP_SHORTCUT_RANDOM));
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                loadMainPageInForegroundTab();
+            }
+        });
+
     }
 
     public void showLinkPreview(@NonNull PageTitle title, int entrySource) {
@@ -422,9 +531,6 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
     // Note: back button first handled in {@link #onOptionsItemSelected()};
     @Override
     public void onBackPressed() {
-        if (ToolTipUtil.dismissToolTip(this)) {
-            return;
-        }
         if (isCabOpen()) {
             finishActionMode();
             return;
@@ -437,7 +543,6 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
             }
             return;
         }
-        getSupportActionBar().setTitle("");
         app.getSessionFunnel().backPressed();
         if (pageFragment.onBackPressed()) {
             return;
@@ -460,10 +565,9 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
         bottomSheetPresenter.dismiss(getSupportFragmentManager());
     }
 
-    @Nullable
     @Override
-    public PageToolbarHideHandler onPageGetToolbarHideHandler() {
-        return toolbarHideHandler;
+    public void onPageInitWebView(@NonNull ObservableWebView webView) {
+        toolbarHideHandler.setScrollView(webView);
     }
 
     @Override
@@ -487,25 +591,14 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
     }
 
     @Override
-    public boolean onPageIsSearching() {
-        return isSearching();
-    }
-
-    @Nullable
-    @Override
-    public Fragment onPageGetTopFragment() {
-        return pageFragment;
-    }
-
-    @Override
     public void onPageShowThemeChooser() {
         bottomSheetPresenter.show(getSupportFragmentManager(), new ThemeChooserDialog());
     }
 
     @Nullable
     @Override
-    public ActionMode onPageStartSupportActionMode(@NonNull ActionMode.Callback callback) {
-        return startSupportActionMode(callback);
+    public void onPageStartSupportActionMode(@NonNull ActionMode.Callback callback) {
+        startActionMode(callback);
     }
 
     @Override
@@ -516,18 +609,6 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
     @Override
     public void onPageHideSoftKeyboard() {
         hideSoftKeyboard();
-    }
-
-    @Nullable
-    @Override
-    public PageLoadCallbacks onPageGetPageLoadCallbacks() {
-        return pageLoadCallbacks;
-    }
-
-    @Override
-    public void onPageLoadPage(@NonNull PageTitle title, @NonNull HistoryEntry entry,
-                               @NonNull TabPosition tabPosition) {
-        loadPage(title, entry, tabPosition);
     }
 
     @Override
@@ -541,21 +622,9 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
         if (!pageFragment.isAdded()) {
             return;
         }
-        FeedbackUtil.showMessage(getActivity(),
+        FeedbackUtil.showMessage(this,
                 getString(R.string.reading_list_item_deleted, title.getDisplayText()));
-        pageFragment.updateBookmark();
-    }
-
-    @Nullable
-    @Override
-    public View onPageGetContentView() {
-        return pageFragment.getView();
-    }
-
-    @Nullable
-    @Override
-    public View onPageGetTabsContainerView() {
-        return tabsContainerView;
+        pageFragment.updateBookmarkAndMenuOptionsFromDao();
     }
 
     @Override
@@ -569,18 +638,8 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
     }
 
     @Override
-    public void onPageSearchRequested() {
-        openSearchFragment(SearchInvokeSource.TOOLBAR, null);
-    }
-
-    @Override
     public void onPageLoadError(@NonNull PageTitle title) {
         getSupportActionBar().setTitle(title.getDisplayText());
-    }
-
-    @Override
-    public void onPageLoadErrorRetry() {
-        getSupportActionBar().setTitle("");
     }
 
     @Override
@@ -592,6 +651,21 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
     public void onSearchSelectPage(@NonNull HistoryEntry entry, boolean inNewTab) {
         loadPage(entry.getTitle(), entry, inNewTab ? TabsProvider.TabPosition.NEW_TAB_BACKGROUND
                 : TabsProvider.TabPosition.CURRENT_TAB);
+    }
+
+    @Override
+    public void onPageHideAllContent() {
+        toolbarHideHandler.setFadeEnabled(false);
+    }
+
+    @Override
+    public void onPageSetToolbarFadeEnabled(boolean enabled) {
+        toolbarHideHandler.setFadeEnabled(enabled);
+    }
+
+    @Override
+    public void onPageSetToolbarForceNoFace(boolean force) {
+        toolbarHideHandler.setForceNoFade(force);
     }
 
     @Override
@@ -652,15 +726,9 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
     }
 
     @Override
-    public boolean shouldLoadFromBackStack() {
-        return getIntent() != null
-                && (ACTION_SHOW_TAB_LIST.equals(getIntent().getAction())
-                || ACTION_RESUME_READING.equals(getIntent().getAction()));
-    }
-
-    @Override
-    public boolean shouldShowTabList() {
-        return getIntent() != null && ACTION_SHOW_TAB_LIST.equals(getIntent().getAction());
+    public void onToggleDimImages() {
+        pageFragment.getDarkModeMarshaller().toggleDimImages();
+        pageFragment.refreshPage(pageFragment.getWebView().getScrollY());
     }
 
     private void copyLink(@NonNull String url) {
@@ -669,12 +737,6 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
 
     private void showCopySuccessMessage() {
         FeedbackUtil.showMessage(this, R.string.address_copied);
-    }
-
-    @Nullable
-    @Override
-    public AppCompatActivity getActivity() {
-        return this;
     }
 
     private boolean shouldRecreateMainActivity() {
@@ -744,43 +806,27 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
         super.onDestroy();
     }
 
-    /**
-     * ActionMode that is invoked when the user long-presses inside the WebView.
-     * @param mode ActionMode under which this context is starting.
-     */
     @Override
-    public void onSupportActionModeStarted(@NonNull ActionMode mode) {
-        if (!isCabOpen()) {
-            conditionallyInjectCustomCabMenu(mode);
-        }
-        super.onSupportActionModeStarted(mode);
-    }
-
-    @Override
-    public void onSupportActionModeFinished(@NonNull ActionMode mode) {
-        super.onSupportActionModeFinished(mode);
-        nullifyActionMode();
-    }
-
-    @Override
-    public void onActionModeStarted(android.view.ActionMode mode) {
-        if (!isCabOpen()) {
-            conditionallyInjectCustomCabMenu(mode);
-        }
+    public void onActionModeStarted(ActionMode mode) {
         super.onActionModeStarted(mode);
+        if (!isSearching() && !isCabOpen() && mode.getTag() == null) {
+            Menu menu = mode.getMenu();
+            menu.clear();
+            mode.getMenuInflater().inflate(R.menu.menu_text_select, menu);
+            pageFragment.onActionModeShown(mode);
+        }
     }
 
     @Override
     public void onActionModeFinished(android.view.ActionMode mode) {
         super.onActionModeFinished(mode);
-        nullifyActionMode();
+        currentActionMode = null;
+        toolbarHideHandler.onScrolled(pageFragment.getWebView().getScrollY(),
+                pageFragment.getWebView().getScrollY());
     }
 
-    private <T> void conditionallyInjectCustomCabMenu(T mode) {
-        currentActionMode = new CompatActionMode(mode);
-        if (currentActionMode.shouldInjectCustomMenu()) {
-            currentActionMode.injectCustomMenu(pageFragment);
-        }
+    protected void clearActionBarTitle() {
+        getSupportActionBar().setTitle("");
     }
 
     private void registerBus() {
@@ -856,21 +902,26 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
                 .show();
     }
 
-    @VisibleForTesting
-    public void setPageLoadCallbacks(@Nullable PageLoadCallbacks pageLoadCallbacks) {
-        this.pageLoadCallbacks = pageLoadCallbacks;
-    }
-
     @SuppressLint("CommitTransaction")
     private void openSearchFragment(@NonNull SearchInvokeSource source, @Nullable String query) {
         Fragment fragment = searchFragment();
         if (fragment == null) {
-            fragment = SearchFragment.newInstance(source, StringUtils.trim(query), true);
+            fragment = SearchFragment.newInstance(source, StringUtils.trim(query));
             getSupportFragmentManager()
                     .beginTransaction()
                     .add(R.id.activity_page_container, fragment)
                     .commitNowAllowingStateLoss();
         }
+    }
+
+    private void updateMenuPageInfo(@NonNull Menu menu) {
+        MenuItem contentIssues = menu.findItem(R.id.menu_page_content_issues);
+        MenuItem similarTitles = menu.findItem(R.id.menu_page_similar_titles);
+        PageInfo pageInfo = pageFragment.getPageInfo();
+        contentIssues.setVisible(pageInfo != null && pageInfo.hasContentIssues());
+        contentIssues.setEnabled(true);
+        similarTitles.setVisible(pageInfo != null && pageInfo.hasSimilarTitles());
+        similarTitles.setEnabled(true);
     }
 
     @SuppressLint("CommitTransaction")
@@ -889,5 +940,15 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
                 pageFragment.updateFontSize();
             }
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_F)
+                || (!event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_F3)) {
+            pageFragment.showFindInPage();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

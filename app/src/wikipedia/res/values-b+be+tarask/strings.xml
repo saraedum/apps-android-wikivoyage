@@ -4,8 +4,6 @@
   <string name="app_name_beta">Вікіпэдыя Бэта</string>
   <string name="app_name_alpha">Вікіпэдыя Альфа</string>
   <string name="wikimedia">Вікімэдыя</string>
-  <string name="yes">Так</string>
-  <string name="no">Не</string>
   <string name="search_hint">Пошук па Вікіпэдыі</string>
   <string name="search_hint_search_history">Шукаць у гісторыі</string>
   <string name="search_hint_search_my_lists">Пошук у маіх сьпісах</string>
@@ -18,7 +16,6 @@
   <string name="history_item_deleted">Артыкул %s выдалены з гісторыі</string>
   <string name="history_items_deleted">%d артыкулаў выдалена з гісторыі</string>
   <string name="history_item_delete_undo">Аднавіць</string>
-  <string name="page_does_not_exist_error">Гэта старонка не існуе.</string>
   <string name="dialog_title_clear_history">Ачысьціць гісторыю прагляду</string>
   <string name="dialog_message_clear_history">Гэтае дзеяньне выдаліць усю гісторыю прагляду і зачыніць усе адкрытыя ўстаўкі. Вы ўпэўнены?</string>
   <string name="nav_item_saved_pages">Захаваныя старонкі</string>
@@ -36,8 +33,6 @@
   <string name="menu_text_select_define">Вызначэньне</string>
   <string name="menu_text_select_share">Падзяліцца</string>
   <string name="nav_item_nearby">Побач</string>
-  <string name="nearby_distance_in_meters">%d м</string>
-  <string name="nearby_distance_in_kilometers">%.2f км</string>
   <string name="nearby_zoom_to_location">Перайсьці да месца на мапе</string>
   <string name="last_updated_text">Апошняе абнаўленьне %s</string>
   <string name="content_license_html">Зьмест даступны згодна ўмоваў ліцэнзіі &lt;a href=\"%1$s\"&gt;CC BY-SA 3.0&lt;/a&gt;, калі не пазначанае іншае</string>
@@ -78,8 +73,6 @@
   <string name="history_empty_message">Сачыце тут за тым, што вы ўжо чыталі.</string>
   <string name="wp_stylized">&lt;big&gt;В&lt;/big&gt;ІКІПЭДЫ&lt;big&gt;A&lt;/big&gt;</string>
   <string name="create_account_username_hint">Імя ўдзельніка</string>
-  <string name="create_account_login_link">Ужо маеце рахунак? Увайсьці</string>
-  <string name="login_create_account_link">Ня маеце рахунак? Далучайцеся да Вікіпэдыі</string>
   <string name="create_account_activity_title">Стварыць рахунак</string>
   <string name="dialog_create_account_checking_progress">Праверка</string>
   <string name="create_account_email_hint">Адрас электроннай пошты (не абавязкова)</string>
@@ -179,7 +172,7 @@
   <string name="gallery_save_progress">Загрузка файлу…</string>
   <string name="gallery_save_success">Файл захаваны пасьпяхова.</string>
   <string name="gallery_error_video_failed">Не атрымалася прайграць відэа.</string>
-  <string name="gallery_save_image_write_permission_rationale">Дзеля захаваньня выяваў неабходны дазвол на запіс у сховішча Вашай прылады. Калі ласка, паспрабуйце яшчэ раз і надайце патрэбны дазвол.</string>
+  <string name="gallery_save_image_write_permission_rationale">Для захаваньня выяваў неабходны дазвол на запіс у сховішча вашай прылады.</string>
   <string name="err_cannot_save_file">Немагчыма захаваць файл</string>
   <string name="snippet_share_intro">«%1$s» на сайце @Wikipedia: %2$s</string>
   <string name="expand_refs">Націсьніце каб развярнуць</string>
@@ -192,15 +185,13 @@
   <string name="gallery_uploader_unknown">Загрузіў невядомы</string>
   <string name="menu_new_tab">Новая ўкладка</string>
   <string name="button_close_tab">Закрыць укладку</string>
-  <string name="tool_tip_select_text">Націсьніце і ўтрымлівайце ў любым месцы тэкста, каб выдзяліць яго для капіраваньне і магчымасьці падзяліцца.</string>
+  <string name="tool_tip_select_text">Націсьніце і ўтрымлівайце ў любым месцы тэксту, каб абраць яго для капяваньня і магчымасьці падзяліцца.</string>
   <string name="tool_tip_share">Пасья выдзяленьня цікавага факту, паспрабуйце падзяліцца ім ў Вашых улюблёных сацыяльных сетках!</string>
   <string name="page_view_in_browser">Праглядзець старонку ў браўзэры</string>
   <string name="tool_tip_toc_button">Глядзіце сьпіс зьместу ў любы час націснуўшы гэтую кнопку, ці правёўшы пальцам ад правага боку экрана.</string>
-  <string name="error_server_response">Сэрвэр ня змог выканаць запыт.</string>
   <string name="error_response_malformed">Адказ з сэрвэра ня быў карэктна адфарматаваны.</string>
   <string name="error_unknown">Узьнікла невядомая памылка.</string>
   <string name="format_error_server_message">Паведамленьне: «%s»</string>
-  <string name="format_error_server_code">Код: «%s»</string>
   <string name="address_copied">Адрас скапіраваны ў буфэр абмену.</string>
   <string name="text_copied">Тэкст скапіяваны ў буфэр абмену.</string>
   <string name="button_continue_to_article">Чытаць артыкул</string>

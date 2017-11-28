@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import org.wikipedia.dataclient.WikiSite;
 import org.wikipedia.dataclient.mwapi.MwQueryResponse;
 import org.wikipedia.feed.dataclient.FeedClient;
+import org.wikipedia.feed.model.Card;
 import org.wikipedia.history.HistoryEntry;
 import org.wikipedia.page.bottomcontent.MainPageReadMoreTopicTask;
 import org.wikipedia.search.FullTextSearchClient;
@@ -14,7 +15,6 @@ import org.wikipedia.search.SearchResult;
 import org.wikipedia.search.SearchResults;
 import org.wikipedia.util.log.L;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,13 +30,13 @@ public class BecauseYouReadClient extends FullTextSearchClient implements FeedCl
     @Override public void request(@NonNull Context context, @NonNull final WikiSite wiki, int age,
                                   @NonNull final FeedClient.Callback cb) {
         cancel();
-        readMoreTopicTask = new MainPageReadMoreTopicTask(context, age) {
+        readMoreTopicTask = new MainPageReadMoreTopicTask(age) {
             @Override public void onFinish(@Nullable HistoryEntry entry) {
                 if (entry == null) {
-                    cb.error(new IOException("Error retrieving history entry for suggestions"));
+                    cb.success(Collections.emptyList());
                     return;
                 }
-                getCardForHistoryEntry(wiki, entry, cb);
+                getCardForHistoryEntry(entry, cb);
             }
 
             @Override public void onCatch(Throwable caught) {
@@ -58,13 +58,17 @@ public class BecauseYouReadClient extends FullTextSearchClient implements FeedCl
         }
     }
 
-    private void getCardForHistoryEntry(@NonNull WikiSite wiki, @NonNull final HistoryEntry entry,
+    private void getCardForHistoryEntry(@NonNull final HistoryEntry entry,
                                         final FeedClient.Callback cb) {
-        requestMoreLike(wiki, entry.getTitle().getDisplayText(), null, null, SUGGESTION_REQUEST_ITEMS,
-                new FullTextSearchClient.Callback() {
+        requestMoreLike(entry.getTitle().getWikiSite(), entry.getTitle().getDisplayText(),
+                null, null, SUGGESTION_REQUEST_ITEMS, new FullTextSearchClient.Callback() {
             @Override public void success(@NonNull Call<MwQueryResponse> call,
                                           @NonNull SearchResults results) {
-                cb.success(Collections.singletonList(toBecauseYouReadCard(results, entry)));
+                SearchResults filteredResults = SearchResults
+                        .filter(results, entry.getTitle().getText(), false);
+                cb.success(filteredResults.getResults().isEmpty()
+                        ? Collections.<Card>emptyList()
+                        : Collections.singletonList(toBecauseYouReadCard(results, entry)));
             }
 
             @Override public void failure(@NonNull Call<MwQueryResponse> call,
@@ -77,9 +81,7 @@ public class BecauseYouReadClient extends FullTextSearchClient implements FeedCl
     @NonNull private BecauseYouReadCard toBecauseYouReadCard(@NonNull SearchResults results,
                                                              @NonNull HistoryEntry entry) {
         List<BecauseYouReadItemCard> itemCards = new ArrayList<>();
-        for (SearchResult result : SearchResults
-                .filter(results, entry.getTitle().getText(), false)
-                .getResults()) {
+        for (SearchResult result : results.getResults()) {
             itemCards.add(new BecauseYouReadItemCard(result.getPageTitle()));
         }
         return new BecauseYouReadCard(entry, itemCards);

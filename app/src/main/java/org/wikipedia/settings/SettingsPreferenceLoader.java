@@ -12,14 +12,16 @@ import android.support.v7.preference.SwitchPreferenceCompat;
 import org.wikipedia.BuildConfig;
 import org.wikipedia.R;
 import org.wikipedia.WikipediaApp;
+import org.wikipedia.activity.BaseActivity;
 import org.wikipedia.readinglist.sync.ReadingListSynchronizer;
 import org.wikipedia.theme.Theme;
 import org.wikipedia.util.ReleaseUtil;
+import org.wikipedia.util.StringUtil;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 
 /** UI code for app settings used by PreferenceFragment. */
-public class SettingsPreferenceLoader extends BasePreferenceLoader {
+class SettingsPreferenceLoader extends BasePreferenceLoader {
 
     /*package*/ SettingsPreferenceLoader(@NonNull PreferenceFragmentCompat fragment) {
         super(fragment);
@@ -43,7 +45,12 @@ public class SettingsPreferenceLoader extends BasePreferenceLoader {
         }
 
         findPreference(R.string.preference_key_sync_reading_lists)
-                .setOnPreferenceChangeListener(new SyncReadingListsListener(getActivity()));
+                .setOnPreferenceChangeListener(new SyncReadingListsListener());
+
+        findPreference(R.string.preference_key_enable_offline_library)
+                .setOnPreferenceChangeListener(new OfflineLibraryEnableListener());
+        findPreference(R.string.preference_key_enable_offline_library)
+                .setSummary(StringUtil.fromHtml(getPreferenceHost().getString(R.string.preference_summary_enable_offline_library)));
 
         findPreference(R.string.preference_key_color_theme)
                 .setOnPreferenceChangeListener(new ThemeChangeListener());
@@ -54,28 +61,26 @@ public class SettingsPreferenceLoader extends BasePreferenceLoader {
 
         Preference contentLanguagePref = findPreference(R.string.preference_key_language);
 
-        if (!Prefs.getMediaWikiBaseUriSupportsLangCode()) {
-            contentLanguagePref.setVisible(false);
-        } else {
-            contentLanguagePref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    LanguagePreferenceDialog langPrefDialog = new LanguagePreferenceDialog(getActivity(), false);
-                    langPrefDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                        @Override
-                        public void onDismiss(DialogInterface dialog) {
-                            String name = defaultString(WikipediaApp.getInstance().getAppOrSystemLanguageLocalizedName());
-                            if (getActivity() != null && !findPreference(R.string.preference_key_language).getSummary().equals(name)) {
-                                findPreference(R.string.preference_key_language).setSummary(name);
-                                getActivity().setResult(SettingsActivity.ACTIVITY_RESULT_LANGUAGE_CHANGED);
-                            }
+        contentLanguagePref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                LanguagePreferenceDialog langPrefDialog = new LanguagePreferenceDialog(getActivity(), false);
+                langPrefDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        String name = defaultString(WikipediaApp.getInstance().getAppOrSystemLanguageLocalizedName());
+                        if (getActivity() != null && !findPreference(R.string.preference_key_language).getSummary().equals(name)) {
+                            findPreference(R.string.preference_key_language).setSummary(name);
+                            getActivity().setResult(SettingsActivity.ACTIVITY_RESULT_LANGUAGE_CHANGED);
                         }
-                    });
-                    langPrefDialog.show();
-                    return true;
-                }
-            });
-        }
+                    }
+                });
+                langPrefDialog.show();
+                return true;
+            }
+        });
+
+        setDimImagesPrefEnabled(getActivity(), WikipediaApp.getInstance().getCurrentTheme());
 
         if (!BuildConfig.APPLICATION_ID.equals("org.wikipedia")) {
             overridePackageName();
@@ -105,6 +110,15 @@ public class SettingsPreferenceLoader extends BasePreferenceLoader {
         languagePref.setSummary(WikipediaApp.getInstance().getAppOrSystemLanguageLocalizedName());
     }
 
+    private static String getDimImagesKey(Context context) {
+        return context.getString(R.string.preference_key_dim_dark_mode_images);
+    }
+
+    private void setDimImagesPrefEnabled(Context context, Theme theme) {
+        Preference dimImagesPref = findPreference(getDimImagesKey(context));
+        dimImagesPref.setEnabled(theme.isDark());
+    }
+
     private static class ShowZeroInterstitialListener implements Preference.OnPreferenceChangeListener {
         @Override public boolean onPreferenceChange(Preference preference, Object newValue) {
             if (newValue == Boolean.FALSE) {
@@ -114,13 +128,7 @@ public class SettingsPreferenceLoader extends BasePreferenceLoader {
         }
     }
 
-    private static final class SyncReadingListsListener implements Preference.OnPreferenceChangeListener {
-        private Context context;
-
-        private SyncReadingListsListener(Context context) {
-            this.context = context;
-        }
-
+    private final class SyncReadingListsListener implements Preference.OnPreferenceChangeListener {
         @Override public boolean onPreferenceChange(final Preference preference, Object newValue) {
             final ReadingListSynchronizer synchronizer = ReadingListSynchronizer.instance();
             if (newValue == Boolean.TRUE) {
@@ -128,23 +136,34 @@ public class SettingsPreferenceLoader extends BasePreferenceLoader {
                 Prefs.setReadingListSyncEnabled(true);
                 synchronizer.sync();
             } else {
-                new AlertDialog.Builder(context)
+                new AlertDialog.Builder(getActivity())
                         .setMessage(R.string.reading_lists_confirm_remote_delete)
-                        .setPositiveButton(R.string.yes, new DeleteRemoteListsYesListener(preference, synchronizer))
-                        .setNegativeButton(R.string.no, new DeleteRemoteListsNoListener(preference))
+                        .setPositiveButton(R.string.reading_lists_confirm_remote_delete_yes, new DeleteRemoteListsYesListener(preference, synchronizer))
+                        .setNegativeButton(R.string.reading_lists_confirm_remote_delete_no, new DeleteRemoteListsNoListener(preference))
                         .show();
             }
             // clicks are handled and preferences updated accordingly; don't pass the result through
             return false;
         }
-    };
+    }
 
-    private static class ThemeChangeListener implements Preference.OnPreferenceChangeListener {
+    private final class ThemeChangeListener implements Preference.OnPreferenceChangeListener {
         @Override public boolean onPreferenceChange(Preference preference, Object newValue) {
-            WikipediaApp.getInstance().setCurrentTheme(Theme.ofMarshallingId((Integer) newValue));
+            Theme theme = Theme.ofMarshallingId((Integer) newValue);
+            WikipediaApp.getInstance().setCurrentTheme(theme);
+            setDimImagesPrefEnabled(getActivity(), theme);
             // The setCurrentTheme call updates the nonvolatile Preference state and updates the UI
             // accordingly. Return false since the pref state is already updated by the method call.
             return false;
+        }
+    }
+
+    private final class OfflineLibraryEnableListener implements Preference.OnPreferenceChangeListener {
+        @Override public boolean onPreferenceChange(Preference preference, Object newValue) {
+            if (((Boolean) newValue)) {
+                ((BaseActivity) getActivity()).searchOfflineCompilationsWithPermission(true);
+            }
+            return true;
         }
     }
 

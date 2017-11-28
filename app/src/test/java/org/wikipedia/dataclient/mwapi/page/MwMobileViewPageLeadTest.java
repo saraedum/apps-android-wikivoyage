@@ -57,12 +57,13 @@ import static org.wikipedia.json.GsonUnmarshaller.unmarshal;
     @Test @SuppressWarnings("checkstyle:magicnumber") public void testThumbUrls() throws Throwable {
         enqueueFromFile("page_lead_mw.json");
         final TestLatch latch = new TestLatch();
-        subject.lead(CacheControl.FORCE_NETWORK, PageClient.CacheOption.CACHE, "foo", 640, false)
+        subject.lead(CacheControl.FORCE_NETWORK, PageClient.CacheOption.CACHE, "foo", 640)
                 .enqueue(new Callback<PageLead>() {
                     @Override
                     public void onResponse(@NonNull Call<PageLead> call, @NonNull Response<PageLead> response) {
                         assertThat(response.body().getLeadImageUrl(640).contains("640px"), is(true));
                         assertThat(response.body().getThumbUrl().contains(preferredThumbSizeString()), is(true));
+                        assertThat(response.body().getDescription(), is("Mexican boxer"));
                         latch.countDown();
                     }
 

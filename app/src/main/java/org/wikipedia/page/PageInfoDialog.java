@@ -30,11 +30,11 @@ public class PageInfoDialog extends NoDimBottomSheetDialog {
         View parentView = LayoutInflater.from(fragment.getContext()).inflate(R.layout.dialog_page_info, null);
         setContentView(parentView);
 
-        flipper = (ViewFlipper) parentView.findViewById(R.id.page_info_flipper);
-        disambigList = (ListView) parentView.findViewById(R.id.disambig_list);
-        ListView issuesList = (ListView) parentView.findViewById(R.id.page_issues_list);
-        disambigHeading = (TextView) parentView.findViewById(R.id.page_info_similar_titles_heading);
-        issuesHeading = (TextView) parentView.findViewById(R.id.page_info_page_issues_heading);
+        flipper = parentView.findViewById(R.id.page_info_flipper);
+        disambigList = parentView.findViewById(R.id.disambig_list);
+        ListView issuesList = parentView.findViewById(R.id.page_issues_list);
+        disambigHeading = parentView.findViewById(R.id.page_info_similar_titles_heading);
+        issuesHeading = parentView.findViewById(R.id.page_info_page_issues_heading);
         View separatorHeading = parentView.findViewById(R.id.page_info_heading_separator);
         View closeButton = parentView.findViewById(R.id.page_info_close);
 
@@ -62,7 +62,7 @@ public class PageInfoDialog extends NoDimBottomSheetDialog {
 
         if (fragment.callback() != null) {
             ListViewContextMenuListener contextMenuListener
-                    = new LongPressHandler(fragment.callback());
+                    = new LongPressHandler(fragment);
             new org.wikipedia.LongPressHandler(disambigList, HistoryEntry.SOURCE_DISAMBIG,
                     contextMenuListener);
         }
@@ -126,8 +126,8 @@ public class PageInfoDialog extends NoDimBottomSheetDialog {
 
     private class LongPressHandler extends PageContainerLongPressHandler
             implements ListViewContextMenuListener {
-        LongPressHandler(@NonNull PageFragment.Callback callback) {
-            super(callback);
+        LongPressHandler(@NonNull PageFragment fragment) {
+            super(fragment);
         }
 
         @Override

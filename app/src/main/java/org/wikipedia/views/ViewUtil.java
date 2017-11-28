@@ -4,13 +4,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.view.ActionMode;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewManager;
@@ -19,21 +16,11 @@ import android.view.animation.Animation;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
 
-import org.wikipedia.WikipediaApp;
 import org.wikipedia.util.DimenUtil;
 
-import java.lang.reflect.Field;
+import static org.wikipedia.settings.Prefs.isImageDownloadEnabled;
 
 public final class ViewUtil {
-    public static void setBackgroundDrawable(View view, Drawable drawable) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            view.setBackground(drawable);
-        } else {
-            //noinspection deprecation
-            view.setBackgroundDrawable(drawable);
-        }
-    }
-
     public static boolean detach(@Nullable View view) {
         if (view != null && view.getParent() instanceof ViewManager) {
             ((ViewManager) view.getParent()).removeView(view);
@@ -60,24 +47,9 @@ public final class ViewUtil {
         view.setAnimation(animation);
     }
 
-    /**
-     * Find the originating view of an ActionMode.
-     * @param mode The ActionMode in question.
-     * @return The view from which the ActionMode originated.
-     * @throws NoSuchFieldException
-     * @throws IllegalAccessException
-     */
-    public static View getOriginatingView(ActionMode mode) throws NoSuchFieldException, IllegalAccessException {
-        Field originatingView = mode.getClass().getDeclaredField("mOriginatingView");
-        originatingView.setAccessible(true);
-        return (View) originatingView.get(mode);
-    }
-
     public static void loadImageUrlInto(@NonNull SimpleDraweeView drawee, @Nullable String url) {
         drawee.setController(Fresco.newDraweeControllerBuilder()
-                .setUri(WikipediaApp.getInstance().isImageDownloadEnabled()
-                        && !TextUtils.isEmpty(url)
-                        ? Uri.parse(url) : null)
+                .setUri(isImageDownloadEnabled() && !TextUtils.isEmpty(url) ? Uri.parse(url) : null)
                 .setAutoPlayAnimations(true)
                 .build());
     }

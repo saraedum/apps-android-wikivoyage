@@ -1,6 +1,5 @@
 package org.wikipedia.readinglist.sync;
 
-import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,6 +10,7 @@ import org.wikipedia.concurrency.CallbackTask;
 import org.wikipedia.dataclient.WikiSite;
 import org.wikipedia.json.GsonMarshaller;
 import org.wikipedia.json.GsonUnmarshaller;
+import org.wikipedia.onboarding.PrefsOnboardingStateMachine;
 import org.wikipedia.page.Namespace;
 import org.wikipedia.page.PageTitle;
 import org.wikipedia.readinglist.ReadingList;
@@ -64,22 +64,17 @@ public class ReadingListSynchronizer {
             L.d("Skipped sync of reading lists.");
             return;
         }
-        UserOptionDataClientSingleton.instance().get(new UserOptionDataClient.UserInfoCallback() {
-            @Override
-            public void success(@NonNull final UserInfo info) {
-                CallbackTask.execute(new CallbackTask.Task<Void>() {
-                    @Override public Void execute() throws Throwable {
+        UserOptionDataClientSingleton.instance().get((UserInfo info) ->
+                CallbackTask.execute(() -> {
                         syncFromRemote(info);
                         syncSavedPages();
                         return null;
-                    }
-                });
-            }
-        });
+                })
+        );
     }
 
     public void syncSavedPages() {
-        WikipediaApp.getInstance().startService(new Intent(WikipediaApp.getInstance(), SavedPageSyncService.class));
+        SavedPageSyncService.enqueueService(WikipediaApp.getInstance());
     }
 
     private synchronized void syncFromRemote(@NonNull UserInfo info) {
@@ -111,7 +106,7 @@ public class ReadingListSynchronizer {
             L.d("Updating local reading lists from server.");
             reconcileAsRightJoin(remoteReadingLists);
             Prefs.setReadingListSyncRev(remoteReadingLists.rev());
-            WikipediaApp.getInstance().getOnboardingStateMachine().setReadingListTutorial();
+            PrefsOnboardingStateMachine.getInstance().setReadingListTutorial();
         } else {
             L.d("Local and remote reading lists are in sync.");
             if (isReadingListsRemoteDeletePending()) {
@@ -229,7 +224,7 @@ public class ReadingListSynchronizer {
                         .mtime(now)
                         .atime(now)
                         .description(remoteList.desc())
-                        .pages(new ArrayList<ReadingListPage>())
+                        .pages(new ArrayList<>())
                         .build();
                 ReadingList.DAO.addList(localList);
                 localLists.add(localList);

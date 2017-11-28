@@ -3,9 +3,8 @@ package org.wikipedia.util;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.text.format.DateUtils;
 import android.util.SparseArray;
 import android.view.View;
 
@@ -20,6 +19,15 @@ import org.wikipedia.page.PageTitle;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
+
+import static android.text.format.DateUtils.SECOND_IN_MILLIS;
+import static android.text.format.DateUtils.getRelativeTimeSpanString;
+import static java.lang.System.currentTimeMillis;
+import static java.util.Locale.SIMPLIFIED_CHINESE;
+import static java.util.Locale.TRADITIONAL_CHINESE;
+import static org.wikipedia.language.AppLanguageLookUpTable.CHINESE_LANGUAGE_CODE;
+import static org.wikipedia.language.AppLanguageLookUpTable.SIMPLIFIED_CHINESE_LANGUAGE_CODE;
+import static org.wikipedia.language.AppLanguageLookUpTable.TRADITIONAL_CHINESE_LANGUAGE_CODE;
 
 /**
  * A collection of localization related methods.
@@ -85,9 +93,7 @@ public final class L10nUtil {
      * @param lang Wiki code for the language based on which to set direction
      */
     public static void setConditionalTextDirection(View view, String lang) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            view.setTextDirection(isLangRTL(lang) ? View.TEXT_DIRECTION_RTL : View.TEXT_DIRECTION_LTR);
-        }
+        view.setTextDirection(isLangRTL(lang) ? View.TEXT_DIRECTION_RTL : View.TEXT_DIRECTION_LTR);
     }
 
     /**
@@ -99,9 +105,7 @@ public final class L10nUtil {
      * @param lang Wiki code for the language based on which to set direction
      */
     public static void setConditionalLayoutDirection(View view, String lang) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            view.setLayoutDirection(isLangRTL(lang) ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
-        }
+        view.setLayoutDirection(isLangRTL(lang) ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
     }
 
     /**
@@ -150,12 +154,13 @@ public final class L10nUtil {
      *
      * See http://stackoverflow.com/a/6380008 (submitted by WMF's own Anomie!).
      */
-    private static SparseArray<String> getStringsForLocale(Locale targetLocale, @StringRes int[] strings) {
+    private static SparseArray<String> getStringsForLocale(@NonNull Locale targetLocale,
+                                                           @StringRes int[] strings) {
         Configuration config = getCurrentConfiguration();
         Locale systemLocale = ConfigurationCompat.getLocale(config);
-        ConfigurationCompat.setLocale(config, targetLocale);
+        setDesiredLocale(config, targetLocale);
         SparseArray<String> localizedStrings = getTargetStrings(strings, config);
-        ConfigurationCompat.setLocale(config, systemLocale);
+        config.setLocale(systemLocale);
         resetConfiguration(config);
         return localizedStrings;
     }
@@ -191,7 +196,46 @@ public final class L10nUtil {
      * @return String representing the relative time difference of the paramter from current time
      */
     public static String formatDateRelative(Date date) {
-        return DateUtils.getRelativeTimeSpanString(date.getTime(), System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS, 0).toString();
+        return getRelativeTimeSpanString(date.getTime(), currentTimeMillis(), SECOND_IN_MILLIS, 0).toString();
+    }
+
+    public static void setDesiredLocale(@NonNull Configuration config, @NonNull Locale desiredLocale) {
+        // when loads API in chinese variant, we can get zh-hant, zh-hans and zh
+        // but if we want to display chinese correctly based on the article itself, we have to
+        // detect the variant from the API responses; otherwise, we will only get english texts.
+        // And this might only happen in Chinese variant
+
+        if (desiredLocale.getLanguage().equals(TRADITIONAL_CHINESE_LANGUAGE_CODE)) {
+            config.setLocale(TRADITIONAL_CHINESE);
+        } else if (desiredLocale.getLanguage().equals(SIMPLIFIED_CHINESE_LANGUAGE_CODE)) {
+            config.setLocale(SIMPLIFIED_CHINESE);
+        } else if (desiredLocale.getLanguage().equals(CHINESE_LANGUAGE_CODE)) {
+            // create a new Locale object to manage only "zh" language code based on its app language
+            // code. e.g.: search "HK" article in "zh-hant" or "zh-hans" will get "zh" language code
+            String appLanguageCode = WikipediaApp.getInstance().getAppLanguageCode();
+            if (appLanguageCode.equals(TRADITIONAL_CHINESE_LANGUAGE_CODE)) {
+                config.setLocale(TRADITIONAL_CHINESE);
+            } else if (appLanguageCode.equals(SIMPLIFIED_CHINESE_LANGUAGE_CODE)) {
+                config.setLocale(SIMPLIFIED_CHINESE);
+            } else {
+                config.setLocale(desiredLocale);
+            }
+        } else {
+            config.setLocale(desiredLocale);
+        }
+    }
+
+    public static int getUpdatedLanguageCountIfNeeded(String getLanguageCode, int originalLanguageCount) {
+
+        int updatedLanguageCount = originalLanguageCount;
+
+        if (getLanguageCode.equals(CHINESE_LANGUAGE_CODE)) {
+            updatedLanguageCount = updatedLanguageCount + 2; // for both Traditional and Simplified
+        } else if (getLanguageCode.equals(TRADITIONAL_CHINESE_LANGUAGE_CODE) || getLanguageCode.equals(SIMPLIFIED_CHINESE_LANGUAGE_CODE)) {
+            updatedLanguageCount = updatedLanguageCount + 1;
+        }
+
+        return updatedLanguageCount;
     }
 
     private L10nUtil() {

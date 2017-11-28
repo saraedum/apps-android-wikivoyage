@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
@@ -30,7 +29,7 @@ import android.widget.TextView;
 import org.wikipedia.Constants;
 import org.wikipedia.R;
 import org.wikipedia.WikipediaApp;
-import org.wikipedia.activity.ThemedActionBarActivity;
+import org.wikipedia.activity.BaseActivity;
 import org.wikipedia.analytics.EditFunnel;
 import org.wikipedia.analytics.LoginFunnel;
 import org.wikipedia.auth.AccountUtil;
@@ -49,6 +48,7 @@ import org.wikipedia.page.LinkMovementMethodExt;
 import org.wikipedia.page.PageProperties;
 import org.wikipedia.page.PageTitle;
 import org.wikipedia.util.FeedbackUtil;
+import org.wikipedia.util.ResourceUtil;
 import org.wikipedia.util.StringUtil;
 import org.wikipedia.util.log.L;
 import org.wikipedia.views.ViewAnimations;
@@ -62,7 +62,7 @@ import static org.wikipedia.util.DeviceUtil.hideSoftKeyboard;
 import static org.wikipedia.util.L10nUtil.setConditionalTextDirection;
 import static org.wikipedia.util.UriUtil.handleExternalLink;
 
-public class EditSectionActivity extends ThemedActionBarActivity {
+public class EditSectionActivity extends BaseActivity {
     public static final String ACTION_EDIT_SECTION = "org.wikipedia.edit_section";
     public static final String EXTRA_TITLE = "org.wikipedia.edit_section.title";
     public static final String EXTRA_SECTION_ID = "org.wikipedia.edit_section.sectionid";
@@ -127,6 +127,7 @@ public class EditSectionActivity extends ThemedActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_section);
+        setStatusBarColor(ResourceUtil.getThemedAttributeId(this, R.attr.page_status_bar_color));
 
         if (!getIntent().getAction().equals(ACTION_EDIT_SECTION)) {
             throw new RuntimeException("Much wrong action. Such exception. Wow");
@@ -148,19 +149,19 @@ public class EditSectionActivity extends ThemedActionBarActivity {
             supportActionBar.setTitle("");
         }
 
-        sectionText = (EditText) findViewById(R.id.edit_section_text);
+        sectionText = findViewById(R.id.edit_section_text);
 
         syntaxHighlighter = new SyntaxHighlighter(this, sectionText);
 
         sectionProgress = findViewById(R.id.edit_section_load_progress);
-        sectionContainer = (ScrollView) findViewById(R.id.edit_section_container);
+        sectionContainer = findViewById(R.id.edit_section_container);
         sectionContainer.setSmoothScrollingEnabled(false);
-        errorView = (WikiErrorView) findViewById(R.id.view_edit_section_error);
+        errorView = findViewById(R.id.view_edit_section_error);
 
         abusefilterContainer = findViewById(R.id.edit_section_abusefilter_container);
-        abuseFilterImage = (ImageView) findViewById(R.id.edit_section_abusefilter_image);
-        abusefilterTitle = (TextView) findViewById(R.id.edit_section_abusefilter_title);
-        abusefilterText = (TextView) findViewById(R.id.edit_section_abusefilter_text);
+        abuseFilterImage = findViewById(R.id.edit_section_abusefilter_image);
+        abusefilterTitle = findViewById(R.id.edit_section_abusefilter_title);
+        abusefilterText = findViewById(R.id.edit_section_abusefilter_text);
 
         captchaHandler = new CaptchaHandler(this, title.getWikiSite(), progressDialog, sectionContainer, "", null);
 
@@ -249,13 +250,8 @@ public class EditSectionActivity extends ThemedActionBarActivity {
         super.onDestroy();
     }
 
-    @Override
-    protected void setTheme() {
-        setActionBarTheme();
-    }
-
     private void updateEditLicenseText() {
-        TextView editLicenseText = (TextView) findViewById(R.id.edit_section_license_text);
+        TextView editLicenseText = findViewById(R.id.edit_section_license_text);
         editLicenseText.setText(StringUtil.fromHtml(String.format(getString(AccountUtil.isLoggedIn()
                         ? R.string.edit_save_action_license_logged_in
                         : R.string.edit_save_action_license_anon),
@@ -568,7 +564,7 @@ public class EditSectionActivity extends ThemedActionBarActivity {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
         v.setLayoutParams(params);
-        TextView txtView = (TextView) v.findViewById(R.id.edit_actionbar_button_text);
+        TextView txtView = v.findViewById(R.id.edit_actionbar_button_text);
         txtView.setText(item.getTitle());
         txtView.setTypeface(null, item.isEnabled() ? Typeface.BOLD : Typeface.NORMAL);
         v.setTag(item);
@@ -581,11 +577,9 @@ public class EditSectionActivity extends ThemedActionBarActivity {
             }
         });
 
-        if (editPreviewFragment.isActive()) {
-            ViewCompat.setBackgroundTintList(v, ContextCompat.getColorStateList(this, R.color.color_state_blue));
-        } else {
-            ViewCompat.setBackgroundTintList(v, ContextCompat.getColorStateList(this, R.color.color_state_green));
-        }
+        v.setBackgroundColor(ContextCompat.getColor(this, item.isEnabled()
+                ? (editPreviewFragment.isActive() ? R.color.accent50
+                : ResourceUtil.getThemedAttributeId(this, R.attr.colorAccent)) : R.color.base50));
 
         return true;
     }
@@ -608,7 +602,8 @@ public class EditSectionActivity extends ThemedActionBarActivity {
         if (sectionWikitext == null) {
             new WikitextClient().request(title.getWikiSite(), title, sectionID, new WikitextClient.Callback() {
                 @Override
-                public void success(@NonNull Call<MwQueryResponse> call, @NonNull String wikitext) {
+                public void success(@NonNull Call<MwQueryResponse> call, @NonNull String normalizedTitle, @NonNull String wikitext) {
+                    title = new PageTitle(normalizedTitle, title.getWikiSite());
                     sectionWikitext = wikitext;
                     displaySectionText();
                 }
@@ -718,14 +713,14 @@ public class EditSectionActivity extends ThemedActionBarActivity {
         if (sectionTextModified) {
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
             alert.setMessage(getString(R.string.edit_abandon_confirm));
-            alert.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+            alert.setPositiveButton(getString(R.string.edit_abandon_confirm_yes), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int id) {
                     dialog.dismiss();
                     finish();
                 }
             });
-            alert.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+            alert.setNegativeButton(getString(R.string.edit_abandon_confirm_no), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int id) {
                     dialog.dismiss();

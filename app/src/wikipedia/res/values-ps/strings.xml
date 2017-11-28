@@ -4,15 +4,12 @@
   <string name="app_name_beta">بيټا ويکيپېډيا</string>
   <string name="app_name_alpha">الفا ويکيپېډيا</string>
   <string name="wikimedia">ويکيمېډيا</string>
-  <string name="yes">هو</string>
-  <string name="no">نه</string>
   <string name="search_hint">ويکيپېډيا پلټل</string>
   <string name="nav_item_history">پېښليک</string>
   <string name="error_network_error">انټرنټ سره نه شي تړل کېدای.</string>
   <string name="page_error_retry">بياآزمويل</string>
   <string name="page_error_back_to_main">پر شا تلل</string>
   <string name="menu_clear_all_history">پېښليک پاکول</string>
-  <string name="page_does_not_exist_error">پدې نوم مخ نشته.</string>
   <string name="dialog_title_clear_history">سپړل شوی پېښليک سپينول</string>
   <string name="nav_item_saved_pages">خوندي مخونه</string>
   <string name="share_via">د شريکولو لار</string>
@@ -29,8 +26,6 @@
   <string name="menu_text_select_share">شريکول</string>
   <string name="menu_text_select_edit_here">دلته سمول</string>
   <string name="nav_item_nearby">نژدې</string>
-  <string name="nearby_distance_in_meters">%d متر</string>
-  <string name="nearby_distance_in_kilometers">%.2f کيلومتر</string>
   <string name="last_updated_text">وروستئ هممهالېدنه %s</string>
   <string name="talk_page_link_text">خبرې اترې</string>
   <string name="preference_title_language">د ويکيپېډيا ژبه</string>
@@ -62,8 +57,6 @@
   <string name="toast_logout_complete">ووتلۍ</string>
   <string name="wp_stylized">&lt;big&gt;و&lt;/big&gt;يکيپېډي&lt;big&gt;ا&lt;/big&gt;</string>
   <string name="create_account_username_hint">کارن-نوم</string>
-  <string name="create_account_login_link">آيا له پخوا نه يو گڼون لرې؟ ورننوځه</string>
-  <string name="login_create_account_link">گڼون نه لرې؟ ويکيپېډيا سره يوځای شه</string>
   <string name="create_account_activity_title">يو گڼون جوړول</string>
   <string name="dialog_create_account_checking_progress">تاييدېدنه</string>
   <string name="create_account_email_hint">برېښليک (اختياري)</string>
@@ -106,6 +99,7 @@
   <string name="about_app_license_heading">منښتليک</string>
   <string name="about_activity_title">په اړه</string>
   <string name="user_blocked_from_editing_title">بنديز لگېدلی</string>
+  <string name="edit_how_page_improved">ليکنه مو څنگه ښه کړه؟</string>
   <string name="edit_next">راتلونکی</string>
   <string name="edit_done" fuzzy="true">خوندي کول</string>
   <string name="edit_preview">مخليدنه</string>
@@ -146,7 +140,6 @@
   <string name="gallery_uploader_unknown">ناڅرگند پورته کوونکی</string>
   <string name="page_view_in_browser">مخ په کتنمل کې کتل</string>
   <string name="format_error_server_message">پيغام: \"%s\"</string>
-  <string name="format_error_server_code">کوډ: \"%s\"</string>
   <string name="button_continue_to_article">ليکنه لوستل</string>
   <string name="button_get_directions">لارښوونې ترلاسه کول</string>
   <string name="nav_item_donate">د ويکيپېډيا ملاتړ وکړئ</string>
@@ -185,7 +178,7 @@
   <string name="user_option_sync_label">غوره توبونه</string>
   <string name="view_continue_reading_card_title">پرله پورې لوستل</string>
   <string name="view_because_you_read_card_title">ځکه چې تاسې لولی</string>
-  <string name="view_random_card_subtitle">د ويکيپېډيا يوه ناټاکلې ليکنه لوستل</string>
+  <string name="view_random_card_subtitle" fuzzy="true">د ويکيپېډيا يوه ناټاکلې ليکنه لوستل</string>
   <string name="view_main_page_card_title">نن په ويکيپېډيا کې</string>
   <string name="view_main_page_card_subtitle">لومړی مخ په %s</string>
   <string name="view_featured_image_card_title">د نن ورځې انځور</string>
@@ -196,4 +189,6 @@
   <string name="view_card_footer_button">نور کتل</string>
   <string name="view_static_card_icon_content_description">ايکان کارت</string>
   <string name="view_card_news_title">په خبرونو کې</string>
+  <string name="view_featured_article_card_title">مخکښه ليکنه</string>
+  <string name="view_featured_article_footer_save_button_label">خوندي کول</string>
 </resources>

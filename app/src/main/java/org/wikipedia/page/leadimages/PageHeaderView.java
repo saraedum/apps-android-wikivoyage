@@ -1,18 +1,13 @@
 package org.wikipedia.page.leadimages;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.graphics.Typeface;
-import android.os.Build;
-import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -46,8 +41,8 @@ import org.wikipedia.util.FeedbackUtil;
 import org.wikipedia.util.ResourceUtil;
 import org.wikipedia.views.AppTextView;
 import org.wikipedia.views.FaceAndColorDetectImageView;
+import org.wikipedia.views.LinearLayoutOverWebView;
 import org.wikipedia.views.ObservableWebView;
-import org.wikipedia.views.StatusBarBlankView;
 import org.wikipedia.views.ViewUtil;
 
 import butterknife.BindView;
@@ -59,14 +54,11 @@ import static org.wikipedia.util.DimenUtil.leadImageHeightForDevice;
 import static org.wikipedia.util.L10nUtil.isLangRTL;
 import static org.wikipedia.util.ResourceUtil.getThemedColor;
 
-public class PageHeaderView extends FrameLayout implements ObservableWebView.OnScrollChangeListener {
+public class PageHeaderView extends LinearLayoutOverWebView implements ObservableWebView.OnScrollChangeListener {
     @BindView(R.id.view_page_header_image) PageHeaderImageView image;
-    @BindView(R.id.view_page_header_image_gradient) View gradient;
     @BindView(R.id.view_page_title_text) AppTextView titleText;
     @BindView(R.id.view_page_subtitle_text) AppTextView subtitleText;
     @BindView(R.id.view_page_header_divider) View divider;
-    @BindView(R.id.view_page_header_container) LinearLayout container;
-    @BindView(R.id.view_page_header_status_bar_placeholder) StatusBarBlankView statusBarPlaceholder;
     @BindView(R.id.view_page_header_edit_pencil) ImageView editPencil;
 
     @Nullable private Callback callback;
@@ -79,6 +71,7 @@ public class PageHeaderView extends FrameLayout implements ObservableWebView.OnS
     @VisibleForTesting @NonNull final ClickableSpan descriptionClickSpan = new DescriptionClickableSpan();
 
     public interface Callback {
+        void onImageClicked();
         void onDescriptionClicked();
         void onEditDescription();
         void onEditLeadSection();
@@ -99,12 +92,6 @@ public class PageHeaderView extends FrameLayout implements ObservableWebView.OnS
         init();
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public PageHeaderView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        init();
-    }
-
     public void hide() {
         setVisibility(View.GONE);
     }
@@ -112,20 +99,14 @@ public class PageHeaderView extends FrameLayout implements ObservableWebView.OnS
     public void showText() {
         setVisibility(View.VISIBLE);
         setTopOffset();
-
         updateText();
-
-        setTextColor(getThemedColor(getContext(), R.attr.lead_text_color));
     }
 
     public void showTextImage() {
         setVisibility(View.VISIBLE);
         unsetTopOffset();
-
         updateText();
-
-        setTextColor(getThemedColor(getContext(), R.attr.lead_text_color));
-        setImageHeight(leadImageHeightForDevice());
+        DimenUtil.setViewHeight(image, leadImageHeightForDevice());
     }
 
     // TODO: remove.
@@ -176,8 +157,8 @@ public class PageHeaderView extends FrameLayout implements ObservableWebView.OnS
     }
 
     public void setProtected(boolean isProtected) {
-        editPencil.setImageDrawable(ContextCompat.getDrawable(getContext(), isProtected
-                ? R.drawable.ic_edit_lock_24px : R.drawable.ic_mode_edit_white_24dp));
+        editPencil.setImageResource(isProtected
+                ? R.drawable.ic_edit_lock_24px : R.drawable.ic_mode_edit_white_24dp);
     }
 
     public void setLocale(@NonNull String locale) {
@@ -223,6 +204,12 @@ public class PageHeaderView extends FrameLayout implements ObservableWebView.OnS
         updateScroll(scrollY);
     }
 
+    @OnClick(R.id.view_page_header_image) void onImageClick() {
+        if (callback != null) {
+            callback.onImageClicked();
+        }
+    }
+
     @OnClick(R.id.view_page_header_edit_pencil) void onEditClick() {
         if (allowDescriptionEdit) {
             PopupMenu menu = new PopupMenu(editPencil.getContext(), editPencil, Gravity.END, 0,
@@ -253,10 +240,6 @@ public class PageHeaderView extends FrameLayout implements ObservableWebView.OnS
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         avPlayer.deinit();
-    }
-
-    private void setTextColor(@ColorInt int color) {
-        titleText.setTextColor(color);
     }
 
     private void updateScroll() {
@@ -295,7 +278,7 @@ public class PageHeaderView extends FrameLayout implements ObservableWebView.OnS
     private Spanned pronunciationSpanned() {
         AudioUrlSpan pronunciationSpan = new AudioUrlSpan(titleText, avPlayer, pronunciationUrl,
                 AudioUrlSpan.ALIGN_BASELINE);
-        pronunciationSpan.setTint(getThemedColor(getContext(), R.attr.window_inverse_color));
+        pronunciationSpan.setTint(getThemedColor(getContext(), R.attr.primary_text_color));
         return RichTextUtil.setSpans(new SpannableString("  "),
                 0,
                 1,
@@ -316,14 +299,9 @@ public class PageHeaderView extends FrameLayout implements ObservableWebView.OnS
                 Spannable.SPAN_INCLUSIVE_EXCLUSIVE,
                 new LeadingSpan(leadingScalar),
                 new ParagraphSpan(paragraphScalar),
-                TextUtils.isEmpty(subtitle) ? descriptionClickSpan : new ForegroundColorSpan(getColor(R.color.dark_gray)),
+                TextUtils.isEmpty(subtitle) ? descriptionClickSpan
+                        : new ForegroundColorSpan(ResourceUtil.getThemedColor(getContext(), R.attr.secondary_text_color)),
                 TextUtils.isEmpty(subtitle) ? new StyleSpan(Typeface.ITALIC) : null);
-    }
-
-    private void setImageHeight(int height) {
-        final float oneThird = 1 / 3;
-        DimenUtil.setViewHeight(image, height);
-        DimenUtil.setViewHeight(gradient, (int) oneThird * height);
     }
 
     private void init() {
@@ -331,11 +309,6 @@ public class PageHeaderView extends FrameLayout implements ObservableWebView.OnS
         ButterKnife.bind(this);
         FeedbackUtil.setToolbarButtonLongPressToast(editPencil);
         hide();
-    }
-
-    @ColorInt
-    private int getColor(@ColorRes int id) {
-        return ContextCompat.getColor(getContext(), id);
     }
 
     private int getDimensionPixelSize(@DimenRes int id) {
@@ -351,7 +324,6 @@ public class PageHeaderView extends FrameLayout implements ObservableWebView.OnS
     }
 
     private void setTopOffset(boolean noImage) {
-        statusBarPlaceholder.setVisibility(noImage ? View.VISIBLE : View.GONE);
         int offset = noImage ? getDimensionPixelSize(R.dimen.lead_no_image_top_offset_dp) : 0;
 
         // Offset is a resolved pixel dimension, not a resource id
@@ -370,8 +342,8 @@ public class PageHeaderView extends FrameLayout implements ObservableWebView.OnS
         @Override
         public void updateDrawState(TextPaint ds) {
             super.updateDrawState(ds);
-            ds.setColor(getColor(TextUtils.isEmpty(subtitle)
-                    ? ResourceUtil.getThemedAttributeId(getContext(), R.attr.colorAccent) : R.color.dark_gray));
+            ds.setColor(ResourceUtil.getThemedColor(getContext(), TextUtils.isEmpty(subtitle)
+                    ? R.attr.colorAccent : R.attr.secondary_text_color));
             ds.setUnderlineText(false);
         }
     }

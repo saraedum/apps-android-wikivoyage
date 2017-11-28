@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -13,9 +14,13 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetView;
+
 import org.wikipedia.R;
 import org.wikipedia.main.MainActivity;
 import org.wikipedia.page.PageActivity;
+import org.wikipedia.random.RandomActivity;
 
 import java.util.concurrent.TimeUnit;
 
@@ -88,11 +93,26 @@ public final class FeedbackUtil {
         }
     }
 
+    public static void showTapTargetView(@NonNull Activity activity, @NonNull View target,
+                                         @StringRes int titleId, @StringRes int descriptionId,
+                                         @Nullable TapTargetView.Listener listener) {
+        final float tooltipAlpha = 0.9f;
+        TapTargetView.showFor(activity,
+                TapTarget.forView(target, activity.getString(titleId),
+                        activity.getString(descriptionId))
+                        .targetCircleColor(ResourceUtil.getThemedAttributeId(activity, R.attr.colorAccent))
+                        .outerCircleColor(ResourceUtil.getThemedAttributeId(activity, R.attr.colorAccent))
+                        .outerCircleAlpha(tooltipAlpha)
+                        .cancelable(true)
+                        .transparentTarget(true),
+                listener);
+    }
+
     private static Snackbar makeSnackbar(View view, CharSequence text, int duration) {
         Snackbar snackbar = Snackbar.make(view, text, duration);
-        TextView textView = (TextView) snackbar.getView().findViewById(R.id.snackbar_text);
+        TextView textView = snackbar.getView().findViewById(R.id.snackbar_text);
         textView.setMaxLines(SNACKBAR_MAX_LINES);
-        TextView actionView = (TextView) snackbar.getView().findViewById(R.id.snackbar_action);
+        TextView actionView = snackbar.getView().findViewById(R.id.snackbar_action);
         actionView.setTextColor(ContextCompat.getColor(view.getContext(), R.color.green50));
         return snackbar;
     }
@@ -110,6 +130,8 @@ public final class FeedbackUtil {
             return activity.findViewById(R.id.fragment_main_coordinator);
         } else if (activity instanceof PageActivity) {
             return activity.findViewById(R.id.page_contents_container);
+        } else if (activity instanceof RandomActivity) {
+            return activity.findViewById(R.id.random_coordinator_layout);
         } else {
             return activity.findViewById(android.R.id.content);
         }

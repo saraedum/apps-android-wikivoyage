@@ -9,8 +9,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="@dimen/list_item_vertical_padding"
-    android:paddingBottom="@dimen/list_item_vertical_padding"
-    android:background="?attr/selectableItemBackground"
+    android:background="?attr/paper_color"
+    android:foreground="?attr/selectableItemBackground"
     android:gravity="top">
 
     <!-- TODO: this probably shouldn't be part of an item cell since it has to do with a collection
@@ -24,16 +24,17 @@
         android:layout_marginLeft="@dimen/list_item_horizontal_padding"
         android:layout_marginRight="@dimen/list_item_horizontal_padding"
         android:gravity="center_vertical"
+        android:textColor="?attr/section_title_color"
         android:visibility="gone"
         tools:visibility="visible"
-        tools:text="Header text"
-        />
+        tools:text="Header text" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/list_item_horizontal_padding"
-        android:layout_marginLeft="@dimen/list_item_horizontal_padding">
+        android:layout_marginLeft="@dimen/list_item_horizontal_padding"
+        android:layout_marginBottom="@dimen/list_item_vertical_padding">
 
         <FrameLayout
             android:id="@+id/page_list_item_image_container"
@@ -46,10 +47,9 @@
                 android:layout_width="@dimen/view_list_card_item_image"
                 android:layout_height="@dimen/view_list_card_item_image"
                 app:roundedCornerRadius="2dp"
-                android:background="@drawable/view_list_card_item_image_background" />
+                app:backgroundImage="@color/base100" />
 
             <android.support.v7.widget.AppCompatImageView
-                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/page_list_item_selected_image"
                 android:layout_width="@dimen/view_list_card_item_image"
                 android:layout_height="@dimen/view_list_card_item_image"
@@ -78,9 +78,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:textSize="16sp"
-                android:textColor="?attr/feed_text_primary_color"
-                style="@style/RtlAwareTextView"
+                style="@style/MaterialListTitle"
+                android:textAppearance="@style/RtlAwareTextView"
                 tools:text="Lorem ipsum"/>
 
             <org.wikipedia.views.GoneIfEmptyTextView
@@ -89,10 +88,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:textSize="14sp"
-                android:textColor="@color/base30"
-                android:lineSpacingMultiplier="1.2"
-                style="@style/RtlAwareTextView"
+                style="@style/MaterialListSubtitle"
+                android:textAppearance="@style/RtlAwareTextView"
                 tools:text="Lorem ipsum"/>
         </LinearLayout>
 
@@ -108,7 +105,7 @@
             android:visibility="gone"
             tools:visibility="visible"/>
 
-        <ImageView
+        <android.support.v7.widget.AppCompatImageView
             android:id="@+id/page_list_item_action_primary"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -116,7 +113,8 @@
             android:clickable="true"
             android:background="?attr/selectableItemBackgroundBorderless"
             app:srcCompat="@drawable/ic_favorite_white_24dp"
-            android:tint="@color/material_icon_default_gray"
+            app:tint="?attr/material_theme_de_emphasised_color"
+            app:tintMode="src_in"
             android:contentDescription="@null"
             android:visibility="gone"
             tools:visibility="visible"/>

@@ -1,37 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-    <View
+    <org.wikipedia.feed.view.CardHeaderView
         android:id="@+id/view_featured_article_card_header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"/>
+        android:layout_height="@dimen/view_card_header_height" />
 
     <org.wikipedia.views.FaceAndColorDetectImageView
         style="@style/SimpleDraweeViewPlaceholder"
         android:id="@+id/view_featured_article_card_image"
         android:layout_width="match_parent"
         android:layout_height="192dp"
+        app:layout_constraintTop_toBottomOf="@id/view_featured_article_card_header"
         app:actualImageScaleType="focusCrop" />
 
     <View
+        android:id="@+id/view_featured_article_card_divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/feed_image_border"/>
+        app:layout_constraintTop_toBottomOf="@id/view_featured_article_card_image"
+        android:background="?attr/material_theme_border_color"/>
 
-    <LinearLayout
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/view_featured_article_card_text_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
+        app:layout_constraintTop_toBottomOf="@id/view_featured_article_card_divider"
         android:clickable="true"
         android:background="?attr/selectableItemBackground">
 
@@ -44,7 +45,7 @@
             android:paddingBottom="4dp"
             android:textSize="24sp"
             android:fontFamily="serif"
-            android:textColor="?attr/feed_text_primary_color"
+            android:textColor="?attr/primary_text_color"
             android:lineSpacingMultiplier="0.9"
             android:maxLines="3"
             android:ellipsize="end"
@@ -55,7 +56,8 @@
             android:id="@+id/view_featured_article_card_article_subtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="?attr/feed_text_tertiary_color"
+            app:layout_constraintTop_toBottomOf="@id/view_featured_article_card_article_title"
+            android:textColor="?attr/secondary_text_color"
             android:paddingTop="4dp"
             android:paddingBottom="4dp"
             android:textSize="12sp"
@@ -68,21 +70,22 @@
             android:id="@+id/view_featured_article_card_extract"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/view_featured_article_card_article_subtitle"
             android:paddingTop="8dp"
             android:paddingBottom="16dp"
             android:maxLines="4"
             android:ellipsize="end"
             android:lineSpacingMultiplier="1.4"
             android:textSize="14sp"
-            android:textColor="?attr/feed_text_secondary_color"
+            android:textColor="?attr/primary_text_color"
             tools:text="Lorem ipsum"/>
 
-    </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
 
-    <View
+    <org.wikipedia.feed.view.ActionFooterView
         android:id="@+id/view_featured_article_card_footer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone" />
+        android:layout_height="@dimen/view_card_footer_height"
+        app:layout_constraintTop_toBottomOf="@id/view_featured_article_card_text_container"/>
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

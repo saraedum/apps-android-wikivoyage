@@ -20,7 +20,7 @@ public class SettingsActivity extends SingleFragmentActivity<SettingsFragment> {
     }
 
     @Override
-    protected void setTheme() {
-        setActionBarTheme();
+    protected void onOfflineCompilationsError(Throwable t) {
+        getFragment().updateOfflineLibraryPref(false);
     }
 }

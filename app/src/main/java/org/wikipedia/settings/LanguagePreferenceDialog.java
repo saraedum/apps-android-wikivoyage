@@ -21,6 +21,7 @@ import org.wikipedia.analytics.AppLanguageSelectFunnel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 
@@ -37,9 +38,7 @@ public class LanguagePreferenceDialog extends AppCompatDialog {
     private final AppLanguageSelectFunnel funnel;
 
     public LanguagePreferenceDialog(Context context, boolean initiatedFromSearchBar) {
-        super(context, WikipediaApp.getInstance().isCurrentThemeLight()
-                ? R.style.Theme_Light_Dialog
-                : R.style.Theme_Dark_Dialog);
+        super(context);
         setContentView(R.layout.dialog_preference_languages);
 
         app = WikipediaApp.getInstance();
@@ -52,13 +51,13 @@ public class LanguagePreferenceDialog extends AppCompatDialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        TextView textView = (TextView) findViewById(android.R.id.title);
+        TextView textView = findViewById(android.R.id.title);
         if (textView != null) {
             textView.setSingleLine(false);
         }
 
-        languagesList = (ListView) findViewById(R.id.preference_languages_list);
-        EditText languagesFilter = (EditText) findViewById(R.id.preference_languages_filter);
+        languagesList = findViewById(R.id.preference_languages_list);
+        EditText languagesFilter = findViewById(R.id.preference_languages_filter);
 
         languagesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -119,13 +118,13 @@ public class LanguagePreferenceDialog extends AppCompatDialog {
 
         public void setFilterText(String filter) {
             this.languageCodes.clear();
-            filter = filter.toLowerCase();
+            filter = filter.toLowerCase(Locale.getDefault());
             for (String code : originalLanguageCodes) {
                 String localizedName = defaultString(app.getAppLanguageLocalizedName(code));
                 String canonicalName = defaultString(app.getAppLanguageCanonicalName(code));
                 if (code != null && code.contains(filter)
-                        || localizedName.toLowerCase().contains(filter)
-                        || canonicalName.toLowerCase().contains(filter)) {
+                        || localizedName.toLowerCase(Locale.getDefault()).contains(filter)
+                        || canonicalName.toLowerCase(Locale.getDefault()).contains(filter)) {
                     this.languageCodes.add(code);
                 }
             }
@@ -153,8 +152,8 @@ public class LanguagePreferenceDialog extends AppCompatDialog {
                 convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_language_list_entry, parent, false);
             }
 
-            TextView localizedNameTextView = (TextView) convertView.findViewById(R.id.localized_language_name);
-            TextView canonicalNameTextView = (TextView) convertView.findViewById(R.id.language_subtitle);
+            TextView localizedNameTextView = convertView.findViewById(R.id.localized_language_name);
+            TextView canonicalNameTextView = convertView.findViewById(R.id.language_subtitle);
 
             String languageCode = getItem(position);
 

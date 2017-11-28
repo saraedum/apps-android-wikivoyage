@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.percent.PercentFrameLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/page_background_color"
+    android:background="?attr/paper_color"
     tools:context=".main.MainActivity">
 
     <org.wikipedia.views.WikiDrawerLayout
@@ -33,21 +33,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <!-- Read More + bottom content (view in browser link, license, last updated) -->
-                <LinearLayout
-                    android:id="@+id/bottom_content_container"
+                <org.wikipedia.page.bottomcontent.BottomContentView
+                    android:id="@+id/page_bottom_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="-400dp"
-                    android:layout_gravity="bottom"
                     android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <include layout="@layout/fragment_page_read_more"/>
-
-                    <include layout="@layout/fragment_page_bottom_content"/>
-
-                </LinearLayout>
+                    android:layout_gravity="bottom"
+                    android:layout_marginTop="-320dp"/>
 
                 <org.wikipedia.views.WikiPageErrorView
                     android:id="@+id/page_error"
@@ -56,7 +48,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:background="@color/base80"
+                    android:background="?android:windowBackground"
                     android:visibility="gone"/>
 
                 <org.wikipedia.page.PageActionTabLayout
@@ -81,7 +73,7 @@
         android:id="@+id/fragment_page_tool_tip_select_text_target"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_marginTopPercent="88%"
-        app:layout_marginLeftPercent="50%" />
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="80dp"/>
 
-</android.support.percent.PercentFrameLayout>
+</FrameLayout>

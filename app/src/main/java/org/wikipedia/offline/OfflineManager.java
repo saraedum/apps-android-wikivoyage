@@ -1,8 +1,10 @@
 package org.wikipedia.offline;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.text.TextUtils;
 
 import org.wikipedia.settings.Prefs;
 import org.wikipedia.util.log.L;
@@ -11,6 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +23,7 @@ public final class OfflineManager {
     @Nullable private CompilationSearchTask searchTask;
     private long lastSearchTime;
     @NonNull private List<Compilation> compilations = new ArrayList<>();
+    @NonNull private List<Compilation> remoteCompilationCache = Collections.emptyList();
 
     public interface Callback {
         void onCompilationsFound(@NonNull List<Compilation> compilations);
@@ -54,6 +58,7 @@ public final class OfflineManager {
         lastSearchTime = System.currentTimeMillis();
         searchTask = new CompilationSearchTask() {
             @Override public void onFinish(List<Compilation> results) {
+                searchTask = null;
                 if (isCancelled()) {
                     return;
                 }
@@ -65,6 +70,13 @@ public final class OfflineManager {
                     }
                     c.close();
                 }
+                for (Compilation result : results) {
+                    for (Compilation remote : remoteCompilationCache) {
+                        if (result.pathNameMatchesUri(remote.uri())) {
+                            result.copyMetadataFrom(remote);
+                        }
+                    }
+                }
                 compilations.clear();
                 compilations.addAll(results);
                 Prefs.setCompilationCache(compilations);
@@ -72,6 +84,7 @@ public final class OfflineManager {
             }
 
             @Override public void onCatch(Throwable caught) {
+                searchTask = null;
                 L.e("Error while searching for compilations.", caught);
                 callback.onError(caught);
             }
@@ -79,16 +92,38 @@ public final class OfflineManager {
         searchTask.execute();
     }
 
+    public void remove(@NonNull Compilation compilation) {
+        new File(compilation.path()).delete();
+        compilations.remove(compilation);
+    }
+
     void updateFromRemoteMetadata(@NonNull List<Compilation> remoteCompilations) {
-        for (Compilation remoteCompilation : remoteCompilations) {
+        remoteCompilationCache = remoteCompilations;
+        for (Compilation remoteCompilation : remoteCompilationCache) {
             for (Compilation localCompilation : compilations) {
-                if (remoteCompilation.uri() != null
-                        && new File(localCompilation.path()).getName().equals(remoteCompilation.uri().getLastPathSegment())) {
+                if (localCompilation.pathNameMatchesUri(remoteCompilation.uri())) {
                     localCompilation.copyMetadataFrom(remoteCompilation);
                 }
             }
         }
         Prefs.setCompilationCache(compilations);
+    }
+
+    void ensureAdded(@NonNull Compilation remoteCompilation, @NonNull Uri localUri) {
+        for (Compilation c : compilations) {
+            if (c.pathNameMatchesUri(localUri)) {
+                return;
+            }
+        }
+        try {
+            Compilation c = new Compilation(new File(localUri.getPath()));
+            c.copyMetadataFrom(remoteCompilation);
+            compilations.add(c);
+
+        } catch (IOException e) {
+            L.e("Error opening compilation: " + localUri);
+            e.printStackTrace();
+        }
     }
 
     public boolean titleExists(@NonNull String title) {
@@ -133,9 +168,6 @@ public final class OfflineManager {
     }
 
     @Nullable public ByteArrayOutputStream getDataForUrl(@NonNull String url) throws IOException {
-        if (url.startsWith("A/") || url.startsWith("I/")) {
-            url = url.substring(2);
-        }
         for (Compilation c : compilations) {
             ByteArrayOutputStream stream = c.getDataForUrl(url);
             if (stream != null) {
@@ -153,6 +185,34 @@ public final class OfflineManager {
     @NonNull public String getMainPageTitle() throws IOException {
         int compIndex = new Random().nextInt(compilations.size());
         return compilations.get(compIndex).getMainPageTitle();
+    }
+
+    public boolean isMainPage(@Nullable String title) {
+        if (TextUtils.isEmpty(title)) {
+            return false;
+        }
+        try {
+            for (Compilation c : compilations) {
+                if (title.equals(c.getMainPageTitle())) {
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            // ignore
+        }
+        return false;
+    }
+
+    @NonNull public String getMainPageTitle(@NonNull Compilation compilation) throws IOException {
+        // The compilation parameter can be a "remote" compilation (i.e. nonempty URI but empty
+        // path, or a local compilation unmarshalled from an Intent (i.e. empty URI but nonempty
+        // path), so let's match our known compilations on both of these fields.
+        for (Compilation c : compilations) {
+            if (c.pathNameMatchesUri(compilation.uri()) || c.path().equals(compilation.path())) {
+                return c.getMainPageTitle();
+            }
+        }
+        throw new IOException("No matching compilation found on disk.");
     }
 
     @VisibleForTesting void setCompilations(@NonNull List<Compilation> compilations) {

@@ -19,11 +19,11 @@ bridge.registerListener( "setMargins", function( payload ) {
 });
 
 bridge.registerListener( "setPaddingTop", function( payload ) {
-    document.getElementById( "content" ).style.paddingTop = payload.paddingTop + "px";
+    document.body.style.paddingTop = payload.paddingTop + "px";
 });
 
 bridge.registerListener( "setPaddingBottom", function( payload ) {
-    document.getElementById( "content" ).style.paddingBottom = payload.paddingBottom + "px";
+    document.body.style.paddingBottom = payload.paddingBottom + "px";
 });
 
 bridge.registerListener( "beginNewPage", function( payload ) {
@@ -68,6 +68,7 @@ bridge.registerListener( "getTextSelection", function( payload ) {
 function setWindowAttributes( payload ) {
     document.head.getElementsByTagName("base")[0].setAttribute("href", payload.siteBaseUrl);
 
+    window.sequence = payload.sequence;
     window.apiLevel = payload.apiLevel;
     window.string_table_infobox = payload.string_table_infobox;
     window.string_table_other = payload.string_table_other;
@@ -79,7 +80,7 @@ function setWindowAttributes( payload ) {
     window.fromRestBase = payload.fromRestBase;
     window.isBeta = payload.isBeta;
     window.siteLanguage = payload.siteLanguage;
-    window.isNetworkMetered = payload.isNetworkMetered;
+    window.showImages = payload.showImages;
 }
 
 function setTitleElement( parentNode ) {
@@ -118,12 +119,12 @@ bridge.registerListener( "displayLeadSection", function( payload ) {
     content.innerHTML = payload.section.text;
     content.id = "content_block_0";
 
-    applySectionTransforms(content, true);
-
     // append the content to the DOM now, so that we can obtain
     // dimension measurements for items.
     document.getElementById( "content" ).appendChild( content );
     document.getElementById( "loading_sections").className = "loading";
+
+    applySectionTransforms(content, true);
 
     bridge.sendMessage( "pageInfo", {
       "issues" : collectIssues(),
@@ -133,8 +134,7 @@ bridge.registerListener( "displayLeadSection", function( payload ) {
     if (!issuesContainer.hasChildNodes()) {
         document.getElementById( "content" ).removeChild(issuesContainer);
     }
-
-    scrolledOnLoad = false;
+    lazyLoadTransformer.loadPlaceholders();
 });
 
 function clearContents() {
@@ -165,6 +165,10 @@ function elementsForSection( section ) {
 }
 
 function applySectionTransforms( content, isLeadSection ) {
+    if (!window.showImages) {
+        transformer.transform( "hideImages", content );
+    }
+
     if (!window.fromRestBase) {
         // Content service transformations
         if (isLeadSection) {
@@ -184,51 +188,92 @@ function applySectionTransforms( content, isLeadSection ) {
     }
     if (!window.isMainPage) {
         transformer.transform( "hideTables", content );
-
-        if (!window.isNetworkMetered) {
-            transformer.transform( "widenImages", content );
-        }
+        transformer.transform( "widenImages", content );
 
         if (!window.isFilePage) {
             lazyLoadTransformer.convertImagesToPlaceholders( content );
         }
     }
     if (isLeadSection) {
-        transformer.transform("displayDisambigLink", content);
         transformer.transform("displayIssuesLink", content);
     }
 }
 
-var scrolledOnLoad = false;
+function displayRemainingSections(json, sequence, scrollY, fragment) {
+    var contentWrapper = document.getElementById( "content" );
+    var scrolled = false;
 
-bridge.registerListener( "displaySection", function ( payload ) {
-    if ( payload.noMore ) {
-        // if we still haven't scrolled to our target offset (if we have one),
-        // then do it now.
-        if (payload.scrollY > 0 && !scrolledOnLoad) {
-            window.scrollTo( 0, payload.scrollY );
-            scrolledOnLoad = true;
-        }
-        document.getElementById( "loading_sections").className = "";
-        lazyLoadTransformer.loadPlaceholders();
-        bridge.sendMessage( "pageLoadComplete", {
-          "sequence": payload.sequence });
-    } else {
-        var contentWrapper = document.getElementById( "content" );
-        elementsForSection(payload.section).forEach(function (element) {
+    json.sections.forEach(function (section) {
+        elementsForSection(section).forEach(function (element) {
             contentWrapper.appendChild(element);
             // do we have a y-offset to scroll to?
-            if (payload.scrollY > 0 && payload.scrollY < element.offsetTop && !scrolledOnLoad) {
-                window.scrollTo( 0, payload.scrollY );
-                scrolledOnLoad = true;
+            if (scrollY > 0 && scrollY < element.offsetTop && !scrolled) {
+                window.scrollTo( 0, scrollY );
+                scrolled = true;
             }
         });
         // do we have a section to scroll to?
-        if ( typeof payload.fragment === "string" && payload.fragment.length > 0 && payload.section.anchor === payload.fragment) {
-            scrollToSection( payload.fragment );
+        if ( typeof fragment === "string" && fragment.length > 0 && section.anchor === fragment) {
+            scrollToSection( fragment );
         }
-        bridge.sendMessage( "requestSection", { "sequence": payload.sequence, "index": payload.section.id + 1 });
+    });
+
+    // if we still haven't scrolled to our target offset (if we have one), then do it now.
+    if (scrollY > 0 && !scrolled) {
+        window.scrollTo( 0, scrollY );
     }
+    document.getElementById( "loading_sections").className = "";
+    lazyLoadTransformer.loadPlaceholders();
+    bridge.sendMessage( "pageLoadComplete", { "sequence": sequence });
+}
+
+var remainingRequest;
+
+bridge.registerListener( "queueRemainingSections", function ( payload ) {
+    if (remainingRequest) {
+        remainingRequest.abort();
+    }
+    remainingRequest = new XMLHttpRequest();
+    remainingRequest.open('GET', payload.url);
+    remainingRequest.sequence = payload.sequence;
+    remainingRequest.scrollY = payload.scrollY;
+    remainingRequest.fragment = payload.fragment;
+    if (window.apiLevel > 19 && window.responseType !== 'json') {
+        remainingRequest.responseType = 'json';
+    }
+    remainingRequest.onreadystatechange = function() {
+        if (this.readyState !== XMLHttpRequest.DONE) {
+            return;
+        }
+        if (this.sequence !== window.sequence) {
+            return;
+        }
+        if (this.status !== 200) {
+            bridge.sendMessage( "loadRemainingError", { "status": this.status, "sequence": this.sequence });
+            return;
+        }
+        try {
+            // On API <20, the XMLHttpRequest does not support responseType = json,
+            // so we have to call JSON.parse() ourselves.
+            var sectionsObj = window.apiLevel > 19 ? this.response : JSON.parse(this.response);
+            if (sectionsObj.mobileview) {
+                // If it's a mobileview response, the "sections" object will be one level deeper.
+                sectionsObj = sectionsObj.mobileview;
+            }
+            displayRemainingSections(sectionsObj, this.sequence, this.scrollY, this.fragment);
+        } catch (e) {
+            // Catch any errors that might have come from deserializing or rendering the
+            // remaining sections.
+            // TODO: Boil this up to the Java layer more properly, even though this kind of error
+            // really shouldn't happen.
+            console.log(e);
+            // In case of such an error, send a completion event to the Java layer, so that the
+            // PageActivity can consider the page loaded, and enable the user to take additional
+            // actions that might have been dependent on page completion (e.g. refreshing).
+            bridge.sendMessage( "pageLoadComplete", { "sequence": this.sequence });
+        }
+    };
+    remainingRequest.send();
 });
 
 // -- Begin custom processing of ZIM html data --
@@ -238,10 +283,19 @@ bridge.registerListener( "displayFromZim", function( payload ) {
     clearContents();
     setWindowAttributes(payload);
     window.isOffline = true;
+    window.mainPageHint = payload.mainPageHint;
     window.offlineContentProvider = payload.offlineContentProvider;
 
     var contentElem = document.getElementById( "content" );
     setTitleElement(contentElem);
+
+    if (window.isMainPage) {
+        // TODO: remove this when the actual Main Pages in ZIM files contain more descriptive content.
+        var helperDiv = document.createElement( "div" );
+        helperDiv.innerHTML = window.mainPageHint;
+        helperDiv.style = "font-size: 85%; margin: 12px 0 20px 0; padding: 12px; line-height: 120%; background-color: rgba(0, 0, 0, 0.04); border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 2px;";
+        contentElem.appendChild( helperDiv );
+    }
 
     var issuesContainer = setIssuesElement(contentElem);
 
@@ -303,6 +357,13 @@ bridge.registerListener( "displayFromZim", function( payload ) {
 
     // perform transforms on the last section
     performZimSectionTransforms( sectionIndex, currentSectionNode );
+    if (currentSectionNode.childNodes && currentSectionNode.childNodes.length > 1) {
+        // In the current version of ZIM files, the last div in the last section is the
+        // manually-appended "issued from Wikipedia" disclaimer, which we need to remove.
+        // (Unfortunately this div doesn't have any identifying classes or ids, so we can't
+        // find it using a selector.)
+        currentSectionNode.removeChild(currentSectionNode.childNodes[currentSectionNode.childNodes.length - 1]);
+    }
 
     bridge.sendMessage( "pageInfo", {
       "issues" : collectIssues(),
@@ -336,7 +397,7 @@ function performZimSectionTransforms( sectionIndex, currentSectionNode ) {
         }
     }
 
-    var placeholderTags = currentSectionNode.querySelectorAll( 'span.pagelib-lazy-load-placeholder' );
+    var placeholderTags = currentSectionNode.querySelectorAll( 'span.pagelib_lazy_load_placeholder' );
     for ( i = 0; i < placeholderTags.length; i++ ) {
         var dataSrc = placeholderTags[i].getAttribute( 'data-src' );
         if (dataSrc !== null) {
@@ -387,16 +448,21 @@ function scrollToSection( anchor ) {
     }
 }
 
-bridge.registerListener( "scrollToBottom", function () {
-    window.scrollTo(0, document.body.scrollHeight);
+bridge.registerListener( "scrollToBottom", function ( payload ) {
+    window.scrollTo(0, document.body.scrollHeight - payload.offset - transformer.getDecorOffset());
 });
 
 /**
- * Returns the section id of the section that has the header closest to but above midpoint of screen
+ * Returns the section id of the section that has the header closest to but above midpoint of screen,
+ * or -1 if the page is scrolled all the way to the bottom (i.e. native bottom content should be shown).
  */
 function getCurrentSection() {
     var sectionHeaders = document.getElementsByClassName( "section_heading" );
+    var bottomDiv = document.getElementById( "bottom_stopper" );
     var topCutoff = window.scrollY + ( document.documentElement.clientHeight / 2 );
+    if (topCutoff > bottomDiv.offsetTop) {
+        return -1;
+    }
     var curClosest = null;
     for ( var i = 0; i < sectionHeaders.length; i++ ) {
         var el = sectionHeaders[i];

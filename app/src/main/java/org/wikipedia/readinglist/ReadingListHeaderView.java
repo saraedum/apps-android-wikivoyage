@@ -2,7 +2,6 @@ package org.wikipedia.readinglist;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -68,7 +67,7 @@ public class ReadingListHeaderView extends FrameLayout {
         } else {
             imageContainerView.setVisibility(VISIBLE);
             emptyView.setVisibility(GONE);
-            getThumbnails();
+            updateThumbnails();
         }
     }
 
@@ -79,28 +78,12 @@ public class ReadingListHeaderView extends FrameLayout {
         setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
 
-        ViewUtil.setBackgroundDrawable(gradientView,
-                GradientUtil.getCubicGradient(Color.BLACK, Gravity.TOP));
+        gradientView.setBackground(GradientUtil.getPowerGradient(R.color.black54, Gravity.TOP));
 
         if (isInEditMode()) {
             return;
         }
         clearThumbnails();
-    }
-
-    private void getThumbnails() {
-        ReadingListPageDetailFetcher.updateInfo(readingList, new ReadingListPageDetailFetcher.Callback() {
-            @Override public void success() {
-                if (getWindowToken() == null) {
-                    return;
-                }
-                updateThumbnails();
-            }
-
-            @Override public void failure(Throwable e) {
-            }
-        });
-        updateThumbnails();
     }
 
     private void clearThumbnails() {

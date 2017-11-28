@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/window_background_color">
+    android:background="?attr/paper_color">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -18,7 +18,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/inline_onboarding_background_color"
+                android:background="?android:windowBackground"
                 android:gravity="center_horizontal"
                 android:orientation="vertical"
                 android:paddingTop="8dp">
@@ -26,7 +26,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="?attr/feed_text_primary_color"
+                    android:textColor="?attr/material_theme_primary_color"
                     android:text="@string/login_dont_have_account" />
 
                 <TextView
@@ -58,7 +58,6 @@
                     android:hint="@string/login_username_hint">
 
                     <org.wikipedia.views.PlainPasteEditText
-                        style="?android:textAppearanceMedium"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:imeOptions="flagNoExtractUi"
@@ -66,13 +65,22 @@
                         android:maxLines="1" />
                 </android.support.design.widget.TextInputLayout>
 
-                <android.support.design.widget.PasswordTextInput
+                <android.support.design.widget.TextInputLayout
                     android:id="@+id/login_password_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:hint="@string/login_password_hint"
-                    app:passwordToggleEnabled="true" />
+                    app:passwordToggleTint="?android:textColorHint"
+                    app:passwordToggleEnabled="true">
+
+                    <org.wikipedia.views.PlainPasteEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:imeOptions="flagNoExtractUi"
+                        android:maxLines="1" />
+                </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
@@ -143,7 +151,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:background="?attr/window_background_color"
+        android:background="?android:windowBackground"
         android:orientation="vertical"
         android:visibility="gone"/>
 </FrameLayout>

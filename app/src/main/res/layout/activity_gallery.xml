@@ -5,7 +5,7 @@
     android:id="@+id/gallery_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/darkest_gray">
+    android:background="@color/base10">
 
     <org.wikipedia.views.WikiErrorView
         android:id="@+id/view_gallery_error"
@@ -60,8 +60,8 @@
             android:scrollbars="vertical"
             android:fadeScrollbars="false"
             tools:text="Sample image description text"
-            android:textColor="@color/lead_text_color"
-            android:textColorLink="@color/lead_text_color"/>
+            android:textColor="@color/base90"
+            android:textColorLink="@color/base90"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -86,8 +86,8 @@
                 android:paddingRight="2dp"
                 android:textIsSelectable="true"
                 tools:text="Credits"
-                android:textColor="@color/foundation_gray"
-                android:textColorLink="@color/foundation_gray"
+                android:textColor="@color/base50"
+                android:textColorLink="@color/base50"
                 android:ellipsize="end"
                 android:maxLines="2"/>
         </LinearLayout>

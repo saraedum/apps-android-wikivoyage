@@ -34,6 +34,8 @@ public class ReadingListItemView extends FrameLayout {
         void onRename(@NonNull ReadingList readingList);
         void onEditDescription(@NonNull ReadingList readingList);
         void onDelete(@NonNull ReadingList readingList);
+        void onSaveAllOffline(@NonNull ReadingList readingList);
+        void onRemoveAllOffline(@NonNull ReadingList readingList);
     }
 
     public enum Description { DETAIL, SUMMARY }
@@ -77,14 +79,18 @@ public class ReadingListItemView extends FrameLayout {
     public void setReadingList(@NonNull ReadingList readingList, @NonNull Description description) {
         this.readingList = readingList;
 
-        CharSequence text = description == Description.DETAIL
+        boolean isDetailView = description == Description.DETAIL;
+        descriptionView.setMaxLines(isDetailView
+                ? Integer.MAX_VALUE
+                : getResources().getInteger(R.integer.reading_list_description_summary_view_max_lines));
+        CharSequence text = isDetailView
                 ? buildStatisticalDetailText(readingList)
                 : buildStatisticalSummaryText(readingList);
         statisticalDescriptionView.setText(text);
 
         updateDetails();
         if (imageContainer.getVisibility() == VISIBLE) {
-            getThumbnails();
+            updateThumbnails();
         }
     }
 
@@ -131,21 +137,6 @@ public class ReadingListItemView extends FrameLayout {
 
         setClickable(true);
         clearThumbnails();
-    }
-
-    private void getThumbnails() {
-        ReadingListPageDetailFetcher.updateInfo(readingList, new ReadingListPageDetailFetcher.Callback() {
-            @Override public void success() {
-                if (getWindowToken() == null) {
-                    return;
-                }
-                updateThumbnails();
-            }
-
-            @Override public void failure(@NonNull Throwable e) {
-            }
-        });
-        updateThumbnails();
     }
 
     private void updateDetails() {
@@ -246,6 +237,18 @@ public class ReadingListItemView extends FrameLayout {
                 case R.id.menu_reading_list_delete:
                     if (callback != null && readingList != null) {
                         callback.onDelete(readingList);
+                        return true;
+                    }
+                    break;
+                case R.id.menu_reading_list_save_all_offline:
+                    if (callback != null && readingList != null) {
+                        callback.onSaveAllOffline(readingList);
+                        return true;
+                    }
+                    break;
+                case R.id.menu_reading_list_remove_all_offline:
+                    if (callback != null && readingList != null) {
+                        callback.onRemoveAllOffline(readingList);
                         return true;
                     }
                     break;

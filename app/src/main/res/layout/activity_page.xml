@@ -6,7 +6,7 @@
     android:id="@+id/activity_page_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/darkest_gray">
+    android:background="@color/base10">
 
     <fragment
         android:layout_width="match_parent"
@@ -39,25 +39,43 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@drawable/toolbar_background"
+        android:background="?attr/page_toolbar_color"
         android:elevation="4dp">
-
-        <org.wikipedia.views.StatusBarBlankView
-            android:id="@+id/empty_status_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/main_toolbar_background"/>
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <android.support.v7.widget.Toolbar
-                android:theme="@style/AppTheme.ToolbarTheme"
                 android:id="@+id/page_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:titleTextColor="@android:color/white"
-                app:navigationIcon="@drawable/ic_close_white_24dp">
+                android:theme="@style/PageToolbarTheme"
+                app:titleTextColor="?attr/page_toolbar_icon_color"
+                app:navigationIcon="@drawable/ic_close_themed_24dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical|end">
+                    <android.support.v7.widget.AppCompatImageView
+                        android:id="@+id/page_toolbar_button_search"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:contentDescription="@string/search_hint"
+                        app:srcCompat="@drawable/ic_search_themed_24dp"
+                        app:tint="?attr/page_toolbar_icon_color"
+                        app:tintMode="src_in"/>
+                    <android.support.v7.widget.AppCompatImageView
+                        android:id="@+id/page_toolbar_button_show_tabs"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:contentDescription="@string/menu_page_show_tabs"
+                        app:tint="?attr/page_toolbar_icon_color"
+                        app:tintMode="src_in"/>
+                </LinearLayout>
             </android.support.v7.widget.Toolbar>
             <ProgressBar
                 android:id="@+id/page_progress_bar"

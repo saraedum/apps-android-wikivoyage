@@ -3,14 +3,12 @@ package org.wikipedia.test.view;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.net.Uri;
-import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.text.TextUtilsCompat;
-import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.TextView;
 
@@ -22,8 +20,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.runner.RunWith;
+import org.wikipedia.R;
 import org.wikipedia.theme.Theme;
-import org.wikipedia.util.ResourceUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,18 +91,18 @@ import static org.wikipedia.test.TestUtil.runOnMainSync;
         this.layoutDirection = layoutDirection;
         this.fontScale = fontScale;
         this.theme = theme;
-        ctx = new ContextThemeWrapper(getTargetContext(), theme.getResourceId());
+        ctx = getTargetContext();
+        ctx.setTheme(R.style.AppTheme);
+        ctx.setTheme(theme.getResourceId());
         config();
     }
 
     protected void snap(@NonNull View subject, @Nullable String... dataPoints) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            int rtl = layoutDirection == LayoutDirection.RTL
-                    ? View.LAYOUT_DIRECTION_RTL
-                    : TextUtilsCompat.getLayoutDirectionFromLocale(locale);
-            //noinspection WrongConstant
-            subject.setLayoutDirection(rtl);
-        }
+        int rtl = layoutDirection == LayoutDirection.RTL
+                ? View.LAYOUT_DIRECTION_RTL
+                : TextUtilsCompat.getLayoutDirectionFromLocale(locale);
+        //noinspection WrongConstant
+        subject.setLayoutDirection(rtl);
 
         ViewHelpers viewHelpers = ViewHelpers.setupView(subject).setExactWidthDp(widthDp);
         if (heightDp != null) {
@@ -118,7 +116,7 @@ import static org.wikipedia.test.TestUtil.runOnMainSync;
         list.add(locale.toString());
         list.add(layoutDirection == LayoutDirection.RTL ? "rtl" : "ltr");
         list.add("font" + fontScale.multiplier() + "x");
-        list.add(theme.toString().toLowerCase());
+        list.add(theme.toString().toLowerCase(Locale.ENGLISH));
         list.addAll(Arrays.asList(ArrayUtils.nullToEmpty(dataPoints)));
         Screenshot.snap(subject).setName(testName(list)).record();
     }
@@ -163,7 +161,7 @@ import static org.wikipedia.test.TestUtil.runOnMainSync;
         Configuration cfg = new Configuration(ctx.getResources().getConfiguration());
         cfg.screenWidthDp = widthDp;
         cfg.fontScale = fontScale.multiplier();
-        ResourceUtil.setLocale(ctx, cfg, locale);
+        cfg.setLocale(locale);
     }
 
     // todo: identify method name by @Theory / @Test annotation instead of depth and remove repeated

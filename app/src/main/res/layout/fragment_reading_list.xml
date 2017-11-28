@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/feed_window_background_color"
     android:fitsSystemWindows="true">
 
     <android.support.design.widget.AppBarLayout
@@ -21,7 +20,7 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/main_toolbar_color"
-            app:statusBarScrim="?attr/main_toolbar_color">
+            app:statusBarScrim="?attr/main_status_bar_color">
 
             <org.wikipedia.readinglist.ReadingListHeaderView
                 android:id="@+id/reading_list_header"
@@ -35,51 +34,45 @@
                 android:id="@+id/reading_list_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:theme="@style/AppTheme.ToolbarTheme"
+                android:theme="@style/ToolbarTheme"
                 app:layout_collapseMode="pin" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="vertical"
+        android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/reading_list_contents"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:scrollbars="vertical"/>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/reading_list_contents"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="?attr/window_background_color"/>
+        <TextView
+            android:id="@+id/reading_list_empty_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="96dp"
+            android:gravity="center"
+            android:padding="16dp"
+            style="@style/MaterialMediumSecondaryCaption"
+            android:text="@string/reading_list_empty"
+            android:visibility="gone"
+            tools:visibility="visible"/>
 
-            <TextView
-                android:id="@+id/reading_list_empty_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="16dp"
-                android:textSize="16sp"
-                android:text="@string/reading_list_empty"
-                android:visibility="gone"
-                tools:visibility="gone"/>
+        <org.wikipedia.views.SearchEmptyView
+            android:id="@+id/search_empty_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="48dp"
+            android:visibility="gone"
+            tools:visibility="visible"/>
 
-            <org.wikipedia.views.SearchEmptyView
-                android:id="@+id/search_empty_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="48dp"
-                android:visibility="gone"/>
-
-        </LinearLayout>
-
-    </android.support.v4.widget.NestedScrollView>
+    </FrameLayout>
 
 </android.support.design.widget.CoordinatorLayout>

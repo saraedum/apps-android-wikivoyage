@@ -10,7 +10,7 @@
         android:id="@+id/mapview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/page_background_color"
+        android:background="?attr/paper_color"
         app:mapbox_styleUrl="asset://mapstyle.json"
         app:mapbox_uiAttribution="false"
         app:mapbox_uiLogo="false">
@@ -25,7 +25,6 @@
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
         android:textColor="@color/base20"
-        android:textColorLink="?attr/colorAccent"
         android:alpha="0.6"
         android:shadowColor="@android:color/white"
         android:shadowDx="2"

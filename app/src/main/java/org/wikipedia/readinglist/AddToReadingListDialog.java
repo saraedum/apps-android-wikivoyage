@@ -14,11 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.wikipedia.R;
-import org.wikipedia.WikipediaApp;
 import org.wikipedia.analytics.ReadingListsFunnel;
 import org.wikipedia.concurrency.CallbackTask;
 import org.wikipedia.model.EnumCode;
 import org.wikipedia.model.EnumCodeMap;
+import org.wikipedia.onboarding.PrefsOnboardingStateMachine;
 import org.wikipedia.page.ExtendedBottomSheetDialogFragment;
 import org.wikipedia.page.PageTitle;
 import org.wikipedia.readinglist.page.ReadingListPage;
@@ -42,7 +42,9 @@ public class AddToReadingListDialog extends ExtendedBottomSheetDialogFragment {
         PAGE_OVERFLOW_MENU(3),
         FEED(4),
         NEWS_ACTIVITY(5),
-        READING_LIST_ACTIVITY(6);
+        READING_LIST_ACTIVITY(6),
+        MOST_READ_ACTIVITY(7),
+        RANDOM_ACTIVITY(8);
 
         private static final EnumCodeMap<InvokeSource> MAP = new EnumCodeMap<>(InvokeSource.class);
 
@@ -114,7 +116,7 @@ public class AddToReadingListDialog extends ExtendedBottomSheetDialogFragment {
         onboardingButton = rootView.findViewById(R.id.onboarding_button);
         checkAndShowOnboarding();
 
-        RecyclerView readingListView = (RecyclerView) rootView.findViewById(R.id.list_of_lists);
+        RecyclerView readingListView = rootView.findViewById(R.id.list_of_lists);
         readingListView.setLayoutManager(new LinearLayoutManager(getActivity()));
         readingListView.setAdapter(adapter);
 
@@ -150,13 +152,13 @@ public class AddToReadingListDialog extends ExtendedBottomSheetDialogFragment {
     }
 
     private void checkAndShowOnboarding() {
-        boolean isOnboarding = WikipediaApp.getInstance().getOnboardingStateMachine().isReadingListTutorialEnabled();
+        boolean isOnboarding = PrefsOnboardingStateMachine.getInstance().isReadingListTutorialEnabled();
         onboardingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onboardingContainer.setVisibility(View.GONE);
                 listsContainer.setVisibility(View.VISIBLE);
-                WikipediaApp.getInstance().getOnboardingStateMachine().setReadingListTutorial();
+                PrefsOnboardingStateMachine.getInstance().setReadingListTutorial();
                 if (readingLists.isEmpty()) {
                     showCreateListDialog();
                 }
@@ -172,6 +174,22 @@ public class AddToReadingListDialog extends ExtendedBottomSheetDialogFragment {
                 readingLists.set(rows);
                 readingLists.sort(Prefs.getReadingListSortMode(ReadingLists.SORT_BY_NAME_ASC));
                 adapter.notifyDataSetChanged();
+                for (ReadingList list : readingLists.get()) {
+                    updateListDetailsAsync(list);
+                }
+            }
+        });
+    }
+
+    private void updateListDetailsAsync(@NonNull ReadingList list) {
+        ReadingListPageDetailFetcher.updateInfo(list, new ReadingListPageDetailFetcher.Callback() {
+            @Override public void success() {
+                if (!isAdded()) {
+                    return;
+                }
+                adapter.notifyDataSetChanged();
+            }
+            @Override public void failure(Throwable e) {
             }
         });
     }
@@ -248,11 +266,11 @@ public class AddToReadingListDialog extends ExtendedBottomSheetDialogFragment {
                 if (isAdded()) {
                     String message;
                     if (result.size() == 0) {
-                        message = "The chosen list already contains all of the selected pages."; // todo: string res
+                        message = getString(R.string.reading_list_already_contains_selection);
                     } else {
                         message = TextUtils.isEmpty(readingList.getTitle())
-                                ? String.format("Added %d articles to reading list.", result.size()) // todo: string res
-                                : String.format("Added %1$d articles to %2$s", result.size(), readingList.getTitle()); // todo: string res
+                                ? String.format(getString(R.string.reading_list_added_articles_list_untitled), result.size())
+                                : String.format(getString(R.string.reading_list_added_articles_list_titled), result.size(), readingList.getTitle());
                         new ReadingListsFunnel().logAddToList(readingList, readingLists.size(), invokeSource);
                         ReadingList.DAO.makeListMostRecent(readingList);
                     }
@@ -301,6 +319,14 @@ public class AddToReadingListDialog extends ExtendedBottomSheetDialogFragment {
 
         @Override
         public void onDelete(@NonNull ReadingList readingList) {
+        }
+
+        @Override
+        public void onSaveAllOffline(@NonNull ReadingList readingList) {
+        }
+
+        @Override
+        public void onRemoveAllOffline(@NonNull ReadingList readingList) {
         }
     }
 

@@ -15,7 +15,7 @@ public enum SyntaxRuleStyle {
     TEMPLATE {
         @NonNull @Override public SpanExtents createSpan(@NonNull Context ctx, int spanStart,
                                                          SyntaxRule syntaxItem) {
-            @ColorInt int color = getThemedColor(ctx, R.attr.syntax_highlight_template_color);
+            @ColorInt int color = getThemedColor(ctx, R.attr.material_theme_secondary_color);
             return new ColorSpanEx(color, Color.TRANSPARENT, spanStart, syntaxItem);
         }
     },
@@ -36,7 +36,7 @@ public enum SyntaxRuleStyle {
     REF {
         @NonNull @Override public SpanExtents createSpan(@NonNull Context ctx, int spanStart,
                                                          SyntaxRule syntaxItem) {
-            return new ColorSpanEx(getColor(ctx, R.color.dark_green), Color.TRANSPARENT, spanStart,
+            return new ColorSpanEx(getColor(ctx, R.color.green30), Color.TRANSPARENT, spanStart,
                     syntaxItem);
         }
     },

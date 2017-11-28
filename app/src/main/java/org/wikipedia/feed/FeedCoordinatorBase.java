@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import org.wikipedia.dataclient.WikiSite;
 import org.wikipedia.feed.dataclient.FeedClient;
 import org.wikipedia.feed.model.Card;
+import org.wikipedia.feed.model.CardType;
 import org.wikipedia.feed.offline.OfflineCard;
 import org.wikipedia.feed.progress.ProgressCard;
 import org.wikipedia.settings.Prefs;
@@ -47,6 +48,11 @@ public abstract class FeedCoordinatorBase {
 
     public FeedCoordinatorBase(@NonNull Context context) {
         this.context = context;
+        updateHiddenCards();
+    }
+
+    public void updateHiddenCards() {
+        hiddenCards.clear();
         hiddenCards.addAll(Prefs.getHiddenCards());
     }
 
@@ -69,15 +75,15 @@ public abstract class FeedCoordinatorBase {
         cards.clear();
     }
 
+    public void incrementAge() {
+        currentAge++;
+    }
+
     public void more(@NonNull WikiSite wiki) {
         this.wiki = wiki;
 
         if (cards.size() == 0) {
             insertCard(progressCard, 0);
-        }
-
-        if (cards.size() > 1) {
-            currentAge++;
         }
 
         buildScript(currentAge);
@@ -94,14 +100,32 @@ public abstract class FeedCoordinatorBase {
 
     public int dismissCard(@NonNull Card card) {
         int position = cards.indexOf(card);
-        addHiddenCard(card);
+        if (card.type() == CardType.RANDOM) {
+            FeedContentType.RANDOM.setEnabled(false);
+            FeedContentType.saveState();
+        } else if (card.type() == CardType.MAIN_PAGE) {
+            FeedContentType.MAIN_PAGE.setEnabled(false);
+            FeedContentType.saveState();
+        } else {
+            addHiddenCard(card);
+        }
         removeCard(card, position);
+        card.onDismiss();
         return position;
     }
 
     public void undoDismissCard(@NonNull Card card, int position) {
-        unHideCard(card);
+        if (card.type() == CardType.RANDOM) {
+            FeedContentType.RANDOM.setEnabled(true);
+            FeedContentType.saveState();
+        } else if (card.type() == CardType.MAIN_PAGE) {
+            FeedContentType.MAIN_PAGE.setEnabled(true);
+            FeedContentType.saveState();
+        } else {
+            unHideCard(card);
+        }
         insertCard(card, position);
+        card.onRestore();
     }
 
     void retryFromOffline(@NonNull WikiSite wiki) {
@@ -112,12 +136,14 @@ public abstract class FeedCoordinatorBase {
 
     protected abstract void buildScript(int age);
 
-    void addPendingClient(FeedClient client) {
-        pendingClients.add(client);
+    void addPendingClient(@Nullable FeedClient client) {
+        if (client != null) {
+            pendingClients.add(client);
+        }
     }
 
-    void conditionallyAddPendingClient(FeedClient client, boolean condition) {
-        if (condition) {
+    void conditionallyAddPendingClient(@Nullable FeedClient client, boolean condition) {
+        if (condition && client != null) {
             pendingClients.add(client);
         }
     }

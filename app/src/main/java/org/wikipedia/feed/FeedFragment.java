@@ -1,11 +1,13 @@
 package org.wikipedia.feed;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
@@ -18,14 +20,18 @@ import android.view.ViewGroup;
 
 import org.wikipedia.BackPressedHandler;
 import org.wikipedia.BuildConfig;
+import org.wikipedia.Constants;
 import org.wikipedia.R;
 import org.wikipedia.WikipediaApp;
 import org.wikipedia.activity.FragmentUtil;
 import org.wikipedia.analytics.FeedFunnel;
-import org.wikipedia.feed.featured.FeaturedArticleCard;
+import org.wikipedia.feed.configure.ConfigureActivity;
+import org.wikipedia.feed.featured.FeaturedArticleCardView;
 import org.wikipedia.feed.image.FeaturedImage;
 import org.wikipedia.feed.image.FeaturedImageCard;
 import org.wikipedia.feed.model.Card;
+import org.wikipedia.feed.mostread.MostReadArticlesActivity;
+import org.wikipedia.feed.mostread.MostReadListCard;
 import org.wikipedia.feed.news.NewsItemCard;
 import org.wikipedia.feed.random.RandomCardView;
 import org.wikipedia.feed.view.FeedAdapter;
@@ -33,8 +39,12 @@ import org.wikipedia.feed.view.FeedView;
 import org.wikipedia.feed.view.HorizontalScrollingListCardItemView;
 import org.wikipedia.history.HistoryEntry;
 import org.wikipedia.offline.LocalCompilationsActivity;
+import org.wikipedia.offline.OfflineTutorialActivity;
+import org.wikipedia.random.RandomActivity;
+import org.wikipedia.readinglist.sync.ReadingListSynchronizer;
 import org.wikipedia.settings.Prefs;
 import org.wikipedia.settings.SettingsActivity;
+import org.wikipedia.util.DeviceUtil;
 import org.wikipedia.util.FeedbackUtil;
 import org.wikipedia.util.ResourceUtil;
 import org.wikipedia.util.ThrowableUtil;
@@ -44,6 +54,10 @@ import org.wikipedia.views.ExploreOverflowView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+
+import static android.app.Activity.RESULT_OK;
+import static org.wikipedia.Constants.ACTIVITY_REQUEST_FEED_CONFIGURE;
+import static org.wikipedia.Constants.ACTIVITY_REQUEST_OFFLINE_TUTORIAL;
 
 public class FeedFragment extends Fragment implements BackPressedHandler {
     @BindView(R.id.feed_swipe_refresh_layout) SwipeRefreshLayout swipeRefreshLayout;
@@ -65,8 +79,8 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
         void onFeedVoiceSearchRequested();
         void onFeedSelectPage(HistoryEntry entry);
         void onFeedAddPageToList(HistoryEntry entry);
-        void onFeedAddFeaturedPageToList(FeedFragment fragment, FeaturedArticleCard card, HistoryEntry entry);
-        void onFeedRemovePageFromList(FeedFragment fragment, Card card, HistoryEntry entry);
+        void onFeedAddFeaturedPageToList(FeaturedArticleCardView view, HistoryEntry entry);
+        void onFeedRemovePageFromList(FeaturedArticleCardView view, HistoryEntry entry);
         void onFeedSharePage(HistoryEntry entry);
         void onFeedNewsItemSelected(NewsItemCard card, HorizontalScrollingListCardItemView view);
         void onFeedShareImage(FeaturedImageCard card);
@@ -146,13 +160,9 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
             getCallback().updateToolbarElevation(shouldElevateToolbar());
         }
 
-        return view;
-    }
+        ReadingListSynchronizer.instance().sync();
 
-    public void notifyItemChanged(@NonNull Card card) {
-        if (feedAdapter != null && feedAdapter.getItemPosition(card) > -1) {
-            feedAdapter.notifyItemChanged(feedAdapter.getItemPosition(card));
-        }
+        return view;
     }
 
     public boolean shouldElevateToolbar() {
@@ -176,6 +186,21 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
     public void onPause() {
         super.onPause();
         funnel.exit();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == ACTIVITY_REQUEST_OFFLINE_TUTORIAL && resultCode == RESULT_OK) {
+            Prefs.setOfflineTutorialCardEnabled(false);
+            Prefs.setOfflineTutorialEnabled(false);
+            refresh();
+            feedCallback.onViewCompilations();
+        } else if (requestCode == ACTIVITY_REQUEST_FEED_CONFIGURE
+                && resultCode == ConfigureActivity.CONFIGURATION_CHANGED_RESULT) {
+            coordinator.updateHiddenCards();
+            refresh();
+        }
     }
 
     @Override
@@ -260,7 +285,15 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
         return false;
     }
 
+    public void scrollToTop() {
+        feedView.smoothScrollToPosition(0);
+    }
+
     public void onGoOffline() {
+        refresh();
+    }
+
+    public void onGoOnline() {
         refresh();
     }
 
@@ -286,7 +319,12 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
         @Override
         public void onRequestMore() {
             funnel.requestMore(coordinator.getAge());
-            coordinator.more(app.getWikiSite());
+            feedView.post(() -> {
+                if (isAdded()) {
+                    coordinator.incrementAge();
+                    coordinator.more(app.getWikiSite());
+                }
+            });
         }
 
         @Override
@@ -316,16 +354,16 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
         }
 
         @Override
-        public void onAddFeaturedPageToList(@NonNull FeaturedArticleCard card, @NonNull HistoryEntry entry) {
+        public void onAddFeaturedPageToList(@NonNull FeaturedArticleCardView view, @NonNull HistoryEntry entry) {
             if (getCallback() != null) {
-                getCallback().onFeedAddFeaturedPageToList(FeedFragment.this, card, entry);
+                getCallback().onFeedAddFeaturedPageToList(view, entry);
             }
         }
 
         @Override
-        public void onRemoveFeaturedPageFromList(@NonNull FeaturedArticleCard card, @NonNull HistoryEntry entry) {
+        public void onRemoveFeaturedPageFromList(@NonNull FeaturedArticleCardView view, @NonNull HistoryEntry entry) {
             if (getCallback() != null) {
-                getCallback().onFeedRemovePageFromList(FeedFragment.this, card, entry);
+                getCallback().onFeedRemovePageFromList(view, entry);
             }
         }
 
@@ -396,12 +434,36 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
         @Override
         public void onAnnouncementPositiveAction(@NonNull Card card, @NonNull Uri uri) {
             funnel.cardClicked(card.type());
-            UriUtil.handleExternalLink(getContext(), uri);
+            if (uri.toString().equals(UriUtil.LOCAL_URL_OFFLINE_LIBRARY)) {
+                onViewCompilations();
+            } else if (uri.toString().equals(UriUtil.LOCAL_URL_LOGIN)) {
+                if (getCallback() != null) {
+                    getCallback().onLoginRequested();
+                }
+            } else if (uri.toString().equals(UriUtil.LOCAL_URL_SETTINGS)) {
+                startActivityForResult(SettingsActivity.newIntent(getContext()),
+                        SettingsActivity.ACTIVITY_REQUEST_SHOW_SETTINGS);
+            } else if (uri.toString().equals(UriUtil.LOCAL_URL_CUSTOMIZE_FEED)) {
+                showConfigureActivity();
+            } else {
+                UriUtil.handleExternalLink(getContext(), uri);
+            }
         }
 
         @Override
         public void onAnnouncementNegativeAction(@NonNull Card card) {
             onRequestDismissCard(card);
+        }
+
+        @Override
+        public void onRandomClick(@NonNull RandomCardView view) {
+            if (!DeviceUtil.isOnline()) {
+                view.getRandomPage();
+            } else {
+                ActivityOptionsCompat options = ActivityOptionsCompat.
+                        makeSceneTransitionAnimation(getActivity(), view, getString(R.string.transition_random_activity));
+                startActivity(RandomActivity.newIntent(getActivity()), options.toBundle());
+            }
         }
 
         @Override
@@ -419,7 +481,17 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
         }
 
         public void onViewCompilations() {
-            startActivity(LocalCompilationsActivity.newIntent(getContext()));
+            if (Prefs.isOfflineTutorialEnabled()) {
+                startActivityForResult(OfflineTutorialActivity.newIntent(getContext()),
+                        ACTIVITY_REQUEST_OFFLINE_TUTORIAL);
+            } else {
+                startActivity(LocalCompilationsActivity.newIntent(getContext()));
+            }
+        }
+
+        @Override
+        public void onMoreContentSelected(@NonNull Card card) {
+            startActivity(MostReadArticlesActivity.newIntent(getContext(), (MostReadListCard) card));
         }
     }
 
@@ -456,6 +528,11 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
         snackbar.show();
     }
 
+    private void showConfigureActivity() {
+        startActivityForResult(ConfigureActivity.newIntent(getActivity()),
+                Constants.ACTIVITY_REQUEST_FEED_CONFIGURE);
+    }
+
     private void showOverflowMenu(@NonNull View anchor) {
         ExploreOverflowView overflowView = new ExploreOverflowView(getContext());
         overflowView.show(anchor, overflowCallback);
@@ -484,6 +561,11 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
         }
 
         @Override
+        public void configureCardsClick() {
+            showConfigureActivity();
+        }
+
+        @Override
         public void logoutClick() {
             WikipediaApp.getInstance().logOut();
             FeedbackUtil.showMessage(FeedFragment.this, R.string.toast_logout_complete);
@@ -491,7 +573,7 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
 
         @Override
         public void compilationsClick() {
-            startActivity(LocalCompilationsActivity.newIntent(getContext()));
+            feedCallback.onViewCompilations();
         }
     }
 }

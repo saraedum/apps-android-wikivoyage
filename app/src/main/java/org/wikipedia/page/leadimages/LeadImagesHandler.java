@@ -19,7 +19,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.wikipedia.Constants;
 import org.wikipedia.R;
-import org.wikipedia.WikipediaApp;
 import org.wikipedia.analytics.GalleryFunnel;
 import org.wikipedia.analytics.LoginFunnel;
 import org.wikipedia.auth.AccountUtil;
@@ -39,6 +38,7 @@ import org.wikipedia.views.FaceAndColorDetectImageView;
 import org.wikipedia.views.ObservableWebView;
 
 import static org.wikipedia.settings.Prefs.isDescriptionEditTutorialEnabled;
+import static org.wikipedia.settings.Prefs.isImageDownloadEnabled;
 import static org.wikipedia.util.DimenUtil.getContentTopOffsetPx;
 
 public class LeadImagesHandler {
@@ -55,7 +55,6 @@ public class LeadImagesHandler {
 
     @NonNull private final PageFragment parentFragment;
     @NonNull private final CommunicationBridge bridge;
-    @NonNull private final ObservableWebView webView;
 
     @NonNull private final PageHeaderView pageHeaderView;
     private View image;
@@ -66,16 +65,17 @@ public class LeadImagesHandler {
                              @NonNull CommunicationBridge bridge,
                              @NonNull ObservableWebView webView,
                              @NonNull PageHeaderView pageHeaderView) {
-        this.pageHeaderView = pageHeaderView;
         this.parentFragment = parentFragment;
+
+        this.pageHeaderView = pageHeaderView;
+        this.pageHeaderView.setWebView(webView);
+
         this.bridge = bridge;
-        this.webView = webView;
+        webView.addOnScrollChangeListener(pageHeaderView);
 
         image = pageHeaderView.getImage();
 
         initDisplayDimensions();
-
-        initWebView();
 
         initArticleHeaderView();
 
@@ -96,8 +96,9 @@ public class LeadImagesHandler {
     }
 
     public boolean isLeadImageEnabled() {
-        return WikipediaApp.getInstance().isImageDownloadEnabled()
+        return isImageDownloadEnabled()
                 && displayHeightDp >= MIN_SCREEN_HEIGHT_DP
+                && !isMainPage()
                 && !TextUtils.isEmpty(getLeadImageUrl());
     }
 
@@ -249,6 +250,21 @@ public class LeadImagesHandler {
         });
         pageHeaderView.setCallback(new PageHeaderView.Callback() {
             @Override
+            public void onImageClicked() {
+                if (getPage() != null && isLeadImageEnabled()) {
+                    String imageName = getPage().getPageProperties().getLeadImageName();
+                    if (imageName != null) {
+                        String filename = "File:" + imageName;
+                        WikiSite wiki = getTitle().getWikiSite();
+                        getActivity().startActivityForResult(GalleryActivity.newIntent(getActivity(),
+                                parentFragment.getTitleOriginal(), filename, wiki,
+                                GalleryFunnel.SOURCE_LEAD_IMAGE),
+                                Constants.ACTIVITY_REQUEST_GALLERY);
+                    }
+                }
+            }
+
+            @Override
             public void onDescriptionClicked() {
                 verifyDescriptionEditable();
             }
@@ -297,31 +313,6 @@ public class LeadImagesHandler {
         } else {
             parentFragment.startDescriptionEditActivity();
         }
-    }
-
-    private void initWebView() {
-        webView.addOnScrollChangeListener(pageHeaderView);
-
-        webView.addOnClickListener(new ObservableWebView.OnClickListener() {
-            @Override
-            public boolean onClick(float x, float y) {
-                // if the click event is within the area of the lead image, then the user
-                // must have wanted to click on the lead image!
-                if (getPage() != null && isLeadImageEnabled() && y < (image.getHeight() - webView.getScrollY())) {
-                    String imageName = getPage().getPageProperties().getLeadImageName();
-                    if (imageName != null) {
-                        String filename = "File:" + imageName;
-                        WikiSite wiki = getTitle().getWikiSite();
-                        getActivity().startActivityForResult(GalleryActivity.newIntent(getActivity(),
-                                parentFragment.getTitleOriginal(), filename, wiki,
-                                GalleryFunnel.SOURCE_LEAD_IMAGE),
-                                Constants.ACTIVITY_REQUEST_GALLERY);
-                    }
-                    return true;
-                }
-                return false;
-            }
-        });
     }
 
     private boolean isMainPage() {

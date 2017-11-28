@@ -7,7 +7,8 @@
     android:id="@+id/item_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground">
+    android:background="?attr/paper_color"
+    android:foreground="?attr/selectableItemBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -66,37 +67,33 @@
                 android:id="@+id/item_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/RtlAwareTextView"
-                android:textSize="16sp"
+                android:textAppearance="@style/RtlAwareTextView"
+                style="@style/MaterialListTitle"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:textColor="?attr/list_item_text_primary_color"
                 tools:text="Lorem ipsum" />
 
             <TextView
                 android:id="@+id/item_reading_list_statistical_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/RtlAwareTextView"
+                android:textAppearance="@style/RtlAwareTextView"
+                style="@style/MaterialListSubtitle"
                 android:textSize="12sp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textColor="?attr/list_item_text_secondary_color"
-                tools:text="x items"
-                />
+                tools:text="x items" />
 
-            <org.wikipedia.views.GoneIfEmptyTextView
+            <TextView
                 android:id="@+id/item_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                style="@style/RtlAwareTextView"
-                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textAppearance="@style/RtlAwareTextView"
+                style="@style/MaterialListSubtitle"
                 android:ellipsize="end"
-                android:maxLines="2"
-                android:textColor="?attr/list_item_text_secondary_color"
-                tools:text="Sample description"
-                />
+                android:maxLines="@integer/reading_list_description_summary_view_max_lines"
+                tools:text="Sample description" />
 
         </LinearLayout>
     </LinearLayout>
@@ -109,7 +106,7 @@
         android:layout_gravity="end"
         android:padding="8dp"
         app:srcCompat="@drawable/ic_more_vert_white_24dp"
-        android:tint="?attr/feed_text_tertiary_color"
+        android:tint="?attr/secondary_text_color"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/abc_action_menu_overflow_description"/>
 

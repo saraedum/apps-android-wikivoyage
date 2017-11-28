@@ -4,8 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="?attr/feed_window_background_color">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/history_empty_container"
@@ -21,8 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:gravity="center"
-            android:textSize="20sp"
-            android:fontFamily="sans-serif-medium"
+            style="@style/MaterialLargePrimaryTitle"
             android:layout_marginBottom="20dp"
             android:text="@string/history_empty_title" />
         <ImageView
@@ -39,7 +37,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="32dp"
             android:gravity="center"
-            android:textSize="16sp"
+            style="@style/MaterialMediumSecondaryCaption"
             android:text="@string/history_empty_message" />
     </LinearLayout>
 
@@ -54,7 +52,6 @@
         android:id="@+id/history_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical"
-        android:background="?attr/window_background_color"/>
+        android:scrollbars="vertical"/>
 
 </FrameLayout>

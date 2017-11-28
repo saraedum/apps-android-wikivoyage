@@ -13,29 +13,35 @@ import org.wikipedia.json.annotations.Required;
  *
  * N.B.: The "title" field here sent by RESTBase is the *normalized* page title.  However, in the
  * FeedPageSummary subclass, "title" becomes the un-normalized, raw title, and the normalized title
- * is sent is "normalizedtitle".
+ * is sent as "normalizedtitle".
  */
 public class RbPageSummary implements PageSummary {
-    @SuppressWarnings("unused") private RbServiceError error;
     @SuppressWarnings("unused,NullableProblems") @Required @NonNull private String title;
+    @SuppressWarnings("unused") @Nullable private String normalizedtitle;
+    @SuppressWarnings("unused,NullableProblems") @NonNull private String displaytitle;
     @SuppressWarnings("unused") @Nullable private String extract;
     @SuppressWarnings("unused") @Nullable private String description;
     @SuppressWarnings("unused") @Nullable private Thumbnail thumbnail;
 
     @Override
     public boolean hasError() {
-        // if there is no title or no extract set something went terribly wrong
-        return error != null || extract == null;
+        // If we have a page summary object, RESTBase hasn't returned an error
+        return false;
     }
 
     @Override @Nullable
     public RbServiceError getError() {
-        return error;
+        return null;
     }
 
     @Override @NonNull
     public String getTitle() {
         return title;
+    }
+
+    @Override @NonNull
+    public String getDisplayTitle() {
+        return displaytitle;
     }
 
     @Override @Nullable
@@ -51,6 +57,11 @@ public class RbPageSummary implements PageSummary {
     @Nullable
     public String getDescription() {
         return description;
+    }
+
+    @NonNull
+    public String getNormalizedTitle() {
+        return normalizedtitle == null ? title : normalizedtitle;
     }
 
     /**

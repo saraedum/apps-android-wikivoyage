@@ -6,12 +6,9 @@ import android.support.annotation.Nullable;
 import android.view.View;
 
 import org.wikipedia.R;
-import org.wikipedia.WikipediaApp;
 import org.wikipedia.feed.view.FeedAdapter;
 import org.wikipedia.feed.view.StaticCardView;
 import org.wikipedia.history.HistoryEntry;
-import org.wikipedia.page.PageTitle;
-import org.wikipedia.staticdata.MainPageNameData;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -26,25 +23,28 @@ public class MainPageCardView extends StaticCardView<MainPageCard> {
         setTitle(getString(R.string.view_main_page_card_title));
         setSubtitle(String.format(getString(R.string.view_main_page_card_subtitle),
                 DateFormat.getDateInstance().format(new Date())));
-        setIcon(R.drawable.icon_feed_today);
+        setIcon(R.drawable.ic_today_24dp);
+        setContainerBackground(R.color.green50);
+        setAction(R.drawable.ic_arrow_forward_black_24dp, R.string.view_main_page_card_action);
+    }
+
+    protected void onContentClick(View v) {
+        goToMainPage();
+    }
+
+    protected void onActionClick(View v) {
+        goToMainPage();
     }
 
     @Override public void setCallback(@Nullable FeedAdapter.Callback callback) {
         super.setCallback(callback);
-        setOnClickListener(new CallbackAdapter());
     }
 
-    private class CallbackAdapter implements OnClickListener {
-        @NonNull private WikipediaApp app = WikipediaApp.getInstance();
-
-        @Override
-        public void onClick(View view) {
-            if (getCallback() != null && getCard() != null) {
-                PageTitle title = new PageTitle(MainPageNameData
-                        .valueFor(app.getAppOrSystemLanguageCode()), app.getWikiSite());
-                getCallback().onSelectPage(getCard(),
-                        new HistoryEntry(title, HistoryEntry.SOURCE_FEED_MAIN_PAGE));
-            }
+    private void goToMainPage() {
+        if (getCallback() != null && getCard() != null) {
+            getCallback().onSelectPage(getCard(),
+                    new HistoryEntry(MainPageClient.getMainPageTitle(),
+                            HistoryEntry.SOURCE_FEED_MAIN_PAGE));
         }
     }
 }

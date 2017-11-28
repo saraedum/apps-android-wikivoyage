@@ -6,11 +6,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -22,8 +23,11 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import org.wikipedia.R;
-import org.wikipedia.WikipediaApp;
+import org.wikipedia.gallery.MediaDownloadReceiver;
 import org.wikipedia.history.SearchActionModeCallback;
+import org.wikipedia.util.DeviceUtil;
+import org.wikipedia.util.DimenUtil;
+import org.wikipedia.util.FeedbackUtil;
 import org.wikipedia.util.ResourceUtil;
 import org.wikipedia.views.DefaultViewHolder;
 import org.wikipedia.views.DrawableItemDecoration;
@@ -33,12 +37,16 @@ import org.wikipedia.views.WikiErrorView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class RemoteCompilationsFragment extends Fragment {
+import static org.wikipedia.util.DateUtil.getShortDateString;
+import static org.wikipedia.util.FileUtil.bytesToGB;
+
+public class RemoteCompilationsFragment extends DownloadObserverFragment {
     @BindView(R.id.compilation_list_toolbar_container) CollapsingToolbarLayout toolbarLayout;
     @BindView(R.id.compilation_list_app_bar) AppBarLayout appBarLayout;
     @BindView(R.id.compilation_list_toolbar) Toolbar toolbar;
@@ -81,8 +89,8 @@ public class RemoteCompilationsFragment extends Fragment {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new DrawableItemDecoration(getContext(),
-                ResourceUtil.getThemedAttributeId(getContext(), R.attr.list_separator_drawable), true));
+        recyclerView.addItemDecoration(new DrawableItemDecoration(getContext(), R.attr.list_separator_drawable));
+        ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
         errorView.setRetryClickListener(new View.OnClickListener() {
             @Override
@@ -99,7 +107,6 @@ public class RemoteCompilationsFragment extends Fragment {
         });
 
         beginUpdate();
-
         return view;
     }
 
@@ -135,7 +142,7 @@ public class RemoteCompilationsFragment extends Fragment {
     private void beginUpdate() {
         updating = true;
         lastError = null;
-        new CompilationClient().request(WikipediaApp.getInstance().getWikiSite(), compilationCallback);
+        new CompilationClient().request(compilationCallback);
         updateEmptyState();
     }
 
@@ -145,9 +152,10 @@ public class RemoteCompilationsFragment extends Fragment {
         if (TextUtils.isEmpty(query)) {
             displayedItems.addAll(allItems);
         } else {
-            query = query.toUpperCase();
+            query = query.toUpperCase(Locale.getDefault());
             for (Compilation c : allItems) {
-                if (c.name().toUpperCase().contains(query.toUpperCase())) {
+                if (c.name().toUpperCase(Locale.getDefault())
+                        .contains(query.toUpperCase(Locale.getDefault()))) {
                     displayedItems.add(c);
                 }
             }
@@ -179,18 +187,54 @@ public class RemoteCompilationsFragment extends Fragment {
         }
     }
 
+    @Override
+    protected void onPollDownloads() {
+        adapter.notifyItemRangeChanged(0, adapter.getItemCount());
+    }
+
     private class CompilationItemHolder extends DefaultViewHolder<PageItemView<Compilation>> {
         private Compilation compilation;
+        private CompilationDownloadControlView controlView;
 
         CompilationItemHolder(PageItemView<Compilation> itemView) {
             super(itemView);
+            controlView = new CompilationDownloadControlView(itemView.getContext());
+            itemView.addFooter(controlView);
+            controlView.setPadding(DimenUtil.roundedDpToPx(DimenUtil.getDimension(R.dimen.activity_horizontal_margin)),
+                    DimenUtil.roundedDpToPx(DimenUtil.getDimension(R.dimen.list_item_footer_padding)),
+                    DimenUtil.roundedDpToPx(DimenUtil.getDimension(R.dimen.activity_horizontal_margin)),
+                    DimenUtil.roundedDpToPx(DimenUtil.getDimension(R.dimen.list_item_footer_padding)));
+            controlView.setBackgroundColor(ResourceUtil.getThemedColor(getContext(), android.R.attr.colorBackground));
+            controlView.setCallback(new CompilationDownloadControlView.Callback() {
+                @Override
+                public void onCancel() {
+                    getDownloadObserver().remove(compilation);
+                }
+            });
         }
 
         void bindItem(Compilation compilation) {
+            DownloadManagerItem myItem = null;
+            for (DownloadManagerItem item : getCurrentDownloads()) {
+                if (item.is(compilation)) {
+                    myItem = item;
+                    break;
+                }
+            }
+            if (CompilationDownloadControlView.shouldShowControls(myItem)) {
+                controlView.setVisibility(View.VISIBLE);
+                controlView.update(myItem);
+            } else {
+                controlView.setVisibility(View.GONE);
+            }
+            if (compilation == this.compilation) {
+                return;
+            }
             this.compilation = compilation;
             getView().setItem(compilation);
             getView().setTitle(compilation.name());
-            getView().setDescription(compilation.description());
+            getView().setDescription(String.format(getString(R.string.offline_compilation_detail_date_size),
+                    getShortDateString(compilation.date()), bytesToGB(compilation.size())));
             getView().setImageUrl(compilation.thumbUri() == null ? null : compilation.thumbUri().toString());
             getView().setActionIcon(R.drawable.ic_more_vert_white_24dp);
             getView().setActionHint(R.string.abc_action_menu_overflow_description);
@@ -243,18 +287,22 @@ public class RemoteCompilationsFragment extends Fragment {
         }
 
         @Override
-        public void onActionClick(@Nullable Compilation item, @NonNull PageItemView view) {
+        public void onActionClick(@Nullable Compilation item, @NonNull View view) {
+            if (item != null) {
+                showCompilationOverflowMenu(item, view);
+            }
         }
 
         @Override
-        public void onSecondaryActionClick(@Nullable Compilation item, @NonNull PageItemView view) {
+        public void onSecondaryActionClick(@Nullable Compilation item, @NonNull View view) {
         }
     }
 
     private class SearchCallback extends SearchActionModeCallback {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            appBarLayout.setExpanded(false, true);
+            recyclerView.stopScroll();
+            appBarLayout.setExpanded(false, false);
             return super.onCreateActionMode(mode, menu);
         }
 
@@ -278,18 +326,62 @@ public class RemoteCompilationsFragment extends Fragment {
     private class CompilationCallback implements CompilationClient.Callback {
         @Override
         public void success(@NonNull List<Compilation> compilations) {
-            allItems = compilations;
-            updating = false;
+            if (!isAdded()) {
+                return;
+            }
             OfflineManager.instance().updateFromRemoteMetadata(compilations);
+
+            allItems.clear();
+            for (Compilation remote : compilations) {
+                boolean haveLocal = false;
+                for (Compilation local : OfflineManager.instance().compilations()) {
+                    if (local.pathNameMatchesUri(remote.uri())) {
+                        haveLocal = true;
+                        allItems.add(local);
+                    }
+                }
+                if (!haveLocal) {
+                    allItems.add(remote);
+                }
+            }
+
+            updating = false;
             setSearchQuery(currentSearchQuery);
         }
 
         @Override
         public void error(@NonNull Throwable caught) {
+            if (!isAdded()) {
+                return;
+            }
             updating = false;
             lastError = caught;
             updateEmptyState();
         }
+    }
+
+    private void showCompilationOverflowMenu(@NonNull final Compilation compilation, @NonNull View anchorView) {
+        PopupMenu menu = new PopupMenu(anchorView.getContext(), anchorView);
+        menu.getMenuInflater().inflate(R.menu.menu_remote_compilation_item, menu.getMenu());
+        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.menu_compilation_download:
+                        if (DeviceUtil.isOnline()) {
+                            if (!getDownloadObserver().isDownloading(compilation)) {
+                                MediaDownloadReceiver.download(getContext(), compilation);
+                            }
+                        } else {
+                            FeedbackUtil.showMessage(getActivity(), R.string.offline_compilation_download_device_offline);
+                        }
+                        return false;
+                    default:
+                        return false;
+                }
+            }
+        });
+        menu.show();
     }
 
     private AppCompatActivity getAppCompatActivity() {

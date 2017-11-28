@@ -22,7 +22,6 @@ import org.wikipedia.R;
 import org.wikipedia.WikipediaApp;
 import org.wikipedia.analytics.EditFunnel;
 import org.wikipedia.bridge.CommunicationBridge;
-import org.wikipedia.bridge.DarkModeMarshaller;
 import org.wikipedia.dataclient.WikiSite;
 import org.wikipedia.edit.EditSectionActivity;
 import org.wikipedia.edit.summaries.EditSummaryTag;
@@ -30,6 +29,7 @@ import org.wikipedia.history.HistoryEntry;
 import org.wikipedia.page.LinkHandler;
 import org.wikipedia.page.PageActivity;
 import org.wikipedia.page.PageTitle;
+import org.wikipedia.theme.DarkModeSwitch;
 import org.wikipedia.util.ConfigurationCompat;
 import org.wikipedia.util.L10nUtil;
 import org.wikipedia.util.log.L;
@@ -65,9 +65,9 @@ public class EditPreviewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View parent = inflater.inflate(R.layout.fragment_preview_edit, container, false);
-        webview = (ObservableWebView) parent.findViewById(R.id.edit_preview_webview);
-        previewContainer = (ScrollView) parent.findViewById(R.id.edit_preview_container);
-        editSummaryTagsContainer = (ViewGroup) parent.findViewById(R.id.edit_summary_tags_container);
+        webview = parent.findViewById(R.id.edit_preview_webview);
+        previewContainer = parent.findViewById(R.id.edit_preview_container);
+        editSummaryTagsContainer = parent.findViewById(R.id.edit_summary_tags_container);
 
         bridge = new CommunicationBridge(webview, "file:///android_asset/preview.html");
 
@@ -97,8 +97,8 @@ public class EditPreviewFragment extends Fragment {
         Locale newLocale = new Locale(pageTitle.getWikiSite().languageCode());
         Configuration config = new Configuration(oldResources.getConfiguration());
         Resources tempResources = getResources();
-        if (!oldLocale.getLanguage().equals(newLocale.getLanguage())) {
-            ConfigurationCompat.setLocale(config, newLocale);
+        if (!oldLocale.getLanguage().equals(newLocale.getLanguage()) && !newLocale.getLanguage().equals("test")) {
+            L10nUtil.setDesiredLocale(config, newLocale);
             tempResources = new Resources(assets, metrics, config);
         }
 
@@ -145,7 +145,7 @@ public class EditPreviewFragment extends Fragment {
         with the original Locale (from above)
          */
         if (!oldLocale.getLanguage().equals(newLocale.getLanguage())) {
-            ConfigurationCompat.setLocale(config, oldLocale);
+            config.setLocale(oldLocale);
             new Resources(assets, metrics, config);
         }
 
@@ -185,7 +185,7 @@ public class EditPreviewFragment extends Fragment {
             isWebViewSetup = true;
             L10nUtil.setupDirectionality(parentActivity.getPageTitle().getWikiSite().languageCode(), Locale.getDefault().getLanguage(), bridge);
             if (WikipediaApp.getInstance().isCurrentThemeDark()) {
-                new DarkModeMarshaller(bridge).turnOn(false);
+                new DarkModeSwitch(bridge).turnOn();
             }
 
             bridge.addListener("linkClicked", new LinkHandler(getActivity()) {
@@ -199,7 +199,7 @@ public class EditPreviewFragment extends Fragment {
                     showLeavingEditDialogue(new Runnable() {
                         @Override
                         public void run() {
-                            startActivity(PageActivity.newIntent(getContext(), new HistoryEntry(title, HistoryEntry.SOURCE_INTERNAL_LINK), title));
+                            startActivity(PageActivity.newIntentForNewTab(getContext(), new HistoryEntry(title, HistoryEntry.SOURCE_INTERNAL_LINK), title));
                         }
                     });
                 }

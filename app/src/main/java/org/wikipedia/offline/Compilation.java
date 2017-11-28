@@ -16,13 +16,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.util.Arrays;
+import java.text.ParseException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
+import static org.wikipedia.util.DateUtil.getIso8601DateFormatShort;
 
 public class Compilation {
+    public static final String MIME_TYPE = "application/zim";
     private static final int COMPRESSION_DICT_SIZE = 2 * 1024 * 1024;
 
     @Nullable private String name;
@@ -33,16 +36,20 @@ public class Compilation {
     @Nullable private MediaContent media;
     @Nullable private Image thumb;
     @Nullable private Image featureImage;
-    private int count;
+    private long count;
     private long size; // bytes
-    private long timestamp;
+    @NonNull private Date date = new Date();
 
     @Nullable private String path;
     @Nullable private transient ZimFile file;
     @Nullable private transient ZimReader reader;
+    @Nullable private transient String mainPageTitle;
 
     public enum MediaContent {
-        ALL, IMAGES, NONE
+        ALL, NOVID, NOPIC
+    }
+
+    public Compilation() {
     }
 
     Compilation(@NonNull File file) throws IOException {
@@ -59,22 +66,23 @@ public class Compilation {
         reader = new ZimReader(this.file, titleCache, urlCache);
     }
 
-    // TODO: Constructor for development/testing only, remove when no longer needed
-    @SuppressWarnings("checkstyle:parameternumber")
-    Compilation(@NonNull String name, @NonNull Uri uri, @Nullable List<String> langCodes,
-                @Nullable String summary, @Nullable String description, @Nullable MediaContent media,
-                @Nullable Image thumb, @Nullable Image featureImage, int count, long size, long timestamp) {
-        this.name = name;
-        this.uri = uri;
-        this.langCodes = langCodes;
-        this.summary = summary;
-        this.description = description;
-        this.media = media;
-        this.thumb = thumb;
-        this.featureImage = featureImage;
-        this.count = count;
-        this.size = size;
-        this.timestamp = timestamp;
+    @SuppressWarnings("checkstyle:magicnumber")
+    Compilation(@NonNull String[] data) {
+        this.name = data[0];
+        this.uri = Uri.parse(data[1]);
+        this.langCodes = Collections.singletonList(data[2]);
+        this.summary = data[3];
+        this.description = data[4];
+        this.media = MediaContent.valueOf(data[5]);
+        this.thumb = new Image(Uri.parse(data[6]), 0, 0);
+        this.featureImage = new Image(Uri.parse(data[7]), 0, 0);
+        this.count = 0;  // currently unused
+        this.size = Long.parseLong(data[9]);
+        try {
+            this.date = getIso8601DateFormatShort().parse(data[10]);
+        } catch (ParseException e) {
+            L.e(e);
+        }
     }
 
     public void copyMetadataFrom(@NonNull Compilation other) {
@@ -88,7 +96,21 @@ public class Compilation {
         featureImage = other.featureImage();
         count = other.count();
         size = other.size();
-        timestamp = other.timestamp();
+        date = other.date();
+    }
+
+    public boolean pathNameMatchesUri(@Nullable Uri otherUri) {
+        if (file == null || otherUri == null) {
+            return false;
+        }
+        return file.getName().equals(otherUri.getLastPathSegment());
+    }
+
+    public boolean uriNameMatchesUri(@Nullable Uri otherUri) {
+        if (uri == null || otherUri == null) {
+            return false;
+        }
+        return uri.getLastPathSegment().equals(otherUri.getLastPathSegment());
     }
 
     public void close() {
@@ -116,12 +138,22 @@ public class Compilation {
         return file != null ? file.getAbsolutePath() : defaultString(path);
     }
 
+    public boolean existsOnDisk() {
+        return !TextUtils.isEmpty(path());
+    }
+
     public long size() {
         return file != null && size == 0 ? file.length() : size;
     }
 
-    public long timestamp() {
-        return file != null && timestamp == 0 ? file.lastModified() : timestamp;
+    @NonNull
+    public Date date() {
+        if (reader != null) {
+            date = reader.getZimDate();
+        } else if (file != null) {
+            date = new Date(file.lastModified());
+        }
+        return date;
     }
 
     @NonNull
@@ -173,7 +205,7 @@ public class Compilation {
         return featureImage != null ? featureImage.uri() : null;
     }
 
-    public int count() {
+    public long count() {
         return count;
     }
 
@@ -210,9 +242,6 @@ public class Compilation {
 
     @Nullable
     ByteArrayOutputStream getDataForUrl(@NonNull String url) throws IOException {
-        if (url.startsWith("A/") || url.startsWith("I/")) {
-            url = url.substring(2);
-        }
         return reader == null ? null : reader.getDataForUrl(URLDecoder.decode(url, "utf-8"));
     }
 
@@ -223,17 +252,16 @@ public class Compilation {
 
     @NonNull
     String getMainPageTitle() throws IOException {
-        return reader.getMainPageTitle();
+        if (mainPageTitle == null) {
+            mainPageTitle = reader.getMainPageTitle();
+        }
+        return mainPageTitle;
     }
 
     public static class Image {
         @NonNull private Uri uri;
         private int width;
         private int height;
-
-        Image(@Nullable String uri, int width, int height) {
-            this(Uri.parse(defaultString(uri)), width, height);
-        }
 
         Image(@NonNull Uri uri, int width, int height) {
             this.uri = uri;
@@ -252,40 +280,5 @@ public class Compilation {
         public int height() {
             return height;
         }
-    }
-
-    // TODO: Below functions are for dev only, remove when finished!
-    @SuppressWarnings("checkstyle:magicnumber")
-    static List<Compilation> getMockInfoForTesting() {
-        return Arrays.asList(
-                new Compilation("Wikipedia (English) top 45000 articles, Feb 2017",
-                        Uri.parse("https://download.kiwix.org/zim/wikipedia/wikipedia_en_wp1-0.8_2017-02.zim"),
-                        Collections.singletonList("en"),
-                        "Compilation of the top 45000 articles, by popularity, from English Wikipedia.",
-                        "Compilation of the top 45000 articles, by popularity, from English Wikipedia.",
-                        Compilation.MediaContent.ALL,
-                        getThumbImage(),
-                        getFeatureImage(),
-                        10000, 5453656823L, 1487065620),
-                new Compilation("WikiProject Medicine (English), Jun 2017",
-                        Uri.parse("https://download.kiwix.org/zim/wikipedia/wikipedia_en_medicine_novid_2017-06.zim"),
-                        Collections.singletonList("en"),
-                        "Compilation of all articles from WikiProject Medicine, from English Wikipedia.",
-                        "Compilation of all articles from WikiProject Medicine, from English Wikipedia.",
-                        Compilation.MediaContent.ALL,
-                        getThumbImage(),
-                        getFeatureImage(),
-                        10000, 1175000000L, 1487065620)
-        );
-    }
-
-    @SuppressWarnings("checkstyle:magicnumber")
-    private static Compilation.Image getFeatureImage() {
-        return new Compilation.Image("https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Wikipedia-logo-v2-en.svg/200px-Wikipedia-logo-v2-en.svg.png", 640, 480);
-    }
-
-    @SuppressWarnings("checkstyle:magicnumber")
-    private static Compilation.Image getThumbImage() {
-        return new Compilation.Image("https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Wikipedia-logo-v2-en.svg/200px-Wikipedia-logo-v2-en.svg.png", 320, 240);
     }
 }

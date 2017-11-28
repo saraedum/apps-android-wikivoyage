@@ -1,11 +1,9 @@
 package org.wikipedia.activity;
 
-import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,24 +23,62 @@ import com.squareup.otto.Subscribe;
 import org.wikipedia.Constants;
 import org.wikipedia.R;
 import org.wikipedia.WikipediaApp;
+import org.wikipedia.crash.CrashReportActivity;
 import org.wikipedia.events.NetworkConnectEvent;
+import org.wikipedia.events.ThemeChangeEvent;
 import org.wikipedia.events.WikipediaZeroEnterEvent;
 import org.wikipedia.offline.Compilation;
 import org.wikipedia.offline.OfflineManager;
 import org.wikipedia.readinglist.sync.ReadingListSynchronizer;
+import org.wikipedia.recurring.RecurringTasksExecutor;
 import org.wikipedia.settings.Prefs;
 import org.wikipedia.util.DeviceUtil;
 import org.wikipedia.util.FeedbackUtil;
 import org.wikipedia.util.PermissionUtil;
-import org.wikipedia.util.ReleaseUtil;
 import org.wikipedia.util.log.L;
 
 import java.util.List;
 
 public abstract class BaseActivity extends AppCompatActivity {
-    private boolean destroyed;
     private EventBusMethods busMethods;
     private NetworkStateReceiver networkStateReceiver = new NetworkStateReceiver();
+
+    @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        busMethods = new EventBusMethods();
+        WikipediaApp.getInstance().getBus().register(busMethods);
+
+        setTheme();
+        removeSplashBackground();
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        ActivityUtil.forceOverflowMenuIcon(this);
+
+        // Conditionally execute all recurring tasks
+        new RecurringTasksExecutor(WikipediaApp.getInstance()).run();
+
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkStateReceiver, filter);
+    }
+
+    @Override protected void onDestroy() {
+        unregisterReceiver(networkStateReceiver);
+        WikipediaApp.getInstance().getBus().unregister(busMethods);
+        busMethods = null;
+        super.onDestroy();
+    }
+
+    @Override protected void onResume() {
+        super.onResume();
+
+        // The UI is likely shown, giving the user the opportunity to exit and making a crash loop
+        // less probable.
+        if (!(this instanceof CrashReportActivity)) {
+            Prefs.crashedBeforeActivityCreated(false);
+        }
+    }
 
     @Override public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -54,40 +90,18 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    protected void requestFullUserOrientation() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_USER);
-        }
-    }
-
-    @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        busMethods = new EventBusMethods();
-        WikipediaApp.getInstance().getBus().register(busMethods);
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(networkStateReceiver, filter);
-    }
-
-    @Override protected void onDestroy() {
-        unregisterReceiver(networkStateReceiver);
-        WikipediaApp.getInstance().getBus().unregister(busMethods);
-        busMethods = null;
-        super.onDestroy();
-        destroyed = true;
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         switch (requestCode) {
-            case Constants.ACTIVITY_REQUEST_READ_EXTERNAL_STORAGE_PERMISSION_OFFLINE:
+            case Constants.ACTIVITY_REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION:
                 if (PermissionUtil.isPermitted(grantResults)) {
                     searchOfflineCompilations(true);
                 } else {
-                    L.i("Read permission was denied by user");
+                    L.i("Write permission was denied by user");
                     onOfflineCompilationsError(new RuntimeException(getString(R.string.offline_read_permission_error)));
-                    if (PermissionUtil.shouldShowReadPermissionRationale(this)) {
-                        showReadPermissionSnackbar();
+                    if (PermissionUtil.shouldShowWritePermissionRationale(this)) {
+                        showStoragePermissionSnackbar();
                     }
                 }
                 break;
@@ -102,11 +116,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    @Override public boolean isDestroyed() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            return super.isDestroyed();
-        }
-        return destroyed;
+    protected void setTheme() {
+        setTheme(WikipediaApp.getInstance().getCurrentTheme().getResourceId());
     }
 
     protected void setSharedElementTransitions() {
@@ -133,14 +144,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onOfflineCompilationsError(Throwable t) {
     }
 
-    protected void searchOfflineCompilationsWithPermission(boolean force) {
-        if (!ReleaseUtil.isPreBetaRelease()) {
-            // TODO: enable when ready for production.
-            return;
-        }
-        if (!PermissionUtil.hasReadExternalStoragePermission(this)) {
-            if (PermissionUtil.shouldShowReadPermissionRationale(this)) {
-                requestReadPermission();
+    public void searchOfflineCompilationsWithPermission(boolean force) {
+        if (!PermissionUtil.hasWriteExternalStoragePermission(this)) {
+            if (PermissionUtil.shouldShowWritePermissionRationale(this)) {
+                requestStoragePermission();
             } else {
                 onOfflineCompilationsError(new RuntimeException(getString(R.string.offline_read_permission_error)));
             }
@@ -149,7 +156,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    @TargetApi(17)
     private void searchOfflineCompilations(boolean force) {
         if ((!DeviceUtil.isOnline() && OfflineManager.instance().shouldSearchAgain()) || force) {
             OfflineManager.instance().searchForCompilations(new OfflineManager.Callback() {
@@ -170,18 +176,18 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    private void requestReadPermission() {
-        PermissionUtil.requestReadStorageRuntimePermissions(BaseActivity.this,
-                Constants.ACTIVITY_REQUEST_READ_EXTERNAL_STORAGE_PERMISSION_OFFLINE);
+    private void requestStoragePermission() {
+        PermissionUtil.requestWriteStorageRuntimePermissions(BaseActivity.this,
+                Constants.ACTIVITY_REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
     }
 
-    private void showReadPermissionSnackbar() {
+    private void showStoragePermissionSnackbar() {
         Snackbar snackbar = FeedbackUtil.makeSnackbar(this,
                 getString(R.string.offline_read_permission_rationale), FeedbackUtil.LENGTH_DEFAULT);
         snackbar.setAction(R.string.page_error_retry, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                requestReadPermission();
+                requestStoragePermission();
             }
         });
         snackbar.show();
@@ -192,10 +198,15 @@ public abstract class BaseActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             if (DeviceUtil.isOnline()) {
                 onGoOnline();
+                ReadingListSynchronizer.instance().syncSavedPages();
             } else {
                 onGoOffline();
             }
         }
+    }
+
+    private void removeSplashBackground() {
+        getWindow().setBackgroundDrawable(null);
     }
 
     private class EventBusMethods {
@@ -211,5 +222,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         @Subscribe public void on(NetworkConnectEvent event) {
             ReadingListSynchronizer.instance().syncSavedPages();
         }
+
+        @Subscribe public void on(ThemeChangeEvent event) {
+            recreate();
+        }
     }
+
 }

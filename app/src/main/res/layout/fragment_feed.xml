@@ -4,8 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/feed_swipe_refresh_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="?attr/feed_window_background_color">
+    android:layout_height="match_parent">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -16,7 +15,7 @@
             android:id="@+id/fragment_feed_header"
             android:layout_width="match_parent"
             android:layout_height="96dp"
-            android:background="@color/dark_blue" />
+            android:background="@color/accent30" />
 
         <org.wikipedia.feed.view.FeedView
             android:id="@+id/fragment_feed_feed"

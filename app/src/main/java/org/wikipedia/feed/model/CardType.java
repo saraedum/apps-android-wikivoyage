@@ -13,6 +13,7 @@ import org.wikipedia.feed.mostread.MostReadCardView;
 import org.wikipedia.feed.news.NewsListCardView;
 import org.wikipedia.feed.offline.OfflineCardView;
 import org.wikipedia.feed.offline.OfflineCompilationCardView;
+import org.wikipedia.feed.onthisday.OnThisDayCardView;
 import org.wikipedia.feed.progress.ProgressCardView;
 import org.wikipedia.feed.random.RandomCardView;
 import org.wikipedia.feed.searchbar.SearchCardView;
@@ -88,6 +89,21 @@ public enum CardType implements EnumCode {
     OFFLINE_COMPILATION(16) {
         @NonNull @Override public FeedCardView<?> newView(@NonNull Context ctx) {
             return new OfflineCompilationCardView(ctx);
+        }
+    },
+    ONBOARDING_OFFLINE(17) {
+        @NonNull @Override public FeedCardView<?> newView(@NonNull Context ctx) {
+            return new AnnouncementCardView(ctx);
+        }
+    },
+    ON_THIS_DAY(18) {
+        @NonNull @Override public FeedCardView<?> newView(@NonNull Context ctx) {
+            return new OnThisDayCardView(ctx);
+        }
+    },
+    ONBOARDING_CUSTOMIZE_FEED(19) {
+        @NonNull @Override public FeedCardView<?> newView(@NonNull Context ctx) {
+            return new AnnouncementCardView(ctx);
         }
     },
     OFFLINE(98) {

@@ -1,17 +1,18 @@
 package org.wikipedia.offline;
 
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ActionMode;
+import android.support.v4.app.ShareCompat;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
+import android.support.v7.widget.SimpleItemAnimator;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +21,14 @@ import android.widget.TextView;
 
 import org.wikipedia.R;
 import org.wikipedia.activity.FragmentUtil;
-import org.wikipedia.history.SearchActionModeCallback;
+import org.wikipedia.page.LinkMovementMethodExt;
+import org.wikipedia.richtext.RichTextUtil;
+import org.wikipedia.settings.SettingsActivity;
+import org.wikipedia.util.DimenUtil;
 import org.wikipedia.util.ResourceUtil;
+import org.wikipedia.util.ShareUtil;
+import org.wikipedia.util.StringUtil;
+import org.wikipedia.util.UriUtil;
 import org.wikipedia.views.DefaultViewHolder;
 import org.wikipedia.views.DrawableItemDecoration;
 import org.wikipedia.views.PageItemView;
@@ -36,7 +43,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
-public class LocalCompilationsFragment extends Fragment {
+import static org.wikipedia.util.DateUtil.getShortDateString;
+import static org.wikipedia.util.FileUtil.bytesToGB;
+
+public class LocalCompilationsFragment extends DownloadObserverFragment {
     @BindView(R.id.compilation_list_container) View listContainer;
     @BindView(R.id.compilation_list) RecyclerView recyclerView;
     @BindView(R.id.search_empty_view) SearchEmptyView searchEmptyView;
@@ -44,16 +54,19 @@ public class LocalCompilationsFragment extends Fragment {
     @BindView(R.id.compilations_count_text) TextView countText;
     @BindView(R.id.disk_usage_view) DiskUsageView diskUsageView;
     @BindView(R.id.compilation_search_error) WikiErrorView errorView;
+    @BindView(R.id.compilation_empty_container) View emptyContainer;
+    @BindView(R.id.compilation_empty_description) TextView emptyDescription;
+    @BindView(R.id.compilation_packs_hint) TextView packsHint;
+    @BindView(R.id.compilation_data_usage_hint) TextView dataUsageHint;
     private Unbinder unbinder;
 
     private boolean updating;
     private Throwable lastError;
     private CompilationItemAdapter adapter = new CompilationItemAdapter();
     private ItemCallback itemCallback = new ItemCallback();
+    private CompilationClientCallback compilationClientCallback = new CompilationClientCallback();
 
-    private SearchCallback searchActionModeCallback = new SearchCallback();
     @NonNull private List<Compilation> displayedItems = new ArrayList<>();
-    private String currentSearchQuery;
 
     public interface Callback {
         void onRequestUpdateCompilations();
@@ -61,8 +74,7 @@ public class LocalCompilationsFragment extends Fragment {
 
     @NonNull
     public static LocalCompilationsFragment newInstance() {
-        LocalCompilationsFragment instance = new LocalCompilationsFragment();
-        return instance;
+        return new LocalCompilationsFragment();
     }
 
     @Nullable
@@ -74,8 +86,8 @@ public class LocalCompilationsFragment extends Fragment {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new DrawableItemDecoration(getContext(),
-                ResourceUtil.getThemedAttributeId(getContext(), R.attr.list_separator_drawable), true));
+        recyclerView.addItemDecoration(new DrawableItemDecoration(getContext(), R.attr.list_separator_drawable));
+        ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
         errorView.setBackClickListener(new View.OnClickListener() {
             @Override
@@ -84,7 +96,22 @@ public class LocalCompilationsFragment extends Fragment {
             }
         });
 
-        beginUpdate();
+        emptyDescription.setMovementMethod(LinkMovementMethod.getInstance());
+        emptyDescription.setText(StringUtil.fromHtml(getString(R.string.offline_library_empty_description_sideload)));
+        RichTextUtil.removeUnderlinesFromLinks(emptyDescription);
+        packsHint.setMovementMethod(LinkMovementMethod.getInstance());
+        packsHint.setText(StringUtil.fromHtml(getString(R.string.offline_library_packs_hint)));
+        RichTextUtil.removeUnderlinesFromLinks(packsHint);
+        dataUsageHint.setMovementMethod(new LinkMovementMethodExt(new LinkMovementMethodExt.UrlHandler() {
+            @Override
+            public void onUrlClick(@NonNull String url, @Nullable String titleString) {
+                if (url.equals(UriUtil.LOCAL_URL_SETTINGS)) {
+                    startActivity(SettingsActivity.newIntent(getContext()));
+                }
+            }
+        }));
+        dataUsageHint.setText(StringUtil.fromHtml(getString(R.string.offline_library_data_usage_hint)));
+        RichTextUtil.removeUnderlinesFromLinks(dataUsageHint);
         return view;
     }
 
@@ -96,6 +123,7 @@ public class LocalCompilationsFragment extends Fragment {
 
     @Override
     public void onResume() {
+        beginUpdate();
         adapter.notifyDataSetChanged();
         super.onResume();
     }
@@ -108,41 +136,35 @@ public class LocalCompilationsFragment extends Fragment {
         super.onDestroyView();
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_local_compilations, menu);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_search_compilations:
-                ((AppCompatActivity) getActivity()).startSupportActionMode(searchActionModeCallback);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @OnClick(R.id.compilations_add_button) void onAddCompilationClick() {
+    @OnClick({R.id.compilations_add_button, R.id.compilation_empty_search_button}) void onAddCompilationClick() {
         startActivity(RemoteCompilationsActivity.newIntent(getContext()));
+    }
+
+    @Override
+    protected void onPollDownloads() {
+        adapter.notifyItemRangeChanged(0, adapter.getItemCount());
     }
 
     public void onCompilationsRefreshed() {
         updating = false;
         lastError = null;
         update();
+        new CompilationClient().request(compilationClientCallback);
     }
 
     public void onCompilationsError(Throwable t) {
         updating = false;
         lastError = t;
         update();
+    }
+
+    private void postBeginUpdate() {
+        listContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                beginUpdate();
+            }
+        });
     }
 
     private void beginUpdate() {
@@ -155,7 +177,12 @@ public class LocalCompilationsFragment extends Fragment {
     }
 
     private void update() {
-        setSearchQuery(currentSearchQuery);
+        displayedItems.clear();
+        displayedItems.addAll(OfflineManager.instance().compilations());
+        countText.setText(getString(R.string.offline_compilations_found_count, displayedItems.size()));
+        adapter.notifyDataSetChanged();
+        updateEmptyState();
+
         long totalBytes = 0;
         for (Compilation c : OfflineManager.instance().compilations()) {
             totalBytes += c.size();
@@ -163,56 +190,74 @@ public class LocalCompilationsFragment extends Fragment {
         diskUsageView.update(totalBytes);
     }
 
-    private void setSearchQuery(@Nullable String query) {
-        currentSearchQuery = query;
-        displayedItems.clear();
-        if (TextUtils.isEmpty(query)) {
-            displayedItems.addAll(OfflineManager.instance().compilations());
-        } else {
-            query = query.toUpperCase();
-            for (Compilation c : OfflineManager.instance().compilations()) {
-                if (c.name().toUpperCase().contains(query.toUpperCase())) {
-                    displayedItems.add(c);
-                }
-            }
-        }
-        countText.setText(getString(R.string.offline_compilations_found_count, displayedItems.size()));
-        adapter.notifyDataSetChanged();
-        updateEmptyState(query);
-    }
-
-    private void updateEmptyState(@Nullable String searchQuery) {
+    private void updateEmptyState() {
         if (lastError != null) {
             errorView.setError(lastError);
             errorView.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.GONE);
             searchEmptyView.setVisibility(View.GONE);
             listContainer.setVisibility(View.GONE);
+            emptyContainer.setVisibility(View.GONE);
             return;
         }
         errorView.setVisibility(View.GONE);
         progressBar.setVisibility(updating ? View.VISIBLE : View.GONE);
-        if (TextUtils.isEmpty(searchQuery)) {
-            searchEmptyView.setVisibility(View.GONE);
-            listContainer.setVisibility(View.VISIBLE);
-        } else {
-            listContainer.setVisibility(displayedItems.isEmpty() ? View.GONE : View.VISIBLE);
-            searchEmptyView.setVisibility(displayedItems.isEmpty() ? View.VISIBLE : View.GONE);
-        }
+        searchEmptyView.setVisibility(View.GONE);
+        listContainer.setVisibility(displayedItems.isEmpty() ? View.GONE : View.VISIBLE);
+        emptyContainer.setVisibility(displayedItems.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     private class CompilationItemHolder extends DefaultViewHolder<PageItemView<Compilation>> {
         private Compilation compilation;
+        private CompilationDownloadControlView controlView;
+        private boolean wasDownloading;
 
         CompilationItemHolder(PageItemView<Compilation> itemView) {
             super(itemView);
+            controlView = new CompilationDownloadControlView(itemView.getContext());
+            itemView.addFooter(controlView);
+            controlView.setPadding(DimenUtil.roundedDpToPx(DimenUtil.getDimension(R.dimen.activity_horizontal_margin)),
+                    DimenUtil.roundedDpToPx(DimenUtil.getDimension(R.dimen.list_item_footer_padding)),
+                    DimenUtil.roundedDpToPx(DimenUtil.getDimension(R.dimen.activity_horizontal_margin)),
+                    DimenUtil.roundedDpToPx(DimenUtil.getDimension(R.dimen.list_item_footer_padding)));
+            controlView.setBackgroundColor(ResourceUtil.getThemedColor(getContext(), android.R.attr.colorBackground));
+            controlView.setCallback(new CompilationDownloadControlView.Callback() {
+                @Override
+                public void onCancel() {
+                    getDownloadObserver().remove(compilation);
+                }
+            });
         }
 
         void bindItem(Compilation compilation) {
+            DownloadManagerItem myItem = null;
+            for (DownloadManagerItem item : getCurrentDownloads()) {
+                if (item.is(compilation)) {
+                    myItem = item;
+                    break;
+                }
+            }
+            if (CompilationDownloadControlView.shouldShowControls(myItem)) {
+                controlView.setVisibility(View.VISIBLE);
+                controlView.update(myItem);
+            } else {
+                controlView.setVisibility(View.GONE);
+            }
+            if (myItem == null && wasDownloading) {
+                postBeginUpdate();
+                wasDownloading = false;
+            } else if (myItem != null) {
+                wasDownloading = true;
+            }
+            if (compilation == this.compilation) {
+                return;
+            }
+            wasDownloading = false;
             this.compilation = compilation;
             getView().setItem(compilation);
             getView().setTitle(compilation.name());
-            getView().setDescription(compilation.description());
+            getView().setDescription(String.format(getString(R.string.offline_compilation_detail_date_size),
+                    getShortDateString(compilation.date()), bytesToGB(compilation.size())));
             getView().setImageUrl(compilation.thumbUri() == null ? null : compilation.thumbUri().toString());
             getView().setActionIcon(R.drawable.ic_more_vert_white_24dp);
             getView().setActionHint(R.string.abc_action_menu_overflow_description);
@@ -265,34 +310,67 @@ public class LocalCompilationsFragment extends Fragment {
         }
 
         @Override
-        public void onActionClick(@Nullable Compilation item, @NonNull PageItemView view) {
+        public void onActionClick(@Nullable Compilation item, @NonNull View view) {
+            if (item != null) {
+                showCompilationOverflowMenu(item, view);
+            }
         }
 
         @Override
-        public void onSecondaryActionClick(@Nullable Compilation item, @NonNull PageItemView view) {
+        public void onSecondaryActionClick(@Nullable Compilation item, @NonNull View view) {
         }
     }
 
-    private class SearchCallback extends SearchActionModeCallback {
+    private void showCompilationOverflowMenu(@NonNull final Compilation compilation, @NonNull View anchorView) {
+        PopupMenu menu = new PopupMenu(anchorView.getContext(), anchorView);
+        menu.getMenuInflater().inflate(R.menu.menu_local_compilation_item, menu.getMenu());
+        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.menu_compilation_share:
+                        share(compilation);
+                        return false;
+                    case R.id.menu_compilation_remove:
+                        remove(compilation);
+                        return false;
+                    default:
+                        return false;
+                }
+            }
+        });
+        menu.show();
+    }
+
+    private void share(@NonNull Compilation compilation) {
+        Intent intent = ShareCompat.IntentBuilder.from(getActivity())
+                .setType("*/*")
+                .setStream(Uri.parse("file://" + compilation.path()))
+                .getIntent();
+        startActivity(ShareUtil.createChooserIntent(intent, getString(R.string.share_via), getContext()));
+    }
+
+    private void remove(@NonNull final Compilation compilation) {
+        getDownloadObserver().removeWithConfirmation(getActivity(), compilation, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                beginUpdate();
+            }
+        });
+    }
+
+    private class CompilationClientCallback implements CompilationClient.Callback {
         @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            return super.onCreateActionMode(mode, menu);
+        public void success(@NonNull List<Compilation> compilations) {
+            if (!isAdded()) {
+                return;
+            }
+            OfflineManager.instance().updateFromRemoteMetadata(compilations);
+            update();
         }
 
         @Override
-        protected void onQueryChange(String s) {
-            setSearchQuery(s);
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            super.onDestroyActionMode(mode);
-            setSearchQuery(null);
-        }
-
-        @Override
-        protected String getSearchHintString() {
-            return getString(R.string.offline_compilations_search_by_name);
+        public void error(@NonNull Throwable caught) {
         }
     }
 

@@ -8,7 +8,6 @@ import org.wikipedia.Constants;
 import org.wikipedia.dataclient.WikiSite;
 import org.wikipedia.dataclient.mwapi.MwException;
 import org.wikipedia.dataclient.mwapi.MwQueryPage;
-import org.wikipedia.dataclient.mwapi.MwQueryResult;
 import org.wikipedia.dataclient.retrofit.MwCachedService;
 import org.wikipedia.dataclient.retrofit.WikiCachedService;
 
@@ -49,13 +48,6 @@ public class PrefixSearchClient {
                     // noinspection ConstantConditions
                     List<MwQueryPage> pages = response.body().query().pages();
                     // noinspection ConstantConditions
-                    List<MwQueryResult.Redirect> redirects = response.body().query().redirects();
-
-                    if (redirects != null) {
-                        // noinspection ConstantConditions
-                        updateWithRedirectInfo(pages, redirects);
-                    }
-                    // noinspection ConstantConditions
                     cb.success(call, new SearchResults(pages, wiki, response.body().continuation(),
                             response.body().suggestion()));
                 } else if (response.body().hasError()) {
@@ -92,30 +84,12 @@ public class PrefixSearchClient {
         }
     }
 
-    @VisibleForTesting static List<MwQueryPage> updateWithRedirectInfo(@NonNull List<MwQueryPage> pages,
-                                                                       @NonNull List<MwQueryResult.Redirect> redirects) {
-        for (MwQueryPage page : pages) {
-            for (MwQueryResult.Redirect redirect : redirects) {
-                // TODO: Looks like result pages and redirects can also be matched on the "index"
-                // property.  Confirm in the API docs and consider updating.
-                if (page.title().equals(redirect.to())) {
-                    page.redirectFrom(redirect.from());
-                    if (redirect.toFragment() != null) {
-                        page.appendTitleFragment(redirect.toFragment());
-                    }
-                    break;
-                }
-            }
-        }
-        return pages;
-    }
-
     @VisibleForTesting interface Service {
-        String QUERY_PREFIX = "w/api.php?action=query&format=json&formatversion=2&redirects=true"
-                + "&prop=pageterms|pageimages&wbptterms=description&piprop=thumbnail&pilicense=any"
-                + "&generator=prefixsearch&gpsnamespace=0&list=search&srnamespace=0&srwhat=text"
-                + "&srinfo=suggestion&srprop=&sroffset=0&srlimit=1&gpslimit=" + MAX_RESULTS
-                + "&pithumbsize=" + Constants.PREFERRED_THUMB_SIZE;
+        String QUERY_PREFIX = "w/api.php?action=query&format=json&formatversion=2&redirects="
+                + "&converttitles=&prop=pageterms|pageimages&wbptterms=description&piprop=thumbnail"
+                + "&pilicense=any&generator=prefixsearch&gpsnamespace=0&list=search&srnamespace=0"
+                + "&srwhat=text&srinfo=suggestion&srprop=&sroffset=0&srlimit=1&gpslimit="
+                + MAX_RESULTS + "&pithumbsize=" + Constants.PREFERRED_THUMB_SIZE;
 
         @GET(QUERY_PREFIX)
         @NonNull Call<PrefixSearchResponse> request(@Query("gpssearch") String title,

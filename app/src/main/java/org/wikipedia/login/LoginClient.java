@@ -89,8 +89,11 @@ public class LoginClient {
                         String actualUserName = loginResult.getUserName();
                         getExtendedInfo(wiki, actualUserName, loginResult, cb);
                     } else if ("UI".equals(loginResult.getStatus())) {
-                        //TODO: Don't just assume this is a 2FA UI result
-                        cb.twoFactorPrompt(new LoginFailedException(loginResult.getMessage()), loginToken);
+                        if (loginResult instanceof LoginOAuthResult) {
+                            cb.twoFactorPrompt(new LoginFailedException(loginResult.getMessage()), loginToken);
+                        } else {
+                            cb.error(new LoginFailedException(loginResult.getMessage()));
+                        }
                     } else {
                         cb.error(new LoginFailedException(loginResult.getMessage()));
                     }
@@ -116,7 +119,7 @@ public class LoginClient {
                 loginResult.setGroups(groups);
                 cb.success(loginResult);
 
-                L.v("Found user ID " + id + " for " + wiki.languageCode());
+                L.v("Found user ID " + id + " for " + wiki.subdomain());
             }
 
             @Override
@@ -158,14 +161,14 @@ public class LoginClient {
         /** Actually log in. Has to be x-www-form-urlencoded */
         @NonNull
         @FormUrlEncoded
-        @POST("w/api.php?action=clientlogin&format=json&formatversion=2&rememberMe=true")
+        @POST("w/api.php?action=clientlogin&format=json&formatversion=2&rememberMe=")
         Call<LoginResponse> logIn(@Field("username") String user, @Field("password") String pass,
                                   @Field("logintoken") String token, @Field("loginreturnurl") String url);
 
         /** Actually log in. Has to be x-www-form-urlencoded */
         @NonNull
         @FormUrlEncoded
-        @POST("w/api.php?action=clientlogin&format=json&formatversion=2&rememberMe=true")
+        @POST("w/api.php?action=clientlogin&format=json&formatversion=2&rememberMe=")
         Call<LoginResponse> logIn(@Field("username") String user, @Field("password") String pass,
                                   @Field("OATHToken") String twoFactorCode, @Field("logintoken") String token,
                                   @Field("logincontinue") boolean loginContinue);
@@ -187,10 +190,10 @@ public class LoginClient {
         }
 
         private static class ClientLogin {
-            @SerializedName("status") private String status;
-            @Nullable private List<Request> requests;
-            @SerializedName("message") @Nullable private String message;
-            @SerializedName("username") @Nullable private String userName;
+            @SuppressWarnings("unused,NullableProblems") @NonNull private String status;
+            @SuppressWarnings("unused") @Nullable private List<Request> requests;
+            @SuppressWarnings("unused") @Nullable private String message;
+            @SuppressWarnings("unused") @SerializedName("username") @Nullable private String userName;
 
             LoginResult toLoginResult(@NonNull WikiSite site, @NonNull String password) {
                 String userMessage = message;

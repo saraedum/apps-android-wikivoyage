@@ -48,7 +48,6 @@ import org.wikipedia.readinglist.sync.ReadingListSyncEvent;
 import org.wikipedia.readinglist.sync.ReadingListSynchronizer;
 import org.wikipedia.settings.Prefs;
 import org.wikipedia.util.FeedbackUtil;
-import org.wikipedia.util.ResourceUtil;
 import org.wikipedia.util.ShareUtil;
 import org.wikipedia.util.StringUtil;
 import org.wikipedia.views.DefaultViewHolder;
@@ -62,6 +61,7 @@ import org.wikipedia.views.TextInputDialog;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -129,8 +129,7 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new DrawableItemDecoration(getContext(),
-                ResourceUtil.getThemedAttributeId(getContext(), R.attr.list_separator_drawable), true));
+        recyclerView.addItemDecoration(new DrawableItemDecoration(getContext(), R.attr.list_separator_drawable));
 
         headerView = new ReadingListItemView(getContext());
         headerView.setCallback(headerCallback);
@@ -140,7 +139,6 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
         headerView.setTitleTextAppearance(R.style.ReadingListTitleTextAppearance);
 
         readingListTitle = getArguments().getString(EXTRA_READING_LIST_TITLE);
-        updateReadingListData();
 
         WikipediaApp.getInstance().getBus().register(eventBusMethods);
 
@@ -151,6 +149,12 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateReadingListData();
     }
 
     @Override public void onDestroyView() {
@@ -204,6 +208,16 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
             case R.id.menu_reading_list_delete:
                 delete();
                 return true;
+            case R.id.menu_reading_list_save_all_offline:
+                if (readingList != null) {
+                    saveSelectedPagesForOffline(readingList.getPages());
+                }
+                return true;
+            case R.id.menu_reading_list_remove_all_offline:
+                if (readingList != null) {
+                    removeSelectedPagesFromOffline(readingList.getPages());
+                }
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -222,6 +236,20 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
         headerImageView.setReadingList(readingList);
         readingList.sort(Prefs.getReadingListPageSortMode(SORT_BY_NAME_ASC));
         setSearchQuery(currentSearchQuery);
+        updateListDetailsAsync(readingList);
+    }
+
+    private void updateListDetailsAsync(@NonNull ReadingList list) {
+        ReadingListPageDetailFetcher.updateInfo(list, new ReadingListPageDetailFetcher.Callback() {
+            @Override public void success() {
+                if (!isAdded()) {
+                    return;
+                }
+                adapter.notifyDataSetChanged();
+            }
+            @Override public void failure(Throwable e) {
+            }
+        });
     }
 
     private void updateReadingListData() {
@@ -250,9 +278,10 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
         if (TextUtils.isEmpty(query)) {
             displayedPages.addAll(readingList.getPages());
         } else {
-            query = query.toUpperCase();
+            query = query.toUpperCase(Locale.getDefault());
             for (ReadingListPage page : readingList.getPages()) {
-                if (page.title().toUpperCase().contains(query.toUpperCase())) {
+                if (page.title().toUpperCase(Locale.getDefault())
+                        .contains(query.toUpperCase(Locale.getDefault()))) {
                     displayedPages.add(page);
                 }
             }
@@ -321,7 +350,8 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
                 new ReadingListTitleDialog.Callback() {
                     @Override
                     public void onSuccess(@NonNull CharSequence text) {
-                        ReadingList.DAO.renameAndSaveListInfo(readingList, text.toString());
+                        readingListTitle = text.toString();
+                        ReadingList.DAO.renameAndSaveListInfo(readingList, readingListTitle);
                         ReadingListSynchronizer.instance().bumpRevAndSync();
                         update();
                         funnel.logModifyList(readingList, readingLists.size());
@@ -428,28 +458,28 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
         }
     }
 
-    private void removeSelectedPagesFromOffline() {
-        List<ReadingListPage> selectedPages = getSelectedPages();
+    private void removeSelectedPagesFromOffline(List<ReadingListPage> selectedPages) {
         if (!selectedPages.isEmpty()) {
             for (ReadingListPage page : selectedPages) {
                 if (page.isOffline()) {
                     ReadingListData.instance().setPageOffline(page, false);
                 }
             }
+            ReadingListSynchronizer.instance().sync();
             showMultiSelectOfflineStateChangeSnackbar(selectedPages, false);
             adapter.notifyDataSetChanged();
             update();
         }
     }
 
-    private void saveSelectedPagesForOffline() {
-        List<ReadingListPage> selectedPages = getSelectedPages();
+    private void saveSelectedPagesForOffline(List<ReadingListPage> selectedPages) {
         if (!selectedPages.isEmpty()) {
             for (ReadingListPage page : selectedPages) {
                 if (!page.isOffline()) {
                     ReadingListData.instance().setPageOffline(page, true);
                 }
             }
+            ReadingListSynchronizer.instance().sync();
             showMultiSelectOfflineStateChangeSnackbar(selectedPages, true);
             adapter.notifyDataSetChanged();
             update();
@@ -550,7 +580,7 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
                 .setNegativeButton(android.R.string.cancel, null)
                 .create();
         dialog.show();
-        TextView text = (TextView) dialog.findViewById(android.R.id.message);
+        TextView text = dialog.findViewById(android.R.id.message);
         text.setLineSpacing(0, 1.3f);
     }
 
@@ -600,6 +630,16 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
         @Override
         public void onDelete(@NonNull ReadingList readingList) {
             delete();
+        }
+
+        @Override
+        public void onSaveAllOffline(@NonNull ReadingList readingList) {
+            saveSelectedPagesForOffline(readingList.getPages());
+        }
+
+        @Override
+        public void onRemoveAllOffline(@NonNull ReadingList readingList) {
+            removeSelectedPagesFromOffline(readingList.getPages());
         }
     }
 
@@ -691,7 +731,7 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
                 PageTitle title = ReadingListDaoProxy.pageTitle(page);
                 HistoryEntry entry = new HistoryEntry(title, HistoryEntry.SOURCE_READING_LIST);
                 ReadingList.DAO.makeListMostRecent(readingList);
-                startActivity(PageActivity.newIntent(getContext(), entry, entry.getTitle()));
+                startActivity(PageActivity.newIntentForNewTab(getContext(), entry, entry.getTitle()));
             }
         }
 
@@ -708,7 +748,7 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
         }
 
         @Override
-        public void onActionClick(@Nullable ReadingListPage page, @NonNull PageItemView view) {
+        public void onActionClick(@Nullable ReadingListPage page, @NonNull View view) {
             if (page == null || readingList == null) {
                 return;
             }
@@ -717,7 +757,7 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
         }
 
         @Override
-        public void onSecondaryActionClick(@Nullable ReadingListPage page, @NonNull PageItemView view) {
+        public void onSecondaryActionClick(@Nullable ReadingListPage page, @NonNull View view) {
             if (page != null) {
                 if (page.isSaving()) {
                     Toast.makeText(getContext(), R.string.reading_list_article_save_in_progress, Toast.LENGTH_LONG).show();
@@ -732,7 +772,8 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             actionMode = mode;
-            appBarLayout.setExpanded(false, true);
+            recyclerView.stopScroll();
+            appBarLayout.setExpanded(false, false);
             return super.onCreateActionMode(mode, menu);
         }
 
@@ -769,11 +810,11 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
                     finishActionMode();
                     return true;
                 case R.id.menu_remove_from_offline:
-                    removeSelectedPagesFromOffline();
+                    removeSelectedPagesFromOffline(getSelectedPages());
                     finishActionMode();
                     return true;
                 case R.id.menu_save_for_offline:
-                    saveSelectedPagesForOffline();
+                    saveSelectedPagesForOffline(getSelectedPages());
                     finishActionMode();
                     return true;
                 case R.id.menu_add_to_another_list:

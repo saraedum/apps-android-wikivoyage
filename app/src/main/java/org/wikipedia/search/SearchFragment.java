@@ -29,13 +29,15 @@ import org.wikipedia.analytics.SearchFunnel;
 import org.wikipedia.concurrency.SaneAsyncTask;
 import org.wikipedia.database.contract.SearchHistoryContract;
 import org.wikipedia.history.HistoryEntry;
+import org.wikipedia.offline.OfflineManager;
 import org.wikipedia.page.PageTitle;
 import org.wikipedia.readinglist.AddToReadingListDialog;
 import org.wikipedia.settings.LanguagePreferenceDialog;
-import org.wikipedia.settings.Prefs;
 import org.wikipedia.util.DeviceUtil;
 import org.wikipedia.util.FeedbackUtil;
 import org.wikipedia.views.ViewUtil;
+
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,18 +61,17 @@ public class SearchFragment extends Fragment implements BackPressedHandler,
 
     private static final String ARG_INVOKE_SOURCE = "invokeSource";
     private static final String ARG_QUERY = "lastQuery";
-    private static final String ARG_STATUS_BAR_VISIBLE = "statusBarVisible";
 
     private static final int PANEL_RECENT_SEARCHES = 0;
     private static final int PANEL_SEARCH_RESULTS = 1;
 
-    @BindView(R.id.empty_status_bar) View statusBarView;
     @BindView(R.id.search_container) View searchContainer;
     @BindView(R.id.search_toolbar) Toolbar toolbar;
     @BindView(R.id.search_cab_view) SearchView searchView;
     @BindView(R.id.search_progress_bar) ProgressBar progressBar;
     @BindView(R.id.search_lang_button_container) View langButtonContainer;
     @BindView(R.id.search_lang_button) TextView langButton;
+    @BindView(R.id.search_offline_library_state) View offlineLibraryStateView;
     private Unbinder unbinder;
 
     private WikipediaApp app;
@@ -88,7 +89,6 @@ public class SearchFragment extends Fragment implements BackPressedHandler,
      * the TitleSearch and FullSearch sub-fragments.
      */
     @Nullable private String query;
-    private boolean statusBarVisible;
 
     private RecentSearchesFragment recentSearchesFragment;
     private SearchResultsFragment searchResultsFragment;
@@ -123,14 +123,12 @@ public class SearchFragment extends Fragment implements BackPressedHandler,
     };
 
     @NonNull public static SearchFragment newInstance(@NonNull SearchInvokeSource source,
-                                                      @Nullable String query,
-                                                      boolean statusBarVisible) {
+                                                      @Nullable String query) {
         SearchFragment fragment = new SearchFragment();
 
         Bundle args = new Bundle();
         args.putInt(ARG_INVOKE_SOURCE, source.code());
         args.putString(ARG_QUERY, query);
-        args.putBoolean(ARG_STATUS_BAR_VISIBLE, statusBarVisible);
 
         fragment.setArguments(args);
         return fragment;
@@ -143,7 +141,6 @@ public class SearchFragment extends Fragment implements BackPressedHandler,
 
         invokeSource = SearchInvokeSource.of(getArguments().getInt(ARG_INVOKE_SOURCE));
         query = getArguments().getString(ARG_QUERY);
-        statusBarVisible = getArguments().getBoolean(ARG_STATUS_BAR_VISIBLE);
 
         funnel = new SearchFunnel(app, invokeSource);
     }
@@ -160,8 +157,6 @@ public class SearchFragment extends Fragment implements BackPressedHandler,
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         unbinder = ButterKnife.bind(this, view);
 
-        statusBarView.setVisibility(statusBarVisible ? View.VISIBLE : View.GONE);
-
         FragmentManager childFragmentManager = getChildFragmentManager();
         recentSearchesFragment = (RecentSearchesFragment)childFragmentManager.findFragmentById(
                 R.id.search_panel_recent);
@@ -177,6 +172,7 @@ public class SearchFragment extends Fragment implements BackPressedHandler,
 
         initSearchView();
         initLangButton();
+        updateOfflineLibraryState();
 
         if (!TextUtils.isEmpty(query)) {
             showPanel(PANEL_SEARCH_RESULTS);
@@ -321,6 +317,7 @@ public class SearchFragment extends Fragment implements BackPressedHandler,
             return;
         }
 
+        updateOfflineLibraryState();
         searchResultsFragment.startSearch(term, force);
     }
 
@@ -359,6 +356,12 @@ public class SearchFragment extends Fragment implements BackPressedHandler,
             callback.onSearchClose(invokeSource.fromIntent());
         }
         addRecentSearch(query);
+    }
+
+    private void updateOfflineLibraryState() {
+        offlineLibraryStateView.setVisibility(
+                (OfflineManager.hasCompilation() && !DeviceUtil.isOnline())
+                        ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -411,18 +414,13 @@ public class SearchFragment extends Fragment implements BackPressedHandler,
                 .findViewById(android.support.v7.appcompat.R.id.search_plate);
         searchEditPlate.setBackgroundColor(Color.TRANSPARENT);
 
-        ImageView searchClose = (ImageView) searchView.findViewById(
+        ImageView searchClose = searchView.findViewById(
                 android.support.v7.appcompat.R.id.search_close_btn);
         FeedbackUtil.setToolbarButtonLongPressToast(searchClose);
     }
 
     private void initLangButton() {
-        if (!Prefs.getMediaWikiBaseUriSupportsLangCode()) {
-            langButtonContainer.setVisibility(View.GONE);
-            return;
-        }
-
-        langButton.setText(app.getAppOrSystemLanguageCode().toUpperCase());
+        langButton.setText(app.getAppOrSystemLanguageCode().toUpperCase(Locale.ENGLISH));
         formatLangButtonText();
         FeedbackUtil.setToolbarButtonLongPressToast(langButtonContainer);
     }
@@ -473,7 +471,7 @@ public class SearchFragment extends Fragment implements BackPressedHandler,
         if (langCode.length() > langCodeStandardLength) {
             langButton.setTextSize(langButtonTextSizeSmaller);
             if (langCode.length() > langButtonTextMaxLength) {
-                langButton.setText(langCode.substring(0, langButtonTextMaxLength).toUpperCase());
+                langButton.setText(langCode.substring(0, langButtonTextMaxLength).toUpperCase(Locale.ENGLISH));
             }
             return;
         }
@@ -494,7 +492,7 @@ public class SearchFragment extends Fragment implements BackPressedHandler,
                     return;
                 }
 
-                langButton.setText(app.getAppOrSystemLanguageCode().toUpperCase());
+                langButton.setText(app.getAppOrSystemLanguageCode().toUpperCase(Locale.ENGLISH));
                 formatLangButtonText();
                 if (!TextUtils.isEmpty(query)) {
                     startSearch(query, true);

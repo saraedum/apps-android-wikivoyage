@@ -1,45 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="window_background_color" format="reference"/>
-    <attr name="window_inverse_color" format="reference"/>
-    <attr name="page_background_color" format="reference"/>
     <attr name="main_toolbar_color" format="reference"/>
     <attr name="main_status_bar_color" format="reference"/>
-    <attr name="inline_onboarding_background_color" format="reference"/>
-    <attr name="toc_background_color" format="reference"/>
-    <attr name="toc_section_text_color" format="reference"/>
-    <attr name="toc_subsection_text_color" format="reference"/>
+    <attr name="page_status_bar_color" format="reference"/>
+    <attr name="page_toolbar_color" format="reference"/>
+    <attr name="page_toolbar_icon_color" format="reference"/>
+    <attr name="toc_item_background" format="reference"/>
     <attr name="edit_text_color" format="reference"/>
     <attr name="edit_improve_tag_selected_drawable" format="reference" />
     <attr name="edit_improve_tag_unselected_drawable" format="reference" />
-    <attr name="abusefilter_background_color" format="reference"/>
     <attr name="lead_image_drawable" format="reference"/>
-    <!-- TODO: rename? -->
-    <attr name="lead_text_color" format="reference"/>
-    <attr name="list_separator_color" format="reference"/>
     <attr name="list_separator_drawable" format="reference"/>
-    <attr name="syntax_highlight_template_color" format="reference"/>
     <attr name="nearby_marker_drawable" format="reference"/>
     <attr name="tab_item_selector" format="reference"/>
     <attr name="tab_shadow_drawable" format="reference"/>
-    <attr name="tab_shadow_color" format="reference"/>
-    <attr name="tool_tip_default_color" format="reference"/>
-    <attr name="bottom_sheet_background_color" format="reference"/>
-    <attr name="link_preview_text_color" format="reference"/>
-    <attr name="link_preview_offline_text_color" format="reference"/>
-    <attr name="list_item_text_primary_color" format="reference"/>
-    <attr name="list_item_text_secondary_color" format="reference"/>
-    <attr name="feed_window_background_color" format="reference" />
-    <attr name="feed_text_primary_color" format="reference" />
-    <attr name="feed_text_secondary_color" format="reference" />
-    <attr name="feed_text_tertiary_color" format="reference" />
-
+    <attr name="material_theme_shadow" format="reference"/>
     <attr name="nav_tab_background_color" format="reference" />
     <attr name="nav_tab_item_color_state" format="reference" />
+    <attr name="button_highlight_border_shape" format="reference" />
 
-    <attr name="overflow_button" format="reference" />
     <attr name="multi_select_background_color" format="reference" />
+    <attr name="searchItemBackground" format="reference" />
 
+    <attr name="material_theme_primary_color" format="color" />
+    <attr name="material_theme_secondary_color" format="color" />
+    <attr name="material_theme_de_emphasised_color" format="color" />
+    <attr name="material_theme_border_color" format="color" />
+    <attr name="primary_text_color" format="color" />
+    <attr name="secondary_text_color" format="color" />
+    <attr name="section_title_color" format="color" />
+    <attr name="paper_color" format="color" />
+    <attr name="chart_shade1" format="color" />
+    <attr name="chart_shade4" format="color" />
+    <attr name="chart_shade5" format="color" />
+    <attr name="chart_shade7" format="color" />
     <declare-styleable name="CabSearchView">
         <attr name="cabEnabled" format="boolean" />
     </declare-styleable>
@@ -70,5 +64,12 @@
         <attr name="tertiaryText" format="string" />
         <attr name="switchText" format="string" />
         <attr name="imageSize" format="dimension" />
+        <attr name="background" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="DiscreteSeekBar">
+        <attr name="min" format="integer" />
+        <attr name="tickDrawable" format="reference" />
+        <attr name="centerDrawable" format="reference" />
     </declare-styleable>
 </resources>

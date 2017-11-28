@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import org.wikipedia.BuildConfig;
 import org.wikipedia.R;
-import org.wikipedia.activity.ThemedActionBarActivity;
+import org.wikipedia.activity.BaseActivity;
 import org.wikipedia.richtext.RichTextUtil;
 import org.wikipedia.util.FeedbackUtil;
 import org.wikipedia.util.StringUtil;
@@ -21,7 +21,7 @@ import butterknife.ButterKnife;
 
 import static org.wikipedia.util.DeviceUtil.mailAppExists;
 
-public class AboutActivity extends ThemedActionBarActivity {
+public class AboutActivity extends BaseActivity {
     private static final String KEY_SCROLL_X = "KEY_SCROLL_X";
     private static final String KEY_SCROLL_Y = "KEY_SCROLL_Y";
 
@@ -38,7 +38,7 @@ public class AboutActivity extends ThemedActionBarActivity {
         setContentView(R.layout.activity_about);
         ButterKnife.bind(this);
 
-        mScrollView = (ScrollView) findViewById(R.id.about_scrollview);
+        mScrollView = findViewById(R.id.about_scrollview);
         translatorsTextView.setText(StringUtil.fromHtml(getString(R.string.about_translators_translatewiki)));
         RichTextUtil.removeUnderlinesFromLinks(translatorsTextView);
         wmfTextView.setText(StringUtil.fromHtml(getString(R.string.about_wmf)));
@@ -83,11 +83,6 @@ public class AboutActivity extends ThemedActionBarActivity {
                 mScrollView.scrollTo(x, y);
             }
         });
-    }
-
-    @Override
-    protected void setTheme() {
-        setActionBarTheme();
     }
 
     private void makeEverythingClickable(ViewGroup vg) {

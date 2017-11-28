@@ -38,6 +38,7 @@ import org.wikipedia.history.HistoryEntry;
 import org.wikipedia.page.ExtendedBottomSheetDialogFragment;
 import org.wikipedia.page.PageTitle;
 import org.wikipedia.util.GeoUtil;
+import org.wikipedia.util.StringUtil;
 import org.wikipedia.util.log.L;
 import org.wikipedia.views.ViewUtil;
 
@@ -48,6 +49,7 @@ import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Response;
 
+import static org.wikipedia.settings.Prefs.isImageDownloadEnabled;
 import static org.wikipedia.util.L10nUtil.getStringForArticleLanguage;
 import static org.wikipedia.util.L10nUtil.setConditionalLayoutDirection;
 
@@ -70,6 +72,7 @@ public class LinkPreviewDialog extends ExtendedBottomSheetDialogFragment
     private SimpleDraweeView thumbnailView;
     private GalleryThumbnailScrollView thumbnailGallery;
     private LinkPreviewOverlayView overlayView;
+    private TextView titleText;
     private View toolbarView;
     private View overflowButton;
 
@@ -99,31 +102,27 @@ public class LinkPreviewDialog extends ExtendedBottomSheetDialogFragment
         location = getArguments().getParcelable("location");
 
         View rootView = inflater.inflate(R.layout.dialog_link_preview, container);
-        dialogContainer = (LinearLayout) rootView.findViewById(R.id.dialog_link_preview_container);
+        dialogContainer = rootView.findViewById(R.id.dialog_link_preview_container);
         contentContainer = rootView.findViewById(R.id.dialog_link_preview_content_container);
-        errorContainer = (LinkPreviewErrorView) rootView.findViewById(R.id.dialog_link_preview_error_container);
-        progressBar = (ProgressBar) rootView.findViewById(R.id.link_preview_progress);
+        errorContainer = rootView.findViewById(R.id.dialog_link_preview_error_container);
+        progressBar = rootView.findViewById(R.id.link_preview_progress);
         toolbarView = rootView.findViewById(R.id.link_preview_toolbar);
         toolbarView.setOnClickListener(goToPageListener);
 
-        TextView titleText = (TextView) rootView.findViewById(R.id.link_preview_title);
-        titleText.setText(pageTitle.getDisplayText());
+        titleText = rootView.findViewById(R.id.link_preview_title);
         setConditionalLayoutDirection(rootView, pageTitle.getWikiSite().languageCode());
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            // for oldish devices, reset line spacing to 1, since it truncates the descenders.
-            titleText.setLineSpacing(0, 1.0f);
-        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             // for <5.0, give the title a bit more bottom padding, since these versions
             // incorrectly cut off the bottom of the text when line spacing is <1.
             final int bottomPadding = 8;
             ViewUtil.setBottomPaddingDp(titleText, bottomPadding);
         }
 
-        extractText = (TextView) rootView.findViewById(R.id.link_preview_extract);
-        thumbnailView = (SimpleDraweeView) rootView.findViewById(R.id.link_preview_thumbnail);
+        extractText = rootView.findViewById(R.id.link_preview_extract);
+        thumbnailView = rootView.findViewById(R.id.link_preview_thumbnail);
+        thumbnailGallery = rootView.findViewById(R.id.link_preview_thumbnail_gallery);
 
-        thumbnailGallery = (GalleryThumbnailScrollView) rootView.findViewById(R.id.link_preview_thumbnail_gallery);
-        if (app.isImageDownloadEnabled()) {
+        if (isImageDownloadEnabled()) {
             CallbackTask.execute(new CallbackTask.Task<Map<String, ImageInfo>>() {
                 @Override public Map<String, ImageInfo> execute() throws Throwable {
                     return client.request(pageTitle.getWikiSite(), pageTitle, true);
@@ -178,7 +177,7 @@ public class LinkPreviewDialog extends ExtendedBottomSheetDialogFragment
     @Override public void onResume() {
         super.onResume();
         if (overlayView == null) {
-            ViewGroup containerView = (ViewGroup) getDialog().findViewById(R.id.container);
+            ViewGroup containerView = getDialog().findViewById(R.id.container);
             overlayView = new LinkPreviewOverlayView(getContext());
             overlayView.setCallback(new OverlayViewCallback());
             overlayView.setPrimaryButtonText(getStringForArticleLanguage(pageTitle, R.string.button_continue_to_article));
@@ -231,7 +230,7 @@ public class LinkPreviewDialog extends ExtendedBottomSheetDialogFragment
         PageClientFactory
                 .create(pageTitle.getWikiSite(), pageTitle.namespace())
                 .summary(pageTitle.getPrefixedText())
-                .enqueue(linkPreviewNetworkOnLoadCallback);
+                .enqueue(linkPreviewCallback);
     }
 
     private void showPreview(@NonNull LinkPreviewContents contents) {
@@ -276,7 +275,7 @@ public class LinkPreviewDialog extends ExtendedBottomSheetDialogFragment
         ViewUtil.loadImageUrlInto(thumbnailView, contents.getTitle().getThumbUrl());
     }
 
-    private retrofit2.Callback<PageSummary> linkPreviewNetworkOnLoadCallback
+    private retrofit2.Callback<PageSummary> linkPreviewCallback
             = new retrofit2.Callback<PageSummary>() {
         @Override public void onResponse(Call<PageSummary> call, Response<PageSummary> rsp) {
             if (!isAdded()) {
@@ -285,8 +284,10 @@ public class LinkPreviewDialog extends ExtendedBottomSheetDialogFragment
 
             PageSummary summary = rsp.body();
             if (summary != null && !summary.hasError()) {
+                titleText.setText(StringUtil.fromHtml(summary.getDisplayTitle()));
                 showPreview(new LinkPreviewContents(summary, pageTitle.getWikiSite()));
             } else {
+                titleText.setText(StringUtil.fromHtml(pageTitle.getDisplayText()));
                 showError(null);
                 logError(summary.hasError() ? summary.getError() : null,
                         "Page summary network request failed");
@@ -298,6 +299,7 @@ public class LinkPreviewDialog extends ExtendedBottomSheetDialogFragment
             if (!isAdded()) {
                 return;
             }
+            titleText.setText(StringUtil.fromHtml(pageTitle.getDisplayText()));
             showError(caught);
         }
     };

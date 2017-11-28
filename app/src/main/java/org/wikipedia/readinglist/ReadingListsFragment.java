@@ -30,13 +30,13 @@ import org.wikipedia.concurrency.CallbackTask;
 import org.wikipedia.feed.FeedFragment;
 import org.wikipedia.history.SearchActionModeCallback;
 import org.wikipedia.onboarding.OnboardingView;
+import org.wikipedia.readinglist.page.ReadingListPage;
 import org.wikipedia.readinglist.sync.ReadingListSyncEvent;
 import org.wikipedia.readinglist.sync.ReadingListSynchronizer;
 import org.wikipedia.settings.Prefs;
 import org.wikipedia.settings.SettingsActivity;
 import org.wikipedia.util.FeedbackUtil;
 import org.wikipedia.util.ReleaseUtil;
-import org.wikipedia.util.ResourceUtil;
 import org.wikipedia.views.DrawableItemDecoration;
 import org.wikipedia.views.SearchEmptyView;
 import org.wikipedia.views.TextInputDialog;
@@ -88,8 +88,7 @@ public class ReadingListsFragment extends Fragment {
         searchEmptyView.setEmptyText(R.string.search_reading_lists_no_results);
         readingListView.setLayoutManager(new LinearLayoutManager(getContext()));
         readingListView.setAdapter(adapter);
-        readingListView.addItemDecoration(new DrawableItemDecoration(getContext(),
-                ResourceUtil.getThemedAttributeId(getContext(), R.attr.list_separator_drawable), true));
+        readingListView.addItemDecoration(new DrawableItemDecoration(getContext(), R.attr.list_separator_drawable));
 
         WikipediaApp.getInstance().getBus().register(eventBusMethods);
         updateLists();
@@ -182,6 +181,22 @@ public class ReadingListsFragment extends Fragment {
                 sortLists();
                 updateEmptyState(searchQuery);
                 maybeDeleteListFromIntent();
+                for (ReadingList list : readingLists.get()) {
+                    updateListDetailsAsync(list);
+                }
+            }
+        });
+    }
+
+    private void updateListDetailsAsync(@NonNull ReadingList list) {
+        ReadingListPageDetailFetcher.updateInfo(list, new ReadingListPageDetailFetcher.Callback() {
+            @Override public void success() {
+                if (!isAdded()) {
+                    return;
+                }
+                adapter.notifyDataSetChanged();
+            }
+            @Override public void failure(Throwable e) {
             }
         });
     }
@@ -205,7 +220,7 @@ public class ReadingListsFragment extends Fragment {
             this.itemView = itemView;
         }
 
-        public void bindItem(ReadingList readingList) {
+        void bindItem(ReadingList readingList) {
             itemView.setReadingList(readingList, ReadingListItemView.Description.SUMMARY);
         }
 
@@ -290,6 +305,37 @@ public class ReadingListsFragment extends Fragment {
         public void onDelete(@NonNull ReadingList readingList) {
             deleteList(readingList);
         }
+
+        @Override
+        public void onSaveAllOffline(@NonNull ReadingList readingList) {
+            for (ReadingListPage page : readingList.getPages()) {
+                if (!page.isOffline()) {
+                    ReadingListData.instance().setPageOffline(page, true);
+                }
+            }
+            ReadingListSynchronizer.instance().sync();
+            updateLists();
+            showMultiSelectOfflineStateChangeSnackbar(readingList.getPages(), true);
+        }
+
+        @Override
+        public void onRemoveAllOffline(@NonNull ReadingList readingList) {
+            for (ReadingListPage page : readingList.getPages()) {
+                if (page.isOffline()) {
+                    ReadingListData.instance().setPageOffline(page, false);
+                }
+            }
+            ReadingListSynchronizer.instance().sync();
+            updateLists();
+            showMultiSelectOfflineStateChangeSnackbar(readingList.getPages(), false);
+        }
+    }
+
+    private void showMultiSelectOfflineStateChangeSnackbar(List<ReadingListPage> pages, boolean offline) {
+        String message = offline
+                ? getResources().getQuantityString(R.plurals.reading_list_article_offline_message, pages.size())
+                : getResources().getQuantityString(R.plurals.reading_list_article_not_offline_message, pages.size());
+        FeedbackUtil.showMessage(getActivity(), message);
     }
 
     private void maybeDeleteListFromIntent() {

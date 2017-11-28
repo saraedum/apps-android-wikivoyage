@@ -14,7 +14,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 
-import org.wikipedia.WikipediaApp;
+import static org.wikipedia.settings.Prefs.isImageDownloadEnabled;
 
 public class FaceAndColorDetectImageView extends SimpleDraweeView {
 
@@ -42,12 +42,11 @@ public class FaceAndColorDetectImageView extends SimpleDraweeView {
     }
 
     public void loadImage(@Nullable Uri uri) {
-        if (!WikipediaApp.getInstance().isImageDownloadEnabled() || uri == null) {
+        if (!isImageDownloadEnabled() || uri == null) {
             setImageURI((Uri) null);
             return;
         }
         ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
-                .setProgressiveRenderingEnabled(true)
                 .setPostprocessor(new FacePostprocessor(listener))
                 .build();
         DraweeController controller = Fresco.newDraweeControllerBuilder()

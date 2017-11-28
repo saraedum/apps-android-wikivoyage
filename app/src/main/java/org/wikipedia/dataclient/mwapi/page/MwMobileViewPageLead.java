@@ -96,6 +96,10 @@ public class MwMobileViewPageLead implements PageLead {
         return mobileview == null ? null : mobileview.getThumbUrl();
     }
 
+    @Nullable @Override public String getDescription() {
+        return mobileview == null ? null : mobileview.getDescription();
+    }
+
     @Nullable
     @Override
     public Location getGeo() {
@@ -124,7 +128,7 @@ public class MwMobileViewPageLead implements PageLead {
         @SuppressWarnings("unused") private boolean mainpage;
         @SuppressWarnings("unused") private boolean disambiguation;
         @SuppressWarnings("unused") @Nullable private String description;
-        @SuppressWarnings("unused") @Nullable private PageImage pageImage;
+        @SuppressWarnings("unused") @SerializedName("image") @Nullable private PageImage pageImage;
         @SuppressWarnings("unused") @SerializedName("thumb") @Nullable private PageImageThumb leadImage;
         @SuppressWarnings("unused") @Nullable private Protection protection;
         @SuppressWarnings("unused") @Nullable private List<Section> sections;
@@ -190,7 +194,6 @@ public class MwMobileViewPageLead implements PageLead {
             return normalizedtitle;
         }
 
-        @Override
         @Nullable
         public String getDescription() {
             return description;

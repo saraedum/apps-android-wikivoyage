@@ -183,7 +183,7 @@ public class WikipediaZeroHandler {
         Handler wikipediaZeroHandler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
-                new ZeroConfigClient().request(new WikiSite(app.getWikiSite().mobileHost()),
+                new ZeroConfigClient().request(new WikiSite(app.getWikiSite().mobileAuthority()),
                         app.getUserAgent(), new ZeroConfigClient.Callback() {
                     @Override
                     public void success(@NonNull Call<ZeroConfig> call, @NonNull ZeroConfig config) {
@@ -264,7 +264,7 @@ public class WikipediaZeroHandler {
 
     private void notifyExitZeroNetwork(@NonNull Context context) {
         NotificationCompat.Builder builder = createNotification(context);
-        builder.setColor(ContextCompat.getColor(context, R.color.foundation_red))
+        builder.setColor(ContextCompat.getColor(context, R.color.red50))
                 .setSmallIcon(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                         ? R.drawable.ic_wikipedia_zero_off : R.mipmap.launcher)
                 .setContentText(context.getString(R.string.zero_charged_verbiage))

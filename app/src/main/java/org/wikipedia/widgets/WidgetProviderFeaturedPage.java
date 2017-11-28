@@ -80,8 +80,7 @@ public class WidgetProviderFeaturedPage extends AppWidgetProvider {
 
         getApiService(title)
                 .lead(null, PageClient.CacheOption.CACHE, title.getPrefixedText(),
-                        DimenUtil.calculateLeadImageWidth(),
-                        !app.isImageDownloadEnabled())
+                        DimenUtil.calculateLeadImageWidth())
                 .enqueue(new retrofit2.Callback<PageLead>() {
                     @Override public void onResponse(Call<PageLead> call, Response<PageLead> rsp) {
                         PageLead lead = rsp.body();

@@ -6,9 +6,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/about_scrollview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?attr/window_background_color"
-        >
+        android:layout_height="match_parent">
     <LinearLayout
             android:id="@+id/about_container"
             android:orientation="vertical"
@@ -22,7 +20,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/w_nav_mark"
-            android:tint="?attr/window_inverse_color"
+            android:tint="?attr/primary_text_color"
             android:contentDescription="@null"
 
             />
@@ -36,7 +34,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:src="@drawable/wp_wordmark"
-                    android:tint="@color/gray_highlight"
+                    android:tint="@color/base30"
                     android:contentDescription="@null"
                     />
                 <TextView android:id="@+id/about_version_text"
@@ -85,7 +83,6 @@
                 android:textIsSelectable="true"
                 android:lineSpacingMultiplier="1.2"
                 android:textColor="#555"
-                android:textColorLink="?attr/colorAccent"
                 android:layout_marginBottom="8dp"
                 />
 
@@ -106,7 +103,6 @@
                 android:textIsSelectable="true"
                 android:lineSpacingMultiplier="1.2"
                 android:textColor="#555"
-                android:textColorLink="?attr/colorAccent"
                 android:layout_marginBottom="8dp"
                 />
 
@@ -127,7 +123,6 @@
                 android:textIsSelectable="true"
                 android:lineSpacingMultiplier="1.2"
                 android:textColor="#555"
-                android:textColorLink="?attr/colorAccent"
                 android:layout_marginBottom="8dp"
                 />
 
@@ -138,7 +133,6 @@
                 tools:text="@string/send_feedback"
                 style="?android:textAppearanceMedium"
                 android:textColor="#555"
-                android:textColorLink="?attr/colorAccent"
                 android:layout_marginTop="32dp"
                 android:layout_marginBottom="8dp"
                 />
@@ -148,7 +142,7 @@
             android:layout_height="1px"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
-            android:background="@color/gray_background" />
+            android:background="?attr/material_theme_border_color" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -156,7 +150,7 @@
             android:layout_margin="12dp"
             android:padding="4dp"
             app:srcCompat="@drawable/ic_wmf_logo"
-            android:tint="@color/dark_gray"
+            android:tint="@color/base30"
             android:contentDescription="@null" />
 
         <org.wikipedia.views.AppTextView
@@ -167,8 +161,7 @@
             style="?android:textAppearanceSmall"
             android:textIsSelectable="true"
             android:layout_weight="1"
-            android:textColor="#555"
-            android:textColorLink="?attr/colorAccent" />
+            android:textColor="#555" />
 
     </LinearLayout>
 </ScrollView>

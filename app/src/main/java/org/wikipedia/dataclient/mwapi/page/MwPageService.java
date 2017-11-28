@@ -36,9 +36,9 @@ public interface MwPageService {
       unparsed wikitext, which we certainly don't want.
     */
     @Headers("x-analytics: preview=1")
-    @GET("w/api.php?action=query&format=json&formatversion=2&prop=extracts%7Cpageimages"
-            + "&redirects=true&exsentences=5&explaintext=true&piprop=thumbnail%7Cname"
-            + "&pilicense=any&pithumbsize=" + Constants.PREFERRED_THUMB_SIZE)
+    @GET("w/api.php?action=query&format=json&formatversion=2&redirects=&converttitles="
+            + "&prop=extracts%7Cpageimages%7Cpageprops&exsentences=5&piprop=thumbnail%7Cname"
+            + "&pilicense=any&explaintext=&pithumbsize=" + Constants.PREFERRED_THUMB_SIZE)
     @NonNull Call<MwQueryPageSummary> summary(@NonNull @Query("titles") String title);
 
     /**
@@ -46,31 +46,27 @@ public interface MwPageService {
      *
      * @param title the page title with prefix if necessary
      * @param leadImageWidth one of the bucket widths for the lead image
-     * @param noImages add the noimages flag to the request if true
      */
     @Headers("x-analytics: pageview=1")
     @GET("w/api.php?action=mobileview&format=json&formatversion=2&prop="
             + "text%7Csections%7Clanguagecount%7Cthumb%7Cimage%7Cid%7Cnamespace%7Crevision"
             + "%7Cdescription%7Clastmodified%7Cnormalizedtitle%7Cdisplaytitle%7Cprotection"
-            + "%7Ceditable%7Cpageprops&pageprops=wikibase_item&onlyrequestedsections=1"
-            + "&sections=0&sectionprop=toclevel%7Cline%7Canchor&noheadings=true")
+            + "%7Ceditable%7Cpageprops&pageprops=wikibase_item"
+            + "&sections=0&sectionprop=toclevel%7Cline%7Canchor&noheadings=")
     @NonNull Call<MwMobileViewPageLead> lead(@Nullable @Header("Cache-Control") String cacheControl,
                                              @Header(SaveHeader.FIELD) Boolean save,
                                              @NonNull @Query("page") String title,
-                                             @Query("thumbwidth") int leadImageWidth,
-                                             @Nullable @Query("noimages") Boolean noImages);
+                                             @Query("thumbwidth") int leadImageWidth);
 
     /**
      * Gets the remaining sections of a given title.
      *
      * @param title the page title to be used including prefix
-     * @param noImages add the noimages flag to the request if true
      */
     @GET("w/api.php?action=mobileview&format=json&formatversion=2&prop="
             + "text%7Csections&onlyrequestedsections=1&sections=1-"
-            + "&sectionprop=toclevel%7Cline%7Canchor&noheadings=true")
+            + "&sectionprop=toclevel%7Cline%7Canchor&noheadings=")
     @NonNull Call<MwMobileViewPageRemaining> sections(@Nullable @Header("Cache-Control") String cacheControl,
                                                       @Header(SaveHeader.FIELD) Boolean save,
-                                                      @NonNull @Query("page") String title,
-                                                      @Nullable @Query("noimages") Boolean noImages);
+                                                      @NonNull @Query("page") String title);
 }

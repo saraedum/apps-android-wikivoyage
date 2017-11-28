@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.view.ActionMode;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -75,9 +75,9 @@ public class TabsProvider {
         this.fragment = fragment;
         this.tabList = tabList;
 
-        pageContentView = fragment.getContentView();
+        pageContentView = fragment.getView();
         tabContainerView = fragment.getTabsContainerView();
-        tabListView = (ListView) tabContainerView.findViewById(R.id.tabs_list);
+        tabListView = tabContainerView.findViewById(R.id.tabs_list);
         tabListAdapter = new TabListAdapter(fragment.getActivity().getLayoutInflater());
         tabListView.setAdapter(tabListAdapter);
 
@@ -149,7 +149,7 @@ public class TabsProvider {
             tabActionMode = mode;
             mode.getMenuInflater().inflate(R.menu.menu_tabs, menu);
             Animation anim = loadPageContentViewAnimation();
-            fragment.getContentView().startAnimation(anim);
+            fragment.getView().startAnimation(anim);
             layoutTabList(onTabModeEntered);
 
             return true;
@@ -178,13 +178,13 @@ public class TabsProvider {
                 case R.id.menu_close_all_tabs:
                     AlertDialog.Builder alert = new AlertDialog.Builder(fragment.getContext());
                     alert.setMessage(R.string.close_all_tabs_confirm);
-                    alert.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    alert.setPositiveButton(R.string.close_all_tabs_confirm_yes, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int id) {
                             providerListener.onCloseAllTabs();
                         }
                     });
-                    alert.setNegativeButton(R.string.no, null);
+                    alert.setNegativeButton(R.string.close_all_tabs_confirm_no, null);
                     alert.create().show();
                     return true;
                 default:
@@ -194,8 +194,11 @@ public class TabsProvider {
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
+            if (!fragment.isAdded() || fragment.getContext() == null) {
+                return;
+            }
             Animation anim = AnimationUtils.loadAnimation(fragment.getContext(), R.anim.tab_list_zoom_exit);
-            fragment.getContentView().startAnimation(anim);
+            fragment.getView().startAnimation(anim);
             hideTabList();
             tabActionMode = null;
             fragment.showToolbar();
@@ -434,8 +437,8 @@ public class TabsProvider {
                 convertView = inflater.inflate(R.layout.item_tab_entry, parent, false);
                 convertView.setTag(viewHolder);
                 viewHolder.container = convertView;
-                viewHolder.title = (TextView) convertView.findViewById(R.id.tab_item_title);
-                viewHolder.thumbnail = (SimpleDraweeView) convertView.findViewById(R.id.tab_item_thumbnail);
+                viewHolder.title = convertView.findViewById(R.id.tab_item_title);
+                viewHolder.thumbnail = convertView.findViewById(R.id.tab_item_thumbnail);
                 viewHolder.gradient = convertView.findViewById(R.id.tab_item_bottom_gradient);
                 viewHolder.closeButton = convertView.findViewById(R.id.tab_item_close);
             } else {
@@ -449,8 +452,8 @@ public class TabsProvider {
                     position == tabList.size() - 1 ? View.GONE : View.VISIBLE);
 
             @ColorRes int colorId = position == 0
-                    ? R.color.darkest_gray
-                    : getThemedAttributeId(fragment.getContext(), R.attr.tab_shadow_color);
+                    ? R.color.base10
+                    : getThemedAttributeId(fragment.getContext(), R.attr.material_theme_shadow);
             int color = ContextCompat.getColor(fragment.getContext(), colorId);
 
             // dynamically set the background color that will show through the rounded corners.

@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import org.wikipedia.R;
-import org.wikipedia.activity.ThemedActionBarActivity;
+import org.wikipedia.activity.BaseActivity;
 import org.wikipedia.util.StringUtil;
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ import static org.wikipedia.util.FileUtil.readFile;
 /**
  * Displays license text of the libraries we use.
  */
-public class LicenseActivity extends ThemedActionBarActivity {
+public class LicenseActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,17 +27,12 @@ public class LicenseActivity extends ThemedActionBarActivity {
         setTitle(getString(R.string.license_title, path.substring(libraryNameStart)));
 
         try {
-            TextView textView = (TextView) findViewById(R.id.license_text);
+            TextView textView = findViewById(R.id.license_text);
             final int assetPathStart = 15;
             final String text = readFile(getAssets().open(path.substring(assetPathStart)));
             textView.setText(StringUtil.fromHtml(text.replace("\n\n", "<br/><br/>")));
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    protected void setTheme() {
-        setActionBarTheme();
     }
 }

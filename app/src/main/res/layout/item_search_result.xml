@@ -11,7 +11,8 @@
     android:paddingRight="@dimen/list_item_horizontal_padding"
     android:paddingBottom="@dimen/list_item_vertical_padding"
     android:paddingLeft="@dimen/list_item_horizontal_padding"
-    android:background="?attr/selectableItemBackground"
+    android:background="?attr/paper_color"
+    android:foreground="?attr/selectableItemBackground"
     android:gravity="top">
 
     <com.facebook.drawee.view.SimpleDraweeView
@@ -21,7 +22,7 @@
         android:layout_height="@dimen/view_list_card_item_image"
         android:layout_marginTop="6dp"
         app:roundedCornerRadius="2dp"
-        android:background="@drawable/view_list_card_item_image_background" />
+        app:backgroundImage="@color/base100" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -36,9 +37,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:textSize="16sp"
-            android:textColor="?attr/feed_text_primary_color"
-            style="@style/RtlAwareTextView"
+            style="@style/MaterialListTitle"
+            android:textAppearance="@style/RtlAwareTextView"
             tools:text="Lorem ipsum"/>
 
         <LinearLayout
@@ -53,19 +53,17 @@
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 app:srcCompat="@drawable/ic_subdirectory_arrow_right_black_24dp"
-                android:tint="?attr/list_item_text_secondary_color"
+                android:tint="?attr/secondary_text_color"
                 android:contentDescription="@null"/>
             <org.wikipedia.views.GoneIfEmptyTextView
                 android:id="@+id/page_list_item_redirect"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/RtlAwareTextView"
-                android:textAppearance="?android:attr/textAppearanceSmall"
+                style="@style/MaterialListSubtitle"
+                android:textAppearance="@style/RtlAwareTextView"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:textColor="?attr/list_item_text_secondary_color"
-                tools:text="Redirected from..."
-                />
+                tools:text="Redirected from..." />
         </LinearLayout>
 
         <org.wikipedia.views.GoneIfEmptyTextView
@@ -75,10 +73,8 @@
             android:layout_marginTop="2dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:textSize="14sp"
-            android:textColor="?attr/feed_text_secondary_color"
-            android:lineSpacingMultiplier="1.2"
-            style="@style/RtlAwareTextView"
+            style="@style/MaterialListSubtitle"
+            android:textAppearance="@style/RtlAwareTextView"
             tools:text="Lorem ipsum"/>
     </LinearLayout>
 

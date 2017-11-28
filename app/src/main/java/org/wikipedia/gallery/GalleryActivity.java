@@ -18,20 +18,20 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.wikipedia.R;
 import org.wikipedia.WikipediaApp;
-import org.wikipedia.activity.ThemedActionBarActivity;
+import org.wikipedia.activity.BaseActivity;
 import org.wikipedia.analytics.GalleryFunnel;
 import org.wikipedia.concurrency.CallbackTask;
 import org.wikipedia.dataclient.WikiSite;
@@ -53,7 +53,6 @@ import org.wikipedia.util.ShareUtil;
 import org.wikipedia.util.StringUtil;
 import org.wikipedia.util.log.L;
 import org.wikipedia.views.ViewAnimations;
-import org.wikipedia.views.ViewUtil;
 import org.wikipedia.views.WikiErrorView;
 
 import java.io.File;
@@ -62,11 +61,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.wikipedia.util.StringUtil.addUnderscores;
 import static org.wikipedia.util.StringUtil.strip;
 import static org.wikipedia.util.UriUtil.handleExternalLink;
 import static org.wikipedia.util.UriUtil.resolveProtocolRelativeUrl;
 
-public class GalleryActivity extends ThemedActionBarActivity implements LinkPreviewDialog.Callback,
+public class GalleryActivity extends BaseActivity implements LinkPreviewDialog.Callback,
         GalleryItemFragment.Callback {
     public static final int ACTIVITY_RESULT_PAGE_SELECTED = 1;
 
@@ -170,35 +170,32 @@ public class GalleryActivity extends ThemedActionBarActivity implements LinkPrev
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // force the theme to dark...
-        setTheme(Theme.DARK.getResourceId());
 
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_gallery);
         initToolbar();
 
-        toolbarContainer = (ViewGroup) findViewById(R.id.gallery_toolbar_container);
-        infoContainer = (ViewGroup) findViewById(R.id.gallery_info_container);
+        toolbarContainer = findViewById(R.id.gallery_toolbar_container);
+        infoContainer = findViewById(R.id.gallery_info_container);
         setBackgroundGradient(infoContainer, Gravity.BOTTOM);
 
-        progressBar = (ProgressBar) findViewById(R.id.gallery_progressbar);
+        progressBar = findViewById(R.id.gallery_progressbar);
 
-        descriptionText = (TextView) findViewById(R.id.gallery_description_text);
-        descriptionText.setShadowLayer(2, 1, 1, color(R.color.lead_text_shadow));
+        descriptionText = findViewById(R.id.gallery_description_text);
+        descriptionText.setShadowLayer(2, 1, 1, color(R.color.black54));
         descriptionText.setMovementMethod(linkMovementMethod);
 
-        licenseIcon = (ImageView) findViewById(R.id.gallery_license_icon);
+        licenseIcon = findViewById(R.id.gallery_license_icon);
         licenseIcon.setOnClickListener(licenseShortClickListener);
         licenseIcon.setOnLongClickListener(licenseLongClickListener);
 
-        creditText = (TextView) findViewById(R.id.gallery_credit_text);
-        creditText.setShadowLayer(2, 1, 1, color(R.color.lead_text_shadow));
+        creditText = findViewById(R.id.gallery_credit_text);
+        creditText.setShadowLayer(2, 1, 1, color(R.color.black54));
 
-        errorView = (WikiErrorView) findViewById(R.id.view_gallery_error);
+        errorView = findViewById(R.id.view_gallery_error);
         ((ImageView) errorView.findViewById(R.id.view_wiki_error_icon))
-                .setColorFilter(ContextCompat.getColor(this, R.color.view_wiki_error_icon_tint_light));
+                .setColorFilter(color(R.color.base70));
         ((TextView) errorView.findViewById(R.id.view_wiki_error_text))
-                .setTextColor(ContextCompat.getColor(this, R.color.view_wiki_error_text_color_light));
+                .setTextColor(color(R.color.base70));
         errorView.setBackClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -221,7 +218,7 @@ public class GalleryActivity extends ThemedActionBarActivity implements LinkPrev
 
         galleryCache = new HashMap<>();
         galleryAdapter = new GalleryItemAdapter(this);
-        galleryPager = (ViewPager) findViewById(R.id.gallery_item_pager);
+        galleryPager = findViewById(R.id.gallery_item_pager);
         galleryPager.setAdapter(galleryAdapter);
         pageChangeListener = new GalleryPageChangeListener();
         galleryPager.addOnPageChangeListener(pageChangeListener);
@@ -302,6 +299,11 @@ public class GalleryActivity extends ThemedActionBarActivity implements LinkPrev
         } else {
             ShareUtil.shareText(this, title);
         }
+    }
+
+    @Override
+    protected void setTheme() {
+        setTheme(Theme.DARK.getResourceId());
     }
 
     private class GalleryPageChangeListener extends ViewPager.SimpleOnPageChangeListener {
@@ -391,21 +393,21 @@ public class GalleryActivity extends ThemedActionBarActivity implements LinkPrev
         public void onUrlClick(@NonNull String url, @Nullable String notUsed) {
             L.v("Link clicked was " + url);
             url = resolveProtocolRelativeUrl(url);
-            WikiSite appWikiSite = app.getWikiSite();
             if (url.startsWith("/wiki/")) {
-                PageTitle title = appWikiSite.titleForInternalLink(url);
+                PageTitle title = app.getWikiSite().titleForInternalLink(url);
                 showLinkPreview(title);
             } else {
                 Uri uri = Uri.parse(url);
                 String authority = uri.getAuthority();
                 if (authority != null && WikiSite.supportedAuthority(authority)
                     && uri.getPath().startsWith("/wiki/")) {
-                    PageTitle title = appWikiSite.titleForUri(uri);
+                    PageTitle title = new WikiSite(uri).titleForUri(uri);
                     showLinkPreview(title);
                 } else {
                     // if it's a /w/ URI, turn it into a full URI and go external
                     if (url.startsWith("/w/")) {
-                        url = String.format("%1$s://%2$s", appWikiSite.scheme(), appWikiSite.authority()) + url;
+                        url = String.format("%1$s://%2$s", app.getWikiSite().scheme(),
+                                app.getWikiSite().authority()) + url;
                     }
                     handleExternalLink(GalleryActivity.this, Uri.parse(url));
                 }
@@ -423,7 +425,7 @@ public class GalleryActivity extends ThemedActionBarActivity implements LinkPrev
     }
 
     public void finishWithPageResult(@NonNull PageTitle resultTitle, @NonNull HistoryEntry historyEntry) {
-        Intent intent = PageActivity.newIntent(GalleryActivity.this, historyEntry, resultTitle);
+        Intent intent = PageActivity.newIntentForCurrentTab(GalleryActivity.this, historyEntry, resultTitle);
         setResult(ACTIVITY_RESULT_PAGE_SELECTED, intent);
         finish();
     }
@@ -528,7 +530,7 @@ public class GalleryActivity extends ThemedActionBarActivity implements LinkPrev
         int initialImagePos = -1;
         if (initialFilename != null) {
             for (GalleryItem item : collection.getItemList()) {
-                if (item.getName().equals(initialFilename)) {
+                if (addUnderscores(item.getName()).equals(addUnderscores(initialFilename))) {
                     initialImagePos = collection.getItemList().indexOf(item);
                     break;
                 }
@@ -577,10 +579,10 @@ public class GalleryActivity extends ThemedActionBarActivity implements LinkPrev
         galleryAdapter.notifyFragments(galleryPager.getCurrentItem());
 
         CharSequence descriptionStr = "";
-        if (item.getMetadata().containsKey("ImageDescription")) {
-            descriptionStr = StringUtil.fromHtml(item.getMetadata().get("ImageDescription"));
-        } else if (item.getMetadata().containsKey("ObjectName")) {
-            descriptionStr = StringUtil.fromHtml(item.getMetadata().get("ObjectName"));
+        if (item.getMetadata() != null && item.getMetadata().imageDescription() != null) {
+            descriptionStr = StringUtil.fromHtml(item.getMetadata().imageDescription().value());
+        } else if (item.getMetadata() != null && item.getMetadata().objectName() != null) {
+            descriptionStr = StringUtil.fromHtml(item.getMetadata().objectName().value());
         }
         if (descriptionStr.length() > 0) {
             descriptionText.setText(strip(descriptionStr));
@@ -593,7 +595,8 @@ public class GalleryActivity extends ThemedActionBarActivity implements LinkPrev
         licenseIcon.setImageResource(getLicenseIcon(item));
         // Set the icon's content description to the UsageTerms property.
         // (if UsageTerms is not present, then default to Fair Use)
-        String usageTerms = item.getMetadata().get("UsageTerms");
+        String usageTerms = (item.getMetadata() == null || item.getMetadata().usageTerms() == null)
+                ? null : item.getMetadata().usageTerms().value();
         if (TextUtils.isEmpty(usageTerms)) {
             usageTerms = getString(R.string.gallery_fair_use_license);
         }
@@ -602,9 +605,9 @@ public class GalleryActivity extends ThemedActionBarActivity implements LinkPrev
         licenseIcon.setTag(item.getLicenseUrl());
 
         String creditStr = "";
-        if (item.getMetadata().containsKey("Artist")) {
+        if (item.getMetadata() != null && item.getMetadata().artist() != null) {
             // todo: is it intentional to convert to a String?
-            creditStr = StringUtil.fromHtml(item.getMetadata().get("Artist")).toString().trim();
+            creditStr = StringUtil.fromHtml(item.getMetadata().artist().value()).toString().trim();
         }
         // if we couldn't find a attribution string, then default to unknown
         if (TextUtils.isEmpty(creditStr)) {
@@ -626,12 +629,11 @@ public class GalleryActivity extends ThemedActionBarActivity implements LinkPrev
     }
 
     private void setBackgroundGradient(View view, int gravity) {
-        ViewUtil.setBackgroundDrawable(view, GradientUtil.getCubicGradient(
-                color(R.color.lead_gradient_start), gravity));
+        view.setBackground(GradientUtil.getPowerGradient(R.color.black54, gravity));
     }
 
     private void initToolbar() {
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.gallery_toolbar);
+        final Toolbar toolbar = findViewById(R.id.gallery_toolbar);
         setBackgroundGradient(toolbar, Gravity.TOP);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -647,7 +649,7 @@ public class GalleryActivity extends ThemedActionBarActivity implements LinkPrev
         private GalleryCollection galleryCollection;
         private SparseArray<GalleryItemFragment> fragmentArray;
 
-        GalleryItemAdapter(ThemedActionBarActivity activity) {
+        GalleryItemAdapter(AppCompatActivity activity) {
             super(activity.getSupportFragmentManager());
             fragmentArray = new SparseArray<>();
         }

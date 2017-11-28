@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
-import android.support.design.widget.PasswordTextInput;
 import android.support.design.widget.TextInputLayout;
 import android.text.TextUtils;
 import android.util.Patterns;
@@ -16,7 +15,7 @@ import android.widget.TextView;
 
 import org.wikipedia.R;
 import org.wikipedia.WikipediaApp;
-import org.wikipedia.activity.ThemedActionBarActivity;
+import org.wikipedia.activity.BaseActivity;
 import org.wikipedia.analytics.CreateAccountFunnel;
 import org.wikipedia.captcha.CaptchaHandler;
 import org.wikipedia.captcha.CaptchaResult;
@@ -37,7 +36,7 @@ import retrofit2.Call;
 
 import static org.wikipedia.util.DeviceUtil.hideSoftKeyboard;
 
-public class CreateAccountActivity extends ThemedActionBarActivity {
+public class CreateAccountActivity extends BaseActivity {
     public static final int RESULT_ACCOUNT_CREATED = 1;
     public static final int RESULT_ACCOUNT_NOT_CREATED = 2;
 
@@ -61,8 +60,8 @@ public class CreateAccountActivity extends ThemedActionBarActivity {
     @BindView(R.id.create_account_primary_container) View primaryContainer;
     @BindView(R.id.create_account_onboarding_container) View onboardingContainer;
     @BindView(R.id.create_account_username) TextInputLayout usernameInput;
-    @BindView(R.id.create_account_password_input) PasswordTextInput passwordInput;
-    @BindView(R.id.create_account_password_repeat) PasswordTextInput passwordRepeatInput;
+    @BindView(R.id.create_account_password_input) TextInputLayout passwordInput;
+    @BindView(R.id.create_account_password_repeat) TextInputLayout passwordRepeatInput;
     @BindView(R.id.create_account_email) TextInputLayout emailInput;
     @BindView(R.id.create_account_submit_button) TextView createAccountButton;
     @BindView(R.id.view_create_account_error) WikiErrorView errorView;
@@ -111,12 +110,6 @@ public class CreateAccountActivity extends ThemedActionBarActivity {
         captchaHandler = new CaptchaHandler(this, WikipediaApp.getInstance().getWikiSite(),
                 progressDialog, primaryContainer, getString(R.string.create_account_activity_title),
                 getString(R.string.create_account_button));
-
-        passwordInput.setOnShowPasswordListener(new PasswordTextInput.OnShowPasswordClickListener() {
-            @Override public void onShowPasswordClick(boolean visible) {
-                passwordRepeatInput.setVisibility(visible ? View.GONE : View.VISIBLE);
-            }
-        });
 
         // Don't allow user to submit registration unless they've put in a username and password
         new NonEmptyValidator(new NonEmptyValidator.ValidationChangedCallback() {
@@ -177,11 +170,6 @@ public class CreateAccountActivity extends ThemedActionBarActivity {
     }
 
     @Override
-    protected void setTheme() {
-        setActionBarTheme();
-    }
-
-    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable("result", createAccountResult);
@@ -223,8 +211,7 @@ public class CreateAccountActivity extends ThemedActionBarActivity {
             email = getText(emailInput).toString();
         }
         String password = getText(passwordInput).toString();
-        String repeat = passwordInput.isPasswordVisible() ? password
-                : getText(passwordRepeatInput).toString();
+        String repeat = getText(passwordRepeatInput).toString();
 
         createAccountClient.request(wiki, getText(usernameInput).toString(),
                 password, repeat, token, email,
@@ -283,8 +270,7 @@ public class CreateAccountActivity extends ThemedActionBarActivity {
     private void validateThenCreateAccount() {
         clearErrors();
         ValidateResult result = validateInput(getText(usernameInput), getText(passwordInput),
-                getText(passwordRepeatInput), !passwordInput.isPasswordVisible(),
-                getText(emailInput));
+                getText(passwordRepeatInput), getText(emailInput));
 
         switch (result) {
             case INVALID_USERNAME:
@@ -319,13 +305,12 @@ public class CreateAccountActivity extends ThemedActionBarActivity {
     static ValidateResult validateInput(@NonNull CharSequence username,
                                          @NonNull CharSequence password,
                                          @NonNull CharSequence passwordRepeat,
-                                         boolean passwordRepeatEnabled,
                                          @NonNull CharSequence email) {
         if (!USERNAME_PATTERN.matcher(username).matches()) {
             return ValidateResult.INVALID_USERNAME;
         } else if (password.length() < PASSWORD_MIN_LENGTH) {
             return ValidateResult.INVALID_PASSWORD;
-        } else if (passwordRepeatEnabled && !passwordRepeat.toString().equals(password.toString())) {
+        } else if (!passwordRepeat.toString().equals(password.toString())) {
             return ValidateResult.PASSWORD_MISMATCH;
         } else if (!TextUtils.isEmpty(email) && !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             return ValidateResult.INVALID_EMAIL;
