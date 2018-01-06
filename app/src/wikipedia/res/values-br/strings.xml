@@ -312,7 +312,7 @@
   <string name="reading_list_item_delete_undo">Dizober</string>
   <string name="reading_list_deleted">%s dilamet</string>
   <string name="reading_lists_empty">Roll lenn ebet c\'hoazh.</string>
-  <string name="reading_lists_empty_message">Enrollañ pennadoù er rolloù lenn evit gallout lenn anezho diwezhatoc\'h, ezlinenn zoken.</string>
+  <string name="reading_lists_empty_message">Enrollañ pennadoù en ur roll da lenn diwezhatoc\'h evit gallout lenn anezho, ezlinenn zoken.</string>
   <string name="reading_lists_onboarding_intro">Krouiñ rolloù lenn evit ar pennadoù ho peus c\'hoant da lenn diwezhatoc\'h, ha pa vefec\'h ezlinenn !</string>
   <string name="reading_lists_onboarding_for_example">Da skouer</string>
   <string name="reading_lists_onboarding_example1">Lec\'hioù da weladenniñ</string>
@@ -338,7 +338,6 @@
   <string name="reading_lists_confirm_remote_delete_no">Ket</string>
   <string name="reading_list_article_save_in_progress">Emañ ar pennad o pellgargañ ha gallout a reot kaout anezhañ pa vo echuet.</string>
   <string name="reading_list_already_contains_selection">Er roll emañ an holl bajennoù dibabet dija.</string>
-  <string name="reading_list_added_articles_list_untitled">%d pennad ouzhpennet d\'ar roll lenn.</string>
   <string name="reading_list_added_articles_list_titled">%1$d pennad ouzhpennet da %2$s</string>
   <string name="reading_list_article_offline_message">{[PLURAL|one=Gallout a reot gwelet ar pennad-mañ ezlinenn hiviziken|Gallout a reot gwelet ar pennadoù-mañ ezlinenn hiviziken.</string>
   <plurals name="reading_list_article_not_offline_message">
@@ -370,11 +369,11 @@
   <string name="most_read_list_card_title">Gizioù ar mare</string>
   <string name="view_static_card_icon_content_description">Arlun ar gartenn</string>
   <string name="view_card_news_title">Er C\'heleier</string>
-  <plurals name="view_continue_reading_card_subtitle">
+  <plurals name="view_continue_reading_card_subtitle" fuzzy="true">
     <item quantity="one">Dec\'h</item>
     <item quantity="other">%d devezh zo</item>
   </plurals>
-  <string name="view_continue_reading_card_subtitle_today">Hiziv</string>
+  <string name="view_continue_reading_card_subtitle_today" fuzzy="true">Hiziv</string>
   <string name="view_announcement_card_negative_action">Ne\'m bo ket, trugarez</string>
   <string name="view_offline_card_text">N\'haller ket kargañ danvez pa vezer ezlinenn.</string>
   <string name="view_featured_article_card_title">Pennpennad</string>

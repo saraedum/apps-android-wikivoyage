@@ -146,7 +146,9 @@
   <string name="about_description">За прилогот „Википедија“</string>
   <string name="privacy_policy_description">Заштита на личните податоци</string>
   <string name="terms_of_use_description">Услови на употреба</string>
+  <string name="about_wikipedia_url">https://mk.wikipedia.org/wiki/Википедија:За_Википедија</string>
   <string name="privacy_policy_url">https://m.wikimediafoundation.org/wiki/Privacy_Policy/mk?uselang=mk</string>
+  <string name="offline_reading_and_data_url">https://www.mediawiki.org/wiki/Wikimedia_Apps/Android_FAQ#Offline_reading_and_data</string>
   <string name="terms_of_use_url">https://wikimediafoundation.org/wiki/Terms_of_Use/mk?uselang=mk</string>
   <string name="cc_by_sa_3_url">https://creativecommons.org/licenses/by-sa/3.0/deed.mk</string>
   <string name="cc_0_url">https://creativecommons.org/publicdomain/zero/1.0/deed.mk</string>
@@ -175,6 +177,8 @@
   <string name="edit_summary_tag_other_hint">Други начини на кои ја подобривте страницата</string>
   <string name="find_next">Најди следно</string>
   <string name="find_previous">Најди претходно</string>
+  <string name="find_first_occurence">Ова е првото јавување</string>
+  <string name="find_last_occurence">Ова е последното јавување</string>
   <string name="abusefilter_title_warn">Ова уредување може да е неконструктивно. Дали сигурно сакате да го објавите?</string>
   <string name="abusefilter_title_disallow">Не можете да го објавите уредувањево. Вратете се и изменето го.</string>
   <string name="abusefilter_text_warn">Автоматскиот филтер утврди дека уредувањево е потенцијално неконструктивно. Може да содржи едно од следниве:&lt;br /&gt;&lt;br /&gt;· Текст напишан со големи букви&lt;br /&gt;· Празнење на статии или спамирање&lt;br /&gt;· Нерелевантни надворешни врски или слики&lt;br /&gt;· Повторување на знаци</string>
@@ -286,6 +290,10 @@
   <string name="color_theme_select">Изглед</string>
   <string name="color_theme_light">Светол</string>
   <string name="color_theme_dark">Темен</string>
+  <string name="color_theme_black">Црн</string>
+  <string name="color_theme_test_title">Примерен текст</string>
+  <string name="color_theme_test_text">Повлечете го лизгачот за да ја измените големината на текстот во статиите што ги читате. За да зададете големина на фонтот во целиот прилог, сменете го во системските поставки за фонт.</string>
+  <string name="preference_title_app_theme">Изглед на прилогот</string>
   <string name="preference_title_color_theme">Темен изглед</string>
   <string name="preference_summary_color_theme">Префрлете се на темниот изглед на прилогот</string>
   <string name="text_size_increase">Зголеми текст</string>
@@ -326,8 +334,8 @@
   <string name="reading_list_item_delete_undo">Откажи</string>
   <string name="reading_list_deleted">%s е избришана</string>
   <string name="reading_lists_empty">Засега нема списоци за читање</string>
-  <string name="reading_lists_empty_message">Зачувувајте ги статиите во списоци за читање, за да можете да им се навратите подоцна, дури и кога немате линија.</string>
-  <string name="reading_lists_onboarding_intro">Создајте списоци на статии што сакате да ги читате подоцна, дури и кога не сте на семрежјето.</string>
+  <string name="reading_lists_empty_message" fuzzy="true">Зачувувајте ги статиите во списоци за читање, за да можете да им се навратите подоцна, дури и кога немате линија.</string>
+  <string name="reading_lists_onboarding_intro" fuzzy="true">Правете списоци на статии што сакате да ги читате подоцна, дури и кога не сте на семрежјето.</string>
   <string name="reading_lists_onboarding_for_example">На пример</string>
   <string name="reading_lists_onboarding_example1">Места за посета</string>
   <string name="reading_lists_onboarding_example2">Омилени животни</string>
@@ -353,7 +361,6 @@
   <string name="reading_lists_confirm_remote_delete_no">Не</string>
   <string name="reading_list_article_save_in_progress">Преземањето на статијата е во тек. Ќе биде достапна вонмрежно кога ќе заврши.</string>
   <string name="reading_list_already_contains_selection">Избраниот список веќе ги содржи сите одбрани страници.</string>
-  <string name="reading_list_added_articles_list_untitled">Додадени %d статии во списокот за читање.</string>
   <string name="reading_list_added_articles_list_titled">Додадени %1$d статии во %2$s</string>
   <plurals name="reading_list_article_offline_message">
     <item quantity="one">Статијава сега ќе биде достапна вонмрежно.</item>
@@ -366,7 +373,7 @@
   <string name="user_option_sync_label">Поставки</string>
   <string name="notification_button_view_user">Разговарајте со корисникот</string>
   <string name="notification_talk_title">Нова порака на Википедија</string>
-  <string name="notification_talk">&lt;em&gt;%1$s&lt;/em&gt; ви остави порака на вашата страница за разговор &lt;strong&gt;%2$s&lt;/strong&gt;</string>
+  <string name="notification_talk">&lt;em&gt;%1$s&lt;/em&gt; ви остави порака на вашата разговорна страница &lt;strong&gt;%2$s&lt;/strong&gt;</string>
   <string name="notification_reverted_title">Отповикано уредување</string>
   <string name="notification_reverted">Вашето уредување на статијата &lt;strong&gt;%2$s&lt;/strong&gt; е отповикано од &lt;em&gt;%1$s&lt;/em&gt;.</string>
   <string name="notification_thanks_title">Добивте благодарност!</string>
@@ -375,9 +382,9 @@
   <string name="notification_channel_description">Напредок на усогласувањето</string>
   <string name="notification_syncing_title">Усогласувам %1$d статии…</string>
   <string name="notification_syncing_description">преостануваат %1$d статии</string>
-  <string name="notification_syncing_pause_button" fuzzy="true">ПАУЗИРАЈ</string>
-  <string name="notification_syncing_resume_button" fuzzy="true">ПРОДОЛЖИ</string>
-  <string name="notification_syncing_cancel_button" fuzzy="true">ОТКАЖИ</string>
+  <string name="notification_syncing_pause_button">Паузирај</string>
+  <string name="notification_syncing_resume_button">Продолжи</string>
+  <string name="notification_syncing_cancel_button">Откажи</string>
   <string name="view_continue_reading_card_title">Продолжете со читање</string>
   <string name="view_because_you_read_card_title">Бидејќи читавте</string>
   <string name="view_random_card_title">Случаен избирач</string>
@@ -399,18 +406,32 @@
   <string name="view_static_card_icon_content_description">Икона за картичка</string>
   <string name="view_card_news_title">Вести</string>
   <plurals name="view_continue_reading_card_subtitle">
-    <item quantity="one">Вчера</item>
-    <item quantity="other">Пред %d дена</item>
+    <item quantity="one">вчера</item>
+    <item quantity="other">пред %d дена</item>
   </plurals>
-  <string name="view_continue_reading_card_subtitle_today">Денес</string>
+  <string name="view_continue_reading_card_subtitle_today">денес</string>
+  <string name="view_continue_reading_card_subtitle_read_date">Прочитано %s</string>
   <string name="view_announcement_card_negative_action">Не, благодарам</string>
   <string name="view_offline_card_text">Содржината не може да се вчита додека не сте на линија.</string>
   <string name="view_featured_article_card_title">Избрана статија</string>
   <string name="view_featured_article_footer_save_button_label">Зачувај</string>
   <string name="view_featured_article_footer_saved_button_label">Зачувано</string>
   <string name="feed_configure_menu_title">Постави картички</string>
-  <string name="feed_configure_activity_title">Постави картички за „Истражи“</string>
-  <string name="feed_configure_menu_reset">Врати по основно</string>
+  <string name="feed_configure_activity_title">Прилагоди го доводот</string>
+  <string name="feed_configure_menu_reset">Поврати основен изглед</string>
+  <string name="feed_configure_menu_select_all">Избери сè</string>
+  <string name="feed_configure_menu_deselect_all">Поништи избрано</string>
+  <string name="feed_item_type_news">Статии за тековни настани</string>
+  <string name="feed_item_type_on_this_day">Настани од историјата на овој ден</string>
+  <string name="feed_item_type_continue_reading">Брза врска кон статија отворена во јазиче</string>
+  <string name="feed_item_type_because_you_read">Предлози според неодамна прочитана статија од вашата историја</string>
+  <string name="feed_item_type_featured_article">Статија на денот на Википедија</string>
+  <string name="feed_item_type_trending">Најпосетени статии за денес</string>
+  <string name="feed_item_type_featured_image">Слика на денот од Ризницата</string>
+  <string name="feed_item_type_main_page">Главна страница на Википедија со содржини на денот</string>
+  <string name="feed_item_type_randomizer">Дава случајни статии за читање</string>
+  <string name="feed_configure_onboarding_action">Прилагоди</string>
+  <string name="feed_configure_onboarding_text">&lt;strong&gt;Прилагодете си го тековникот „Истражи“&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;Можете да изберете што да се прикажува во тековникот и да им дадете предност на вашите омилени видови содржини.</string>
   <string name="description_edit_text_hint">Опис на насловот</string>
   <string name="description_edit_save">Објави</string>
   <string name="description_edit_add_description">Додај опис на насловот</string>
@@ -503,26 +524,33 @@
   <string name="onboarding_skip">Прескокни</string>
   <string name="onboarding_continue">Продолжи</string>
   <string name="onboarding_get_started">Започнете</string>
+  <string name="onboarding_welcome_title">Слободната енциклопедија</string>
+  <string name="onboarding_welcome_text">Википедија е соработно дело кое го пишуваат доброволци и се состои од преку 40 милиони статии на речиси 300 различни јазици. &lt;a href=\"#about\"&gt;Дознајте повеќе&lt;/a&gt;</string>
   <string name="onboarding_explore_title">Нови начини на истражување</string>
-  <string name="onboarding_explore_text">Откријте ги избраните статии, тековните изгледи и предлозите за читање во каналот „Истражи“.</string>
+  <string name="onboarding_explore_text">Нурнете се длабоко во Википедија со постојано подновениот тековник „Истражи“.&lt;br/&gt; &lt;b&gt;Прилагодете&lt;/b&gt; го тековниот според вашите интереси — дознајте за историските настани кои се случиле &lt;b&gt;На денешен ден&lt;/b&gt; или пробајте си ја среќата со &lt;b&gt;Случајна&lt;/b&gt;.</string>
+  <string name="onboarding_save_to_reading_lists_title">Зачувување во списоци за читање</string>
+  <string name="onboarding_save_to_reading_lists_text">Правете списоци за читање од статиите што сакате да ги читате подоцна, дури и кога не сте на семрежјето.</string>
   <string name="onboarding_reading_list_sync_title">Списоци за читање со усогласување</string>
   <string name="onboarding_reading_list_sync_text">Создавајте списоци за читање од статиите што сакате да ги прочитате подоцна, дури и кога немате линија. &lt;a href=\"#login\"&gt;Најавете се или направете&lt;/a&gt; ваша сметка на Википедија за да ги запазите списоците.</string>
   <string name="onboarding_analytics_title">Испраќај анонимни податоци</string>
   <string name="onboarding_analytics_text">Помогнете ни да ја подобриме алатката со тоа што ќе добиваме информации како ја користите. Насобраните податоци ќе бидат анонимни. &lt;a href=\"#privacy\"&gt;Дознајте повеќе&lt;/a&gt;</string>
+  <string name="onboarding_analytics_offline_text">Помогнете ни да го подобриме прилогот со тоа што ќе добиваме информации како го користите. Насобраните податоци ќе бидат анонимни. &lt;a href=\"#offline\"&gt;Дознајте повеќе&lt;/a&gt;</string>
   <string name="onboarding_analytics_switch_title">Испраќај податоци за употреба</string>
   <string name="onboarding_create_account_sync">Усогласи списоци за читање</string>
   <string name="onboarding_create_account_contributions">Бидете во тек со вашите придонеси</string>
   <string name="onboarding_create_account_preferences">Зачувајете ги вашите поставки</string>
+  <string name="onboarding_got_it">Јасно</string>
   <string name="app_shortcuts_random">Случајна</string>
   <string name="app_shortcuts_continue_reading">Продолжете со читање</string>
   <string name="app_shortcuts_search">Пребарај</string>
+  <string name="more_trending_text">Повеќе вакви</string>
   <string name="all_trending_text">Сите најчитани страници на %1$s</string>
   <string name="top_on_this_day">Најчитано на %1$s</string>
   <string name="on_this_day_card_title">На денешен ден</string>
-  <string name="more_events_text">Повеќе историски настани на денешен ден</string>
-  <string name="events_count_text">%1$s настани од %2$s до %3$d г.</string>
-  <string name="on_this_day">На денешен ден</string>
+  <string name="more_events_text">Повеќе на овој ден</string>
+  <string name="events_count_text">%1$s настани од %2$s–%3$d</string>
   <string name="this_year">Годинава</string>
+  <string name="back_to_top">Најгоре</string>
   <plurals name="diff_years">
     <item quantity="one">Лани</item>
     <item quantity="other">Пред %d години</item>

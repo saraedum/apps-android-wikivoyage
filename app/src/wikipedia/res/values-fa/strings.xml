@@ -326,8 +326,8 @@
   <string name="reading_list_item_delete_undo">واگردانی</string>
   <string name="reading_list_deleted">%s حذف شد</string>
   <string name="reading_lists_empty">هنوز فهرست مطالعه‌ای وجود ندارد.</string>
-  <string name="reading_lists_empty_message">ذخیره مقاله در فهرست خواندن تا بتوانید آنها را بعدا مطالعه کنید، حتی زمانی که برخط نیستید.</string>
-  <string name="reading_lists_onboarding_intro">درست کردن فهرست مطالعه برای مطالعه در زمانی دیگر حتی زمانی که به اینترنت دسترسی ندارید!</string>
+  <string name="reading_lists_empty_message" fuzzy="true">ذخیره مقاله در فهرست خواندن تا بتوانید آنها را بعدا مطالعه کنید، حتی زمانی که برخط نیستید.</string>
+  <string name="reading_lists_onboarding_intro" fuzzy="true">درست کردن فهرست مطالعه برای مطالعه در زمانی دیگر حتی زمانی که به اینترنت دسترسی ندارید!</string>
   <string name="reading_lists_onboarding_for_example">برای مثال</string>
   <string name="reading_lists_onboarding_example1">مکان برای مشاهده</string>
   <string name="reading_lists_onboarding_example2">حیوانات مورد علاقه</string>
@@ -353,7 +353,6 @@
   <string name="reading_lists_confirm_remote_delete_no">خیر</string>
   <string name="reading_list_article_save_in_progress">بارگیری مقاله در حال انجام است و به صورت آفلاین قابل دسترس خواهد بود.</string>
   <string name="reading_list_already_contains_selection">فهرست انتخاب‌شده همیشه شامل همهٔ صفحات انتخاب‌شده‌ است.</string>
-  <string name="reading_list_added_articles_list_untitled">%d مقاله به فهرست خواندن اضافه شد.</string>
   <string name="reading_list_added_articles_list_titled">%1$d مقاله به %2$s اضافه شد</string>
   <plurals name="reading_list_article_offline_message">
     <item quantity="one">اکنون در حالت آفلاین مقاله در دسترس است.</item>
@@ -393,19 +392,19 @@
   <string name="most_read_list_card_title">گریش‌ها</string>
   <string name="view_static_card_icon_content_description">آیکون کارت</string>
   <string name="view_card_news_title">در اخبار</string>
-  <plurals name="view_continue_reading_card_subtitle">
+  <plurals name="view_continue_reading_card_subtitle" fuzzy="true">
     <item quantity="one">دیروز</item>
     <item quantity="other">%d روز پیش</item>
   </plurals>
-  <string name="view_continue_reading_card_subtitle_today">امروز</string>
+  <string name="view_continue_reading_card_subtitle_today" fuzzy="true">امروز</string>
   <string name="view_announcement_card_negative_action">نه ممنون</string>
   <string name="view_offline_card_text">محتوی در زمان آفلاین در دسترس نیست.</string>
   <string name="view_featured_article_card_title">مقاله برگزیده</string>
   <string name="view_featured_article_footer_save_button_label">ذخیره</string>
   <string name="view_featured_article_footer_saved_button_label">ذخیره شد</string>
   <string name="feed_configure_menu_title">کارت‌های تنظیم</string>
-  <string name="feed_configure_activity_title">برگه‌های تنظیم کاوش</string>
-  <string name="feed_configure_menu_reset">بازگردانی به پیش‌فرض</string>
+  <string name="feed_configure_activity_title" fuzzy="true">برگه‌های تنظیم کاوش</string>
+  <string name="feed_configure_menu_reset" fuzzy="true">بازگردانی به پیش‌فرض</string>
   <string name="description_edit_text_hint">توضیحات عنوان</string>
   <string name="description_edit_save">منتشر</string>
   <string name="description_edit_add_description">افزودن توضیحات عنوان</string>
@@ -498,7 +497,7 @@
   <string name="onboarding_continue">ادامه</string>
   <string name="onboarding_get_started">شروع شد</string>
   <string name="onboarding_explore_title">روش‌های جدید برای کاوش</string>
-  <string name="onboarding_explore_text">کاوش خصوصیات مقالات، رتبه موضوعات و خواندن پیشنهادها در بازخورد کاوش.</string>
+  <string name="onboarding_explore_text" fuzzy="true">کاوش خصوصیات مقالات، رتبه موضوعات و خواندن پیشنهادها در بازخورد کاوش.</string>
   <string name="onboarding_reading_list_sync_title">مطالعهٔ فهرست با همسان‌سازی</string>
   <string name="onboarding_reading_list_sync_text">ایجاد فهرست‌های مطالعه از مقالاتی که شما قصد مطالعهٔ آنها را برای بعدا دارید، با وجودی که آفلاین هستید &lt;a href=\"#login\"&gt;به سامانه وارد شوید&lt;/a&gt; یا حساب کاربری ویکی‌پدیا ایجاد کنید تا از فهرست‌های خواند پشتیبانی داشته باشید.</string>
   <string name="onboarding_analytics_title">ارسال اطلاعات ناشناس</string>
@@ -513,9 +512,8 @@
   <string name="all_trending_text">همهٔ مقالات پربیننده در %1$s</string>
   <string name="top_on_this_day">بالاترین در %1$s</string>
   <string name="on_this_day_card_title">در این روز</string>
-  <string name="more_events_text">وقایع تاریخی بیشتر برای این روز</string>
-  <string name="events_count_text">%1$s رویداد از %2$s - %3$d</string>
-  <string name="on_this_day">در این روز</string>
+  <string name="more_events_text" fuzzy="true">وقایع تاریخی بیشتر برای این روز</string>
+  <string name="events_count_text" fuzzy="true">%1$s رویداد از %2$s - %3$d</string>
   <string name="this_year">امسال</string>
   <plurals name="diff_years">
     <item quantity="one">سال پیش</item>

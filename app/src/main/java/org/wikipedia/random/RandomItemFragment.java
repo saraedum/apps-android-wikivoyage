@@ -16,13 +16,14 @@ import org.wikipedia.R;
 import org.wikipedia.WikipediaApp;
 import org.wikipedia.dataclient.restbase.page.RbPageSummary;
 import org.wikipedia.page.PageTitle;
+import org.wikipedia.util.log.L;
 import org.wikipedia.views.FaceAndColorDetectImageView;
 import org.wikipedia.views.GoneIfEmptyTextView;
+import org.wikipedia.views.WikiErrorView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.Unbinder;
 import retrofit2.Call;
 
 public class RandomItemFragment extends Fragment {
@@ -32,10 +33,12 @@ public class RandomItemFragment extends Fragment {
     @BindView(R.id.view_featured_article_card_article_title) TextView articleTitleView;
     @BindView(R.id.view_featured_article_card_article_subtitle) GoneIfEmptyTextView articleSubtitleView;
     @BindView(R.id.view_featured_article_card_extract) TextView extractView;
-    private Unbinder unbinder;
+    @BindView(R.id.random_item_error_view) WikiErrorView errorView;
+
 
     @Nullable private RbPageSummary summary;
     private int pagerPosition = -1;
+    private View view;
 
     @NonNull
     public static RandomItemFragment newInstance() {
@@ -50,14 +53,33 @@ public class RandomItemFragment extends Fragment {
         return pagerPosition;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.fragment_random_item, container, false);
-        unbinder = ButterKnife.bind(this, view);
-        imageView.setLegacyVisibilityHandlingEnabled(true);
-        setContents(null);
+
+        if (view == null) {
+            view = inflater.inflate(R.layout.fragment_random_item, container, false);
+            ButterKnife.bind(this, view);
+            imageView.setLegacyVisibilityHandlingEnabled(true);
+            setContents(null);
+            errorView.setBackClickListener(v -> getActivity().finish());
+            errorView.setRetryClickListener(v -> {
+                progressBar.setVisibility(View.VISIBLE);
+                getRandomPage();
+            });
+            getRandomPage();
+        }
+        return view;
+    }
+
+    private void getRandomPage() {
 
         new RandomSummaryClient().request(WikipediaApp.getInstance().getWikiSite(), new RandomSummaryClient.Callback() {
             @Override
@@ -70,17 +92,20 @@ public class RandomItemFragment extends Fragment {
 
             @Override
             public void onError(@NonNull Call<RbPageSummary> call, @NonNull Throwable t) {
-                // TODO: show error.
+                if (!isAdded()) {
+                    return;
+                }
+                setErrorState(t);
             }
         });
-        return view;
     }
 
-    @Override
-    public void onDestroyView() {
-        unbinder.unbind();
-        unbinder = null;
-        super.onDestroyView();
+    private void setErrorState(@NonNull Throwable t) {
+        L.e(t);
+        errorView.setError(t);
+        errorView.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
+        containerView.setVisibility(View.GONE);
     }
 
     @OnClick(R.id.view_featured_article_card_text_container) void onClick(View v) {
@@ -90,6 +115,7 @@ public class RandomItemFragment extends Fragment {
     }
 
     public void setContents(@Nullable RbPageSummary pageSummary) {
+        errorView.setVisibility(View.GONE);
         containerView.setVisibility(pageSummary == null ? View.GONE : View.VISIBLE);
         progressBar.setVisibility(pageSummary == null ? View.VISIBLE : View.GONE);
         if (summary == pageSummary) {
@@ -106,7 +132,12 @@ public class RandomItemFragment extends Fragment {
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                extractView.setMaxLines(extractView.getHeight() / extractView.getLineHeight());
+                if (!isAdded() || extractView == null) {
+                    return;
+                }
+                int maxLines = extractView.getHeight() / extractView.getLineHeight() - 1;
+                final int minLines = 3;
+                extractView.setMaxLines(Math.max(maxLines, minLines));
                 extractView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });

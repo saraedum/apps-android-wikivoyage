@@ -146,7 +146,9 @@
   <string name="about_description">Über die Wikipedia-App</string>
   <string name="privacy_policy_description">Datenschutzrichtlinie</string>
   <string name="terms_of_use_description">Nutzungsbedingungen</string>
+  <string name="about_wikipedia_url">https://de.m.wikipedia.org/wiki/Wikipedia:Über_Wikipedia</string>
   <string name="privacy_policy_url" fuzzy="true">https://meta.wikimedia.org/wiki/Privacy_policy/de</string>
+  <string name="offline_reading_and_data_url">https://www.mediawiki.org/wiki/Special:MyLanguage/Wikimedia_Apps/Android_FAQ#Offline_reading_and_data</string>
   <string name="terms_of_use_url">https://wikimediafoundation.org/wiki/Terms_of_Use/de</string>
   <string name="cc_by_sa_3_url">https://creativecommons.org/licenses/by-sa/3.0/deed.de</string>
   <string name="cc_0_url">https://creativecommons.org/publicdomain/zero/1.0/deed.de</string>
@@ -175,6 +177,8 @@
   <string name="edit_summary_tag_other_hint">Andere Wege, wie du die Seite verbessert hast</string>
   <string name="find_next">Nächste finden</string>
   <string name="find_previous">Vorherige finden</string>
+  <string name="find_first_occurence">Dies ist das erste Auftreten</string>
+  <string name="find_last_occurence">Dies ist das letzte Auftreten</string>
   <string name="abusefilter_title_warn">Dies könnte eine unkonstruktive Bearbeitung sein. Bist du sicher, dass du sie veröffentlichen möchtest?</string>
   <string name="abusefilter_title_disallow">Du kannst diese Bearbeitung nicht veröffentlichen. Bitte gehe zurück und ändere sie ab.</string>
   <string name="abusefilter_text_warn">Ein automatischer Filter hat diese Bearbeitung als potenziell unkonstruktiv identifiziert. Sie könnte eine oder mehrere der folgenden Dinge beinhalten:&lt;br /&gt;&lt;br /&gt;· Eingeben aller Kapitälchen&lt;br /&gt;· Artikel leeren oder Einbringen von Spam&lt;br /&gt;· Irrelevante externe Links oder Bilder&lt;br /&gt;· Wiederholte Zeichen</string>
@@ -286,6 +290,10 @@
   <string name="color_theme_select">Farbschema</string>
   <string name="color_theme_light">Hell</string>
   <string name="color_theme_dark">Dunkel</string>
+  <string name="color_theme_black">Schwarz</string>
+  <string name="color_theme_test_title">Beispieltext</string>
+  <string name="color_theme_test_text">Ziehe den Schieber, um die Größe des Textes zu ändern, der für das Lesen von Artikeln verwendet wird. Um die Textgröße auch für den Rest der App festzulegen, ändere die Systemtextgröße.</string>
+  <string name="preference_title_app_theme">Farbschema der App</string>
   <string name="preference_title_color_theme">Dunkles Farbschema</string>
   <string name="preference_summary_color_theme">Wechsle zur Verwendung der App in einem dunklen Farbschema</string>
   <string name="text_size_increase">Text vergrößern</string>
@@ -326,8 +334,8 @@
   <string name="reading_list_item_delete_undo">Rückgängig</string>
   <string name="reading_list_deleted">%s gelöscht</string>
   <string name="reading_lists_empty">Es gibt noch keine Leselisten.</string>
-  <string name="reading_lists_empty_message">Speichere Artikel in Leselisten, so dass du sie später ansehen kannst, auch wenn du offline bist.</string>
-  <string name="reading_lists_onboarding_intro">Erstelle Leselisten von Artikeln, die du später lesen möchtest, auch wenn du offline bist!</string>
+  <string name="reading_lists_empty_message">Füge Artikel einer Liste zum späteren Lesen hinzu, auch wenn du offline bist.</string>
+  <string name="reading_lists_onboarding_intro">Füge Artikel einer Liste zum späteren Lesen hinzu, auch wenn du offline bist!</string>
   <string name="reading_lists_onboarding_for_example">Zum Beispiel</string>
   <string name="reading_lists_onboarding_example1">Zu besuchende Orte</string>
   <string name="reading_lists_onboarding_example2">Lieblingstiere</string>
@@ -353,7 +361,6 @@
   <string name="reading_lists_confirm_remote_delete_no">Nein</string>
   <string name="reading_list_article_save_in_progress">Der Artikel wird derzeit heruntergeladen und wird offline verfügbar sein, wenn der Download abgeschlossen ist.</string>
   <string name="reading_list_already_contains_selection">Die ausgewählte Liste enthält bereits alle der ausgewählten Seiten.</string>
-  <string name="reading_list_added_articles_list_untitled">%d Artikel zur Leseliste hinzugefügt.</string>
   <string name="reading_list_added_articles_list_titled">%1$d Artikel zu %2$s hinzugefügt</string>
   <plurals name="reading_list_article_offline_message">
     <item quantity="one">Dieser Artikel ist jetzt offline verfügbar.</item>
@@ -403,14 +410,28 @@
     <item quantity="other">Vor %d Tagen</item>
   </plurals>
   <string name="view_continue_reading_card_subtitle_today">Heute</string>
+  <string name="view_continue_reading_card_subtitle_read_date">%s gelesen</string>
   <string name="view_announcement_card_negative_action">Nein, danke</string>
   <string name="view_offline_card_text">Der Inhalt kann nicht geladen werden, während du offline bist.</string>
   <string name="view_featured_article_card_title">Vorgestellter Artikel</string>
   <string name="view_featured_article_footer_save_button_label">Speichern</string>
   <string name="view_featured_article_footer_saved_button_label">Gespeichert</string>
   <string name="feed_configure_menu_title">Karten konfigurieren</string>
-  <string name="feed_configure_activity_title">Entdecken-Karten konfigurieren</string>
-  <string name="feed_configure_menu_reset">Auf die Standards zurücksetzen</string>
+  <string name="feed_configure_activity_title">Den Feed anpassen</string>
+  <string name="feed_configure_menu_reset">Standardansicht wiederherstellen</string>
+  <string name="feed_configure_menu_select_all">Alle auswählen</string>
+  <string name="feed_configure_menu_deselect_all">Alle abwählen</string>
+  <string name="feed_item_type_news">Artikel über aktuelle Ereignisse</string>
+  <string name="feed_item_type_on_this_day">Ereignisse in der Vergangenheit an diesem Tag</string>
+  <string name="feed_item_type_continue_reading">Schneller Link zurück zum Lesen eines offenen Artikels in einer deiner Registerkarten</string>
+  <string name="feed_item_type_because_you_read">Vorschläge basierend auf einem kürzlich gelesenen Artikel aus deinem Verlauf</string>
+  <string name="feed_item_type_featured_article">Täglich auf Wikipedia vorgestellter Artikel</string>
+  <string name="feed_item_type_trending">Täglich meistgelesene Artikel</string>
+  <string name="feed_item_type_featured_image">Täglich auf Wikimedia Commons vorgestelltes Bild</string>
+  <string name="feed_item_type_main_page">Hauptseite der Wikipedia mit täglich vorgestelltem Inhalt</string>
+  <string name="feed_item_type_randomizer">Zufällige Artikel zum Lesen erzeugen</string>
+  <string name="feed_configure_onboarding_action">Anpassen</string>
+  <string name="feed_configure_onboarding_text">&lt;strong&gt;Passe deinen Entdecken-Feed an&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;Du kannst jetzt auswählen, was auf deinem Feed angezeigt werden soll und auch deine Lieblingsinhalte priorisieren.</string>
   <string name="description_edit_text_hint">Titelbeschreibung</string>
   <string name="description_edit_save">Veröffentlichen</string>
   <string name="description_edit_add_description">Titelbeschreibung hinzufügen</string>
@@ -503,26 +524,33 @@
   <string name="onboarding_skip">Überspringen</string>
   <string name="onboarding_continue">Fortfahren</string>
   <string name="onboarding_get_started">Anfangen</string>
+  <string name="onboarding_welcome_title">Die freie Enzyklopädie</string>
+  <string name="onboarding_welcome_text">Wikipedia wird kollaborativ von Freiwilligen erstellt und besteht aus mehr als 40 Millionen Artikeln in fast 300 unterschiedlichen Sprachen. &lt;a href=\"#about\"&gt;Mehr erfahren&lt;/a&gt;</string>
   <string name="onboarding_explore_title">Neue Wege zum Entdecken</string>
-  <string name="onboarding_explore_text">Entdecke vorgestellte Artikel, beliebte Themen und Lesevorschläge auf dem Entdecken-Feed.</string>
+  <string name="onboarding_explore_text">Tauche in das Wikipedia-Kaninchenloch ein mit einem ständig aktuellen Entdecken-Feed.&lt;br/&gt; &lt;b&gt;Passe&lt;/b&gt; den Feed deinen Interessen an – ob er dir historische Ereignisse &lt;b&gt;An diesem Tag&lt;/b&gt; nahebringt oder wirf den Würfel mit &lt;b&gt;Zufällig&lt;/b&gt;.</string>
+  <string name="onboarding_save_to_reading_lists_title">Zu den Leselisten speichern</string>
+  <string name="onboarding_save_to_reading_lists_text">Erstelle Leselisten von Artikeln, die du später lesen möchtest, auch wenn du offline bist.</string>
   <string name="onboarding_reading_list_sync_title">Leselisten mit Synchronisierung</string>
   <string name="onboarding_reading_list_sync_text">Erstelle Leselisten von Artikeln, die du später lesen möchtest, auch wenn du offline bist. &lt;a href=\"#login\"&gt;Melde dich an oder erstelle&lt;/a&gt; ein Wikipedia-Benutzerkonto, damit deine Leselisten immer gesichert werden.</string>
   <string name="onboarding_analytics_title">Anonymisierte Daten senden</string>
   <string name="onboarding_analytics_text">Hilf mit, die App besser zu machen, indem du uns wissen lässt, wie du sie nutzt. Die gesammelten Daten sind anonym. &lt;a href=\"#privacy\"&gt;Mehr erfahren&lt;/a&gt;</string>
+  <string name="onboarding_analytics_offline_text">Hilf uns dabei, die App zu verbessern, indem du uns wissen lässt, wie du sie nutzt. Die gesammelten Daten sind anonym. &lt;a href=\"#offline\"&gt;Mehr erfahren&lt;/a&gt;</string>
   <string name="onboarding_analytics_switch_title">Nutzungsdaten senden</string>
   <string name="onboarding_create_account_sync">Synchronisiere deine Leselisten</string>
   <string name="onboarding_create_account_contributions">Verfolge deine Beiträge</string>
   <string name="onboarding_create_account_preferences">Speichere deine Einstellungen</string>
+  <string name="onboarding_got_it">Verstanden</string>
   <string name="app_shortcuts_random">Zufällig</string>
   <string name="app_shortcuts_continue_reading">Mit dem Lesen fortfahren</string>
   <string name="app_shortcuts_search">Suchen</string>
+  <string name="more_trending_text">Mehr wie dies</string>
   <string name="all_trending_text">Alle beliebten Artikel am %1$s</string>
   <string name="top_on_this_day">Beliebt am %1$s</string>
   <string name="on_this_day_card_title">Heute</string>
-  <string name="more_events_text">Weitere historische Ereignisse an diesem Tag</string>
+  <string name="more_events_text">Mehr an diesem Tag</string>
   <string name="events_count_text">%1$s Ereignisse von %2$s bis %3$d</string>
-  <string name="on_this_day">Heute</string>
   <string name="this_year">Dieses Jahr</string>
+  <string name="back_to_top">Zurück nach oben</string>
   <plurals name="diff_years">
     <item quantity="one">Letztes Jahr</item>
     <item quantity="other">Vor %d Jahren</item>

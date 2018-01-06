@@ -5,6 +5,7 @@
   <string name="app_name_alpha">विकिपीडिया अल्फा</string>
   <string name="wikimedia">विकिमिडिया</string>
   <string name="search_hint">विकिपीडिया मध्ये शोधा</string>
+  <string name="search_hint_search_history">इतिहास शोधा</string>
   <string name="nav_item_history">इतिहास</string>
   <string name="error_network_error">आंतरजालाशी जुळू शकत नाही.</string>
   <string name="page_error_retry">पुन्हा प्रयत्न करा</string>
@@ -252,7 +253,7 @@
   <string name="reading_list_deleted">%s वगळले</string>
   <string name="reading_lists_empty" fuzzy="true">येथे वाचन याद्या नाहीत.</string>
   <string name="reading_lists_empty_message" fuzzy="true">आपण न्याहाळत असलेले लेख वाचन यादीत नियोजित करा ! लेख न्याहाळत असतांना, तो आपल्या वाचनयादीत जोडण्यास,लेखाच्या खालच्या बाजूस असणाऱ्या बुकमार्क साधनपट्टीवर थपकवा.</string>
-  <string name="reading_lists_onboarding_intro">जरी आपण विनाजाल असाल तरीही,आपणास नंतर वाचावयाच्या लेखांची वाचनयादी तयार करा!</string>
+  <string name="reading_lists_onboarding_intro" fuzzy="true">जरी आपण विनाजाल असाल तरीही,आपणास नंतर वाचावयाच्या लेखांची वाचनयादी तयार करा!</string>
   <string name="reading_lists_onboarding_for_example">उदाहरणार्थ</string>
   <string name="reading_lists_onboarding_example1">भेट द्यावयाची स्थाने</string>
   <string name="reading_lists_onboarding_example2">आवडते पशू</string>
@@ -274,7 +275,7 @@
   <string name="feed">शोध करा</string>
   <string name="view_card_footer_button">अधिक बघा</string>
   <string name="view_card_news_title">बातम्यांमध्ये</string>
-  <string name="view_continue_reading_card_subtitle_today">आज</string>
+  <string name="view_continue_reading_card_subtitle_today" fuzzy="true">आज</string>
   <string name="view_announcement_card_negative_action">नाही धन्यवाद</string>
   <string name="view_featured_article_card_title">विशेष लेख</string>
   <string name="view_featured_article_footer_save_button_label">जतन करा</string>

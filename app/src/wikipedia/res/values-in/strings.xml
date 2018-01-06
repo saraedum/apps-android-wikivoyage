@@ -146,7 +146,9 @@
   <string name="about_description">Tentang aplikasi Wikipedia</string>
   <string name="privacy_policy_description">Kebijakan privasi</string>
   <string name="terms_of_use_description">Ketentuan penggunaan</string>
+  <string name="about_wikipedia_url">https://id.m.wikipedia.org/wiki/Wikipedia:Perihal</string>
   <string name="privacy_policy_url">https://m.wikimediafoundation.org/wiki/Privacy_policy</string>
+  <string name="offline_reading_and_data_url">https://www.mediawiki.org/wiki/Wikimedia_Apps/Android_FAQ/id#Baca_secara_luring_dan_data</string>
   <string name="terms_of_use_url">https://wikimediafoundation.org/wiki/Terms_of_Use/id</string>
   <string name="cc_by_sa_3_url">https://creativecommons.org/licenses/by-sa/3.0/deed.id</string>
   <string name="cc_0_url">https://creativecommons.org/publicdomain/zero/1.0/</string>
@@ -175,6 +177,8 @@
   <string name="edit_summary_tag_other_hint">Cara lain Anda menyempurnakan halaman</string>
   <string name="find_next">Cari berikutnya</string>
   <string name="find_previous">Cari sebelumnya</string>
+  <string name="find_first_occurence">Ini adalah kejadian pertama</string>
+  <string name="find_last_occurence">Ini adalah kejadian terakhir</string>
   <string name="abusefilter_title_warn">Ini mungkin suntingan yang tidak konstruktif. Apakah Anda yakin ingin menerbitkannya?</string>
   <string name="abusefilter_title_disallow">Anda tidak dapat menerbitkan suntingan ini. Silakan kembali dan mengubahnya.</string>
   <string name="abusefilter_text_warn">Penyaring otomatis telah mengidentifikasi suntingan ini sebagai berpotensi tidak konstruktif. Ini mungkin berisi satu atau lebih hal berikut:&lt;br /&gt;&lt;br /&gt;· Mengetik dengan semua huruf besar&lt;br /&gt;· Mengosongkan artikel atau spam &lt;br /&gt;· Pranala luar atau gambar yang tidak relevan &lt;br /&gt;· Karakter berulang</string>
@@ -286,6 +290,10 @@
   <string name="color_theme_select">Tema</string>
   <string name="color_theme_light">Terang</string>
   <string name="color_theme_dark">Gelap</string>
+  <string name="color_theme_black">Hitam</string>
+  <string name="color_theme_test_title">Contoh teks</string>
+  <string name="color_theme_test_text">Seret penggeser untuk mengubah ukuran teks yang digunakan saat membaca artikel. Untuk mengatur ukuran teks di seluruh aplikasi lainnya, ubah ukuran teks sistem Anda.</string>
+  <string name="preference_title_app_theme">Tema aplikasi</string>
   <string name="preference_title_color_theme">Tema gelap</string>
   <string name="preference_summary_color_theme">Beralih menggunakan tema warna gelap aplikasi</string>
   <string name="text_size_increase">Tingkatkan ukuran teks</string>
@@ -326,8 +334,8 @@
   <string name="reading_list_item_delete_undo">Urungkan</string>
   <string name="reading_list_deleted">%s terhapus</string>
   <string name="reading_lists_empty">Tidak ada daftar bacaan lagi</string>
-  <string name="reading_lists_empty_message">Simpan artikel ke daftar bacaan untuk dapat Anda lihat nanti, bahkan ketika Anda sedang luring.</string>
-  <string name="reading_lists_onboarding_intro">Buat daftar bacaan dari artikel yang ingin Anda baca nanti, bahkan ketika Anda sedang luring!</string>
+  <string name="reading_lists_empty_message">Tambahkan artikel ke daftar untuk dibaca nanti, bahkan saat Anda sedang luring.</string>
+  <string name="reading_lists_onboarding_intro">Tambahkan artikel ke daftar untuk dibaca nanti, bahkan saat Anda sedang luring!</string>
   <string name="reading_lists_onboarding_for_example">Sebagai contoh</string>
   <string name="reading_lists_onboarding_example1">Tempat untuk berkunjung</string>
   <string name="reading_lists_onboarding_example2">Hewan kesukaan</string>
@@ -353,7 +361,6 @@
   <string name="reading_lists_confirm_remote_delete_no">Tidak</string>
   <string name="reading_list_article_save_in_progress">Artikel sedang diunduh, dan akan tersedia secara luring saat selesai.</string>
   <string name="reading_list_already_contains_selection">Daftar yang dipilih sudah berisi semua halaman yang dipilih.</string>
-  <string name="reading_list_added_articles_list_untitled">%d artikel ditambahkan ke daftar bacaan.</string>
   <string name="reading_list_added_articles_list_titled">%1$d ditambahkan ke %2$s</string>
   <plurals name="reading_list_article_offline_message">
     <item quantity="one">Artikel ini sekarang akan tersedia secara luring.</item>
@@ -399,18 +406,32 @@
   <string name="view_static_card_icon_content_description">Ikon kartu</string>
   <string name="view_card_news_title">Peristiwa terkini</string>
   <plurals name="view_continue_reading_card_subtitle">
-    <item quantity="one">Kemarin</item>
+    <item quantity="one">kemarin</item>
     <item quantity="other">%d hari yang lalu</item>
   </plurals>
-  <string name="view_continue_reading_card_subtitle_today">Hari ini</string>
+  <string name="view_continue_reading_card_subtitle_today">hari ini</string>
+  <string name="view_continue_reading_card_subtitle_read_date">Dibaca %s</string>
   <string name="view_announcement_card_negative_action">Tidak, terima kasih</string>
   <string name="view_offline_card_text">Konten tidak dapat dimuat saat luring.</string>
   <string name="view_featured_article_card_title">Artikel pilihan</string>
   <string name="view_featured_article_footer_save_button_label">Simpan</string>
   <string name="view_featured_article_footer_saved_button_label">Tersimpan</string>
   <string name="feed_configure_menu_title">Konfigurasikan kartu</string>
-  <string name="feed_configure_activity_title">Konfigurasikan kartu Jelajahi</string>
-  <string name="feed_configure_menu_reset">Setel ulang ke baku</string>
+  <string name="feed_configure_activity_title">Sesuaikan umpan</string>
+  <string name="feed_configure_menu_reset">Pulihkan tampilan baku</string>
+  <string name="feed_configure_menu_select_all">Pilih semua</string>
+  <string name="feed_configure_menu_deselect_all">Tidak pilih semua</string>
+  <string name="feed_item_type_news">Artikel mengenai peristiwa saat ini</string>
+  <string name="feed_item_type_on_this_day">Peristiwa bersejarah pada hari ini</string>
+  <string name="feed_item_type_continue_reading">Pranala cepat kembali untuk membaca artikel yang terbuka di salah satu tab Anda</string>
+  <string name="feed_item_type_because_you_read">Saran berdasarkan artikel yang baru dibaca dari riwayat Anda</string>
+  <string name="feed_item_type_featured_article">Artikel pilihan harian di Wikipedia</string>
+  <string name="feed_item_type_trending">Artikel harian yang paling banyak dilihat</string>
+  <string name="feed_item_type_featured_image">Gambar pilihan harian dari Wikimedia Commons</string>
+  <string name="feed_item_type_main_page">Halaman utama Wikipedia dengan isi pilihan harian</string>
+  <string name="feed_item_type_randomizer">Menghasilkan sembarang artikel untuk dibaca</string>
+  <string name="feed_configure_onboarding_action">Sesuaikan</string>
+  <string name="feed_configure_onboarding_text">&lt;strong&gt;Sesuaikan umpan Jelajahi Anda&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;Anda sekarang dapat memilih apa yang akan ditampilkan pada umpan Anda, dan juga memprioritaskan jenis konten favorit Anda.</string>
   <string name="description_edit_text_hint">Deskripsi judul</string>
   <string name="description_edit_save">Terbitkan</string>
   <string name="description_edit_add_description">Tambah deskripsi judul</string>
@@ -503,26 +524,33 @@
   <string name="onboarding_skip">Lewati</string>
   <string name="onboarding_continue">Lanjutkan</string>
   <string name="onboarding_get_started">Memulai</string>
+  <string name="onboarding_welcome_title">Ensiklopedia bebas</string>
+  <string name="onboarding_welcome_text">Wikipedia ditulis secara kolaboratif oleh sukarelawan dan terdiri dari lebih dari 40 juta artikel dalam hampir 300 bahasa yang berbeda. &lt;a href=\"#about\"&gt;Pelajari lebih lanjut&lt;/a&gt;</string>
   <string name="onboarding_explore_title">Cara baru untuk menjelajah</string>
-  <string name="onboarding_explore_text">Temukan artikel pilihan, topik yang sedang tren, dan saran artikel di umpan Jelajahi.</string>
+  <string name="onboarding_explore_text">Menyelam menyusuri lubang kelinci Wikipedia dengan umpan Jelajahi yang terus diperbarui. &lt;br/&gt; &lt;b&gt;Sesuaikan&lt;/b&gt; umpan untuk minat Anda – apakah itu mempelajari tentang peristiwa bersejarah &lt;b&gt;Pada hari ini&lt;/b&gt;, atau melempar dadu dengan &lt;b&gt;Sembarang&lt;/b&gt;.</string>
+  <string name="onboarding_save_to_reading_lists_title">Simpan ke daftar bacaan</string>
+  <string name="onboarding_save_to_reading_lists_text">Buat daftar bacaan dari artikel yang ingin Anda baca nanti, bahkan saat Anda sedang luring.</string>
   <string name="onboarding_reading_list_sync_title">Daftar bacaan dengan sinkronisasi</string>
   <string name="onboarding_reading_list_sync_text">Buat daftar bacaan dari artikel yang ingin Anda baca nanti, bahkan saat Anda sedang luring. &lt;a href=\"#login\"&gt;Masuk log atau buat&lt;/a&gt; akun Wikipedia Anda agar daftar bacaan Anda dicadangkan.</string>
   <string name="onboarding_analytics_title">Kirim data anonim</string>
   <string name="onboarding_analytics_text">Bantu membuat aplikasi lebih baik dengan memberi tahu kami bagaimana Anda menggunakannya. Data yang dikumpulkan adalah anonim. &lt;a href=\"#privacy\"&gt;Pelajari lebih lanjut&lt;/a&gt;</string>
+  <string name="onboarding_analytics_offline_text">Bantu membuat aplikasi lebih baik dengan memberi tahu kami bagaimana Anda menggunakannya. Data yang dikumpulkan adalah anonim. &lt;a href=\"#offline\"&gt;Pelajari lebih lanjut&lt;/a&gt;</string>
   <string name="onboarding_analytics_switch_title">Kirim data penggunaan</string>
   <string name="onboarding_create_account_sync">Sinkronkan daftar bacaan Anda</string>
   <string name="onboarding_create_account_contributions">Catat kontribusi Anda</string>
   <string name="onboarding_create_account_preferences">Simpan preferensi Anda</string>
+  <string name="onboarding_got_it">Mengerti</string>
   <string name="app_shortcuts_random">Sembarang</string>
   <string name="app_shortcuts_continue_reading">Lanjutkan membaca</string>
   <string name="app_shortcuts_search">Cari</string>
+  <string name="more_trending_text">Lainnya seperti ini</string>
   <string name="all_trending_text">Semua artikel yang sedang tren pada %1$s</string>
   <string name="top_on_this_day">Sedang tren pada %1$s</string>
   <string name="on_this_day_card_title">Hari ini dalam sejarah</string>
-  <string name="more_events_text">Peristiwa bersejarah lainnya pada hari ini</string>
-  <string name="events_count_text">%1$s peristiwa dari %2$s - %3$d</string>
-  <string name="on_this_day">Hari ini dalam sejarah</string>
+  <string name="more_events_text">Lainnya pada hari ini</string>
+  <string name="events_count_text">%1$s peristiwa dari %2$s–%3$d</string>
   <string name="this_year">Tahun ini</string>
+  <string name="back_to_top">Kembali ke atas</string>
   <plurals name="diff_years">
     <item quantity="one">Tahun lalu</item>
     <item quantity="other">%d tahun yang lalu</item>

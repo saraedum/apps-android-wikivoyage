@@ -13,6 +13,7 @@ import org.wikipedia.feed.model.Card;
 import org.wikipedia.feed.model.UtcDate;
 import org.wikipedia.feed.mostread.MostReadListCard;
 import org.wikipedia.feed.news.NewsListCard;
+import org.wikipedia.feed.onthisday.OnThisDayCard;
 import org.wikipedia.settings.Prefs;
 import org.wikipedia.util.DateUtil;
 import org.wikipedia.util.log.L;
@@ -35,6 +36,19 @@ public class AggregatedFeedContentClient {
     @Nullable private AggregatedFeedContent aggregatedResponse;
     private int aggregatedResponseAge = -1;
 
+    public static class OnThisDayFeed extends BaseClient {
+        public OnThisDayFeed(@NonNull AggregatedFeedContentClient aggregatedClient) {
+            super(aggregatedClient);
+        }
+
+        @Override
+        void getCardFromResponse(@NonNull AggregatedFeedContent content, @NonNull WikiSite wiki,
+                                 int age, @NonNull List<Card> outCards) {
+            if (content.onthisday() != null && !content.onthisday().isEmpty()) {
+                outCards.add(new OnThisDayCard(content.onthisday(), wiki, age));
+            }
+        }
+    }
     public static class InTheNews extends BaseClient {
         public InTheNews(@NonNull AggregatedFeedContentClient aggregatedClient) {
             super(aggregatedClient);
@@ -158,14 +172,16 @@ public class AggregatedFeedContentClient {
         public void request(@NonNull Context context, @NonNull WikiSite wiki, int age, @NonNull Callback cb) {
             this.cb = cb;
             this.age = age;
-            this.wiki = wiki;
-            if (aggregatedClient.getCurrentAge() == age && aggregatedClient.getCurrentResponse() != null) {
+            if (aggregatedClient.getCurrentAge() == age
+                    && aggregatedClient.getCurrentResponse() != null
+                    && wiki.equals(this.wiki)) {
                 List<Card> cards = new ArrayList<>();
                 getCardFromResponse(aggregatedClient.getCurrentResponse(), wiki, age, cards);
                 cb.success(cards);
             } else {
                 aggregatedClient.requestAggregated(wiki, age, this);
             }
+            this.wiki = wiki;
         }
 
         @Override

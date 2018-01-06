@@ -261,8 +261,8 @@
   <string name="reading_list_item_delete_undo">Ontdaan</string>
   <string name="reading_list_deleted">%s geskrap</string>
   <string name="reading_lists_empty">Nog geen leeslyste nie</string>
-  <string name="reading_lists_empty_message">Bewaar artikels in die leeslys sodat u dit later kan lees, selfs wanneer u vanlyn is.</string>
-  <string name="reading_lists_onboarding_intro">Skep ’n leeslys van artikels wat u later wil lees, selfs wanneer u vanlyn is!</string>
+  <string name="reading_lists_empty_message" fuzzy="true">Bewaar artikels in die leeslys sodat u dit later kan lees, selfs wanneer u vanlyn is.</string>
+  <string name="reading_lists_onboarding_intro" fuzzy="true">Skep ’n leeslys van artikels wat u later wil lees, selfs wanneer u vanlyn is!</string>
   <string name="reading_lists_onboarding_for_example">Byvoorbeeld</string>
   <string name="reading_lists_onboarding_example1">Plekke om te besoek</string>
   <string name="reading_lists_onboarding_example2">Gunstelingdiere</string>
@@ -287,11 +287,11 @@
   <string name="view_featured_image_card_download">Laai af</string>
   <string name="feed">Verken</string>
   <string name="view_card_news_title">In die nuus</string>
-  <plurals name="view_continue_reading_card_subtitle">
+  <plurals name="view_continue_reading_card_subtitle" fuzzy="true">
     <item quantity="one">Gister</item>
     <item quantity="other">%d dae gekede</item>
   </plurals>
-  <string name="view_continue_reading_card_subtitle_today">Vandag</string>
+  <string name="view_continue_reading_card_subtitle_today" fuzzy="true">Vandag</string>
   <string name="view_announcement_card_negative_action">Nee dankie</string>
   <string name="description_edit_cancel_hint">Kanselleer</string>
   <string name="description_edit_success_did_you_know">Het u geweet?</string>

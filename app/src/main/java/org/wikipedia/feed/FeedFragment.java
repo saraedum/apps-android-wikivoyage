@@ -41,7 +41,6 @@ import org.wikipedia.history.HistoryEntry;
 import org.wikipedia.offline.LocalCompilationsActivity;
 import org.wikipedia.offline.OfflineTutorialActivity;
 import org.wikipedia.random.RandomActivity;
-import org.wikipedia.readinglist.sync.ReadingListSynchronizer;
 import org.wikipedia.settings.Prefs;
 import org.wikipedia.settings.SettingsActivity;
 import org.wikipedia.util.DeviceUtil;
@@ -78,6 +77,7 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
         void onFeedSearchRequested();
         void onFeedVoiceSearchRequested();
         void onFeedSelectPage(HistoryEntry entry);
+        void onFeedSelectPageFromExistingTab(HistoryEntry entry);
         void onFeedAddPageToList(HistoryEntry entry);
         void onFeedAddFeaturedPageToList(FeaturedArticleCardView view, HistoryEntry entry);
         void onFeedRemovePageFromList(FeaturedArticleCardView view, HistoryEntry entry);
@@ -119,12 +119,7 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
         feedView.addOnScrollListener(feedScrollListener);
 
         swipeRefreshLayout.setColorSchemeResources(ResourceUtil.getThemedAttributeId(getContext(), R.attr.colorAccent));
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                refresh();
-            }
-        });
+        swipeRefreshLayout.setOnRefreshListener(this::refresh);
 
         coordinator.setFeedUpdateListener(new FeedCoordinator.FeedUpdateListener() {
             @Override public void insert(Card card, int pos) {
@@ -132,15 +127,6 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
                     swipeRefreshLayout.setRefreshing(false);
                     if (feedView != null && feedAdapter != null) {
                         feedAdapter.notifyItemInserted(pos);
-                    }
-                }
-            }
-
-            @Override public void swap(Card card, int pos) {
-                if (isAdded()) {
-                    swipeRefreshLayout.setRefreshing(false);
-                    if (feedView != null && feedAdapter != null) {
-                        feedAdapter.notifyItemChanged(pos);
                     }
                 }
             }
@@ -159,8 +145,6 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
         if (getCallback() != null) {
             getCallback().updateToolbarElevation(shouldElevateToolbar());
         }
-
-        ReadingListSynchronizer.instance().sync();
 
         return view;
     }
@@ -329,8 +313,7 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
 
         @Override
         public void onRetryFromOffline() {
-            funnel.requestMore(coordinator.getAge());
-            coordinator.retryFromOffline(app.getWikiSite());
+            refresh();
         }
 
         @Override
@@ -342,6 +325,14 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
         public void onSelectPage(@NonNull Card card, @NonNull HistoryEntry entry) {
             if (getCallback() != null) {
                 getCallback().onFeedSelectPage(entry);
+                funnel.cardClicked(card.type());
+            }
+        }
+
+        @Override
+        public void onSelectPageFromExistingTab(@NonNull Card card, @NonNull HistoryEntry entry) {
+            if (getCallback() != null) {
+                getCallback().onFeedSelectPageFromExistingTab(entry);
                 funnel.cardClicked(card.type());
             }
         }
@@ -397,6 +388,11 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
         }
 
         @Override
+        public void onRequestCustomize(@NonNull Card card) {
+            showConfigureActivity(card.type().code());
+        }
+
+        @Override
         public void onSwiped(@IntRange(from = 0) int itemPos) {
             onRequestDismissCard(coordinator.getCards().get(itemPos));
         }
@@ -444,7 +440,7 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
                 startActivityForResult(SettingsActivity.newIntent(getContext()),
                         SettingsActivity.ACTIVITY_REQUEST_SHOW_SETTINGS);
             } else if (uri.toString().equals(UriUtil.LOCAL_URL_CUSTOMIZE_FEED)) {
-                showConfigureActivity();
+                showConfigureActivity(card.type().code());
             } else {
                 UriUtil.handleExternalLink(getContext(), uri);
             }
@@ -462,7 +458,7 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
             } else {
                 ActivityOptionsCompat options = ActivityOptionsCompat.
                         makeSceneTransitionAnimation(getActivity(), view, getString(R.string.transition_random_activity));
-                startActivity(RandomActivity.newIntent(getActivity()), options.toBundle());
+                startActivity(RandomActivity.newIntent(getActivity(), RandomActivity.INVOKE_SOURCE_FEED), options.toBundle());
             }
         }
 
@@ -507,7 +503,7 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
             boolean shouldShowSearchIcon = feedView.getFirstVisibleItemPosition() != 0;
             if (shouldShowSearchIcon != searchIconVisible) {
                 searchIconVisible = shouldShowSearchIcon;
-                getActivity().supportInvalidateOptionsMenu();
+                getActivity().invalidateOptionsMenu();
                 if (getCallback() != null) {
                     getCallback().updateToolbarElevation(shouldElevateToolbar());
                 }
@@ -528,8 +524,8 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
         snackbar.show();
     }
 
-    private void showConfigureActivity() {
-        startActivityForResult(ConfigureActivity.newIntent(getActivity()),
+    private void showConfigureActivity(int invokeSource) {
+        startActivityForResult(ConfigureActivity.newIntent(getActivity(), invokeSource),
                 Constants.ACTIVITY_REQUEST_FEED_CONFIGURE);
     }
 
@@ -562,7 +558,7 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
 
         @Override
         public void configureCardsClick() {
-            showConfigureActivity();
+            showConfigureActivity(-1);
         }
 
         @Override

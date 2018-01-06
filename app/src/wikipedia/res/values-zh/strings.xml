@@ -146,7 +146,9 @@
   <string name="about_description">关于维基百科应用</string>
   <string name="privacy_policy_description">隐私政策</string>
   <string name="terms_of_use_description">使用条款</string>
-  <string name="privacy_policy_url" fuzzy="true">https://m.wikimediafoundation.org/wiki/Special:MyLanguage/Privacy_Policy</string>
+  <string name="about_wikipedia_url">https://zh.m.wikipedia.org/wiki/Wikipedia:关于</string>
+  <string name="privacy_policy_url">https://m.wikimediafoundation.org/wiki/Special:MyLanguage/Privacy_policy</string>
+  <string name="offline_reading_and_data_url">https://www.mediawiki.org/wiki/Wikimedia_Apps/Android_FAQ/zh#离线阅读和数据</string>
   <string name="terms_of_use_url">https://m.wikimediafoundation.org/wiki/Terms_of_Use</string>
   <string name="cc_by_sa_3_url">https://creativecommons.org/licenses/by-sa/3.0/deed.zh</string>
   <string name="cc_0_url">https://creativecommons.org/publicdomain/zero/1.0/deed.zh</string>
@@ -175,6 +177,8 @@
   <string name="edit_summary_tag_other_hint">您改善该页面的其他方式</string>
   <string name="find_next">查找下一个</string>
   <string name="find_previous">查找上一个</string>
+  <string name="find_first_occurence">这是首次出现</string>
+  <string name="find_last_occurence">这是最后一次出现</string>
   <string name="abusefilter_title_warn">这可能是没有建设性的编辑。您确认要发布它么？</string>
   <string name="abusefilter_title_disallow">您不能发布该编辑。请返回更改。</string>
   <string name="abusefilter_text_warn">自动过滤器识别该编辑为没有潜在建设性的编辑。该编辑可能含有以下一种或多种问题：&lt;br /&gt;&lt;br /&gt;· 全文大写&lt;br /&gt;· 清空条目或有垃圾内容&lt;br /&gt;· 无关的外部链接或图像&lt;br /&gt;· 重复的文字</string>
@@ -286,6 +290,10 @@
   <string name="color_theme_select">主题</string>
   <string name="color_theme_light">日间</string>
   <string name="color_theme_dark">夜间</string>
+  <string name="color_theme_black">黑</string>
+  <string name="color_theme_test_title">示例文本</string>
+  <string name="color_theme_test_text">拖动滑块以更改阅读条目时的文本大小。要设置应用其他部分的文本大小，请更改您的系统文本大小。</string>
+  <string name="preference_title_app_theme">应用主题</string>
   <string name="preference_title_color_theme">黑暗主题</string>
   <string name="preference_summary_color_theme">切换成应用的黑暗颜色主题</string>
   <string name="text_size_increase">调高文本大小</string>
@@ -326,8 +334,8 @@
   <string name="reading_list_item_delete_undo">撤销</string>
   <string name="reading_list_deleted">%s已删除</string>
   <string name="reading_lists_empty">目前尚无阅读列表</string>
-  <string name="reading_lists_empty_message">保存条目至阅读列表，这样即便您日后离线了，您也可以阅读这些条目。</string>
-  <string name="reading_lists_onboarding_intro">从您希望稍后阅读的条目创建阅读列表，即便当您离线时！</string>
+  <string name="reading_lists_empty_message">添加条目到列表中以便日后阅读，即便当您离线时。</string>
+  <string name="reading_lists_onboarding_intro">添加条目到列表中以便日后阅读，即便当您离线时！</string>
   <string name="reading_lists_onboarding_for_example">例如</string>
   <string name="reading_lists_onboarding_example1">要访问的地点</string>
   <string name="reading_lists_onboarding_example2">喜爱的动物</string>
@@ -353,7 +361,6 @@
   <string name="reading_lists_confirm_remote_delete_no">否</string>
   <string name="reading_list_article_save_in_progress">条目已开始下载，并将在完成时离线可用。</string>
   <string name="reading_list_already_contains_selection">选择的列表已包含所有选择的页面。</string>
-  <string name="reading_list_added_articles_list_untitled">已添加%d个条目至阅读列表。</string>
   <string name="reading_list_added_articles_list_titled">已添加%1$d个条目至%2$s</string>
   <plurals name="reading_list_article_offline_message">
     <item quantity="one">该条目现在可以离线使用。</item>
@@ -403,14 +410,28 @@
     <item quantity="other">%d天前</item>
   </plurals>
   <string name="view_continue_reading_card_subtitle_today">今天</string>
+  <string name="view_continue_reading_card_subtitle_read_date">阅读%s</string>
   <string name="view_announcement_card_negative_action">不用了，谢谢</string>
   <string name="view_offline_card_text">内容不能在离线时加载。</string>
   <string name="view_featured_article_card_title">典范条目</string>
   <string name="view_featured_article_footer_save_button_label">保存</string>
   <string name="view_featured_article_footer_saved_button_label">已保存</string>
   <string name="feed_configure_menu_title">配置卡片</string>
-  <string name="feed_configure_activity_title">配置探索卡片</string>
-  <string name="feed_configure_menu_reset">重置为默认</string>
+  <string name="feed_configure_activity_title">自定义订阅源</string>
+  <string name="feed_configure_menu_reset">恢复默认视图</string>
+  <string name="feed_configure_menu_select_all">全选</string>
+  <string name="feed_configure_menu_deselect_all">取消全选</string>
+  <string name="feed_item_type_news">有关当前活动的条目</string>
+  <string name="feed_item_type_on_this_day">这一天历史上的活动</string>
+  <string name="feed_item_type_continue_reading">阅读您的标签中一个开启条目的快速返回链接</string>
+  <string name="feed_item_type_because_you_read">基于您的历史中最近阅读条目的建议</string>
+  <string name="feed_item_type_featured_article">维基百科上的每日典范条目</string>
+  <string name="feed_item_type_trending">每日最多访问的条目</string>
+  <string name="feed_item_type_featured_image">来自维基共享资源的每日特色图片</string>
+  <string name="feed_item_type_main_page">包含每日特色内容的维基百科首页</string>
+  <string name="feed_item_type_randomizer">生成随机条目以阅读</string>
+  <string name="feed_configure_onboarding_action">自定义</string>
+  <string name="feed_configure_onboarding_text">&lt;strong&gt;自定义您的浏览订阅源&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;您现在可以选择在您的订阅源上显示什么，并可以排序您感兴趣的内容类型。</string>
   <string name="description_edit_text_hint">标题描述</string>
   <string name="description_edit_save">发布</string>
   <string name="description_edit_add_description">添加标题描述</string>
@@ -503,26 +524,33 @@
   <string name="onboarding_skip">跳过</string>
   <string name="onboarding_continue">继续</string>
   <string name="onboarding_get_started">入门</string>
+  <string name="onboarding_welcome_title">自由的百科全书</string>
+  <string name="onboarding_welcome_text">维基百科由志愿者合作撰写，并包含将近300种不同语言的超过4000万个条目。&lt;a href=\"#about\"&gt;了解更多&lt;/a&gt;</string>
   <string name="onboarding_explore_title">浏览的新方式</string>
-  <string name="onboarding_explore_text">在浏览订阅上发现特色条目、热门话题和阅读建议。</string>
+  <string name="onboarding_explore_text">通过不断更新的探索订阅源扑进维基百科的怀抱。&lt;br/&gt;&lt;b&gt;自定义&lt;/b&gt;您感兴趣内容的订阅源——无论是了解有关&lt;b&gt;历史上的今天&lt;/b&gt;，还是&lt;b&gt;随机&lt;/b&gt;掷骰子。</string>
+  <string name="onboarding_save_to_reading_lists_title">保存至阅读列表</string>
+  <string name="onboarding_save_to_reading_lists_text">从您希望稍后阅读的条目创建阅读列表，即便当您离线时。</string>
   <string name="onboarding_reading_list_sync_title">通过同步阅读列表</string>
   <string name="onboarding_reading_list_sync_text">创建包含您希望日后阅读条目的阅读列表，这样即便您离线也可阅读。&lt;a href=\"#login\"&gt;登录或创建&lt;/a&gt;您的维基百科账户来保持您的阅读列表备份。</string>
   <string name="onboarding_analytics_title">发送匿名数据</string>
   <string name="onboarding_analytics_text">通过让我们知道您如何使用它，帮助应用做得更好。数据收集是匿名的。&lt;a href=\"#privacy\"&gt;了解更多&lt;/a&gt;</string>
+  <string name="onboarding_analytics_offline_text">通过让我们知道您如何使用它，帮助应用做得更好。数据收集是匿名的。&lt;a href=\"#offline\"&gt;了解更多&lt;/a&gt;</string>
   <string name="onboarding_analytics_switch_title">发送使用数据</string>
   <string name="onboarding_create_account_sync">同步您的阅读列表</string>
   <string name="onboarding_create_account_contributions">保持追踪您的贡献</string>
   <string name="onboarding_create_account_preferences">保存您的参数设置</string>
+  <string name="onboarding_got_it">明白了</string>
   <string name="app_shortcuts_random">随机</string>
   <string name="app_shortcuts_continue_reading">继续阅读</string>
   <string name="app_shortcuts_search">搜索</string>
+  <string name="more_trending_text">更多类似条目</string>
   <string name="all_trending_text">在%1$s的所有趋势条目</string>
   <string name="top_on_this_day">%1$s上的趋势</string>
   <string name="on_this_day_card_title">历史上的今天</string>
-  <string name="more_events_text">这一天的更多历史事件</string>
-  <string name="events_count_text">在%2$s~%3$d年间的%1$s次事件</string>
-  <string name="on_this_day">历史上的今天</string>
+  <string name="more_events_text">这一天的更多事情</string>
+  <string name="events_count_text">%2$s~%3$d年间的%1$s次事件</string>
   <string name="this_year">今年</string>
+  <string name="back_to_top">返回顶部</string>
   <plurals name="diff_years">
     <item quantity="one">去年</item>
     <item quantity="other">%d年前</item>

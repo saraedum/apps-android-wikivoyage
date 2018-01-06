@@ -51,6 +51,7 @@ import org.wikipedia.page.ExclusiveBottomSheetPresenter;
 import org.wikipedia.page.PageActivity;
 import org.wikipedia.page.PageTitle;
 import org.wikipedia.page.linkpreview.LinkPreviewDialog;
+import org.wikipedia.random.RandomActivity;
 import org.wikipedia.readinglist.AddToReadingListDialog;
 import org.wikipedia.search.SearchFragment;
 import org.wikipedia.search.SearchInvokeSource;
@@ -134,7 +135,7 @@ public class MainFragment extends Fragment implements BackPressedHandler, FeedFr
                 new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         downloadReceiver.setCallback(downloadReceiverCallback);
         // update toolbar, since Tab count might have changed
-        getActivity().supportInvalidateOptionsMenu();
+        getActivity().invalidateOptionsMenu();
         // reset the last-page-viewed timer
         Prefs.pageLastShown(0);
     }
@@ -195,6 +196,8 @@ public class MainFragment extends Fragment implements BackPressedHandler, FeedFr
         IntentFunnel funnel = new IntentFunnel(WikipediaApp.getInstance());
         if (intent.hasExtra(Constants.INTENT_APP_SHORTCUT_SEARCH)) {
             openSearchFragment(SearchInvokeSource.APP_SHORTCUTS, null);
+        } else if (intent.hasExtra(Constants.INTENT_APP_SHORTCUT_RANDOM)) {
+            startActivity(RandomActivity.newIntent(getActivity(), RandomActivity.INVOKE_SOURCE_SHORTCUT));
         } else if (Intent.ACTION_SEND.equals(intent.getAction())
                 && Constants.PLAIN_TEXT_MIME_TYPE.equals(intent.getType())) {
             funnel.logShareIntent();
@@ -236,6 +239,10 @@ public class MainFragment extends Fragment implements BackPressedHandler, FeedFr
 
     @Override public void onFeedSelectPage(HistoryEntry entry) {
         startActivity(PageActivity.newIntentForNewTab(getContext(), entry, entry.getTitle()));
+    }
+
+    @Override public void onFeedSelectPageFromExistingTab(HistoryEntry entry) {
+        startActivity(PageActivity.newIntentForExistingTab(getContext(), entry, entry.getTitle()));
     }
 
     @Override public void onFeedAddPageToList(HistoryEntry entry) {

@@ -159,7 +159,9 @@
     <string name="about_description">About the Wikipedia app</string>
     <string name="privacy_policy_description">Privacy policy</string>
     <string name="terms_of_use_description">Terms of use</string>
+    <string name="about_wikipedia_url">https://en.m.wikipedia.org/wiki/Wikipedia:About</string>
     <string name="privacy_policy_url">https://m.wikimediafoundation.org/wiki/Privacy_policy</string>
+    <string name="offline_reading_and_data_url">https://www.mediawiki.org/wiki/Wikimedia_Apps/Android_FAQ#Offline_reading_and_data</string>
     <string name="terms_of_use_url">https://m.wikimediafoundation.org/wiki/Terms_of_Use</string>
     <string name="cc_by_sa_3_url">https://creativecommons.org/licenses/by-sa/3.0/</string>
     <string name="cc_0_url">https://creativecommons.org/publicdomain/zero/1.0/</string>
@@ -188,6 +190,8 @@
     <string name="edit_summary_tag_other_hint">Other ways you improved the page</string>
     <string name="find_next">Find next</string>
     <string name="find_previous">Find previous</string>
+    <string name="find_first_occurence">This is the first occurrence</string>
+    <string name="find_last_occurence">This is the last occurrence</string>
     <!-- need this and next? -->
     <string name="abusefilter_title_warn">This may be an unconstructive edit. Are you sure you want to publish it?</string>
     <string name="abusefilter_title_disallow">You cannot publish this edit. Please go back and change it.</string>
@@ -308,6 +312,10 @@
     <string name="color_theme_select">Theme</string>
     <string name="color_theme_light">Light</string>
     <string name="color_theme_dark">Dark</string>
+    <string name="color_theme_black">Black</string>
+    <string name="color_theme_test_title">Sample text</string>
+    <string name="color_theme_test_text">Drag the slider to change the size of the text that is used when reading articles. To set the text size throughout the rest of the app, change your system text size.</string>
+    <string name="preference_title_app_theme">App theme</string>
     <string name="preference_title_color_theme">Dark theme</string>
     <string name="preference_summary_color_theme">Switch to using the app\'s dark color theme</string>
     <string name="text_size_increase">Increase text size</string>
@@ -351,8 +359,8 @@
     <string name="reading_list_item_delete_undo">Undo</string>
     <string name="reading_list_deleted">%s deleted</string>
     <string name="reading_lists_empty">No reading lists yet</string>
-    <string name="reading_lists_empty_message">Save articles to reading lists so you can view them later, even when you\'re offline.</string>
-    <string name="reading_lists_onboarding_intro">Create reading lists from articles you want to read later, even when you\'re offline!</string>
+    <string name="reading_lists_empty_message">Add articles to a list for reading later, even when you\'re offline.</string>
+    <string name="reading_lists_onboarding_intro">Add articles to a list for reading later, even when you\'re offline!</string>
     <string name="reading_lists_onboarding_for_example">For example</string>
     <string name="reading_lists_onboarding_example1">Places to visit</string>
     <string name="reading_lists_onboarding_example2">Favorite animals</string>
@@ -378,8 +386,9 @@
     <string name="reading_lists_confirm_remote_delete_no">No</string>
     <string name="reading_list_article_save_in_progress">The article is being downloaded, and it will be available offline when complete.</string>
     <string name="reading_list_already_contains_selection">The chosen list already contains all of the selected pages.</string>
-    <string name="reading_list_added_articles_list_untitled">Added %d articles to reading list.</string>
     <string name="reading_list_added_articles_list_titled">Added %1$d articles to %2$s</string>
+    <string name="default_reading_list_name">Saved</string>
+    <string name="default_reading_list_description">Default list for your saved articles</string>
     <plurals name="reading_list_article_offline_message">
         <item quantity="one">This article will now be available offline.</item>
         <item quantity="other">These articles will now be available offline.</item>
@@ -434,10 +443,11 @@
     <string name="view_static_card_icon_content_description">Card icon</string>
     <string name="view_card_news_title">In the news</string>
     <plurals name="view_continue_reading_card_subtitle">
-        <item quantity="one">Yesterday</item>
+        <item quantity="one">yesterday</item>
         <item quantity="other">%d days ago</item>
     </plurals>
-    <string name="view_continue_reading_card_subtitle_today">Today</string>
+    <string name="view_continue_reading_card_subtitle_today">today</string>
+    <string name="view_continue_reading_card_subtitle_read_date">Read %s</string>
     <string name="view_announcement_card_negative_action">No thanks</string>
     <string name="view_offline_card_text">Content cannot be loaded when offline.</string>
     <string name="view_featured_article_card_title">Featured article</string>
@@ -572,12 +582,17 @@
     <string name="onboarding_skip">Skip</string>
     <string name="onboarding_continue">Continue</string>
     <string name="onboarding_get_started">Get started</string>
+    <string name="onboarding_welcome_title">The free encyclopedia</string>
+    <string name="onboarding_welcome_text"><![CDATA[Wikipedia is written collaboratively by volunteers and consists of more than 40 million articles in nearly 300 different languages. <a href="#about">Learn more</a>]]></string>
     <string name="onboarding_explore_title">New ways to explore</string>
-    <string name="onboarding_explore_text">Discover featured articles, trending topics, and reading suggestions on the Explore feed.</string>
+    <string name="onboarding_explore_text"><![CDATA[Dive down the Wikipedia rabbit hole with a constantly updating Explore feed. <br/> <b>Customize</b> the feed to your interests – whether it’s learning about historical events <b>On this day</b>, or rolling the dice with <b>Random</b>.]]></string>
+    <string name="onboarding_save_to_reading_lists_title">Save to reading lists</string>
+    <string name="onboarding_save_to_reading_lists_text">Create reading lists from articles you want to read later, even when you’re offline.</string>
     <string name="onboarding_reading_list_sync_title">Reading lists with sync</string>
     <string name="onboarding_reading_list_sync_text"><![CDATA[Create reading lists from articles you want to read later, even when you\'re offline. <a href="#login">Log in or create</a> your Wikipedia account to keep your reading lists backed up.]]></string>
     <string name="onboarding_analytics_title">Send anonymous data</string>
     <string name="onboarding_analytics_text"><![CDATA[Help make the app better by letting us know how you use it. Data collected is anonymous. <a href="#privacy">Learn more</a>]]></string>
+    <string name="onboarding_analytics_offline_text"><![CDATA[Help make the app better by letting us know how you use it. Data collected is anonymous. <a href="#offline">Learn more</a>]]></string>
     <string name="onboarding_analytics_switch_title">Send usage data</string>
     <string name="onboarding_create_account_sync">Sync your reading lists</string>
     <string name="onboarding_create_account_contributions">Keep track of your contributions</string>
@@ -589,16 +604,17 @@
     <string name="app_shortcuts_random">Random</string>
     <string name="app_shortcuts_continue_reading">Continue reading</string>
     <string name="app_shortcuts_search">Search</string>
+    <string name="more_trending_text">More like this</string>
     <string name="all_trending_text">All trending articles on %1$s</string>
     <string name="top_on_this_day">Trending on %1$s</string>
     <!-- /App Shortcuts -->
 
     <!-- On This Day -->
     <string name="on_this_day_card_title">On this day</string>
-    <string name="more_events_text">More historical events on this day</string>
-    <string name="events_count_text">%1$s events from %2$s - %3$d</string>
-    <string name="on_this_day">On this day</string>
+    <string name="more_events_text">More on this day</string>
+    <string name="events_count_text">%1$s events from %2$s–%3$d</string>
     <string name="this_year">This year</string>
+    <string name="back_to_top">Back to top</string>
     <plurals name="diff_years">
         <item quantity="one">Last year</item>
         <item quantity="other">%d years ago</item>

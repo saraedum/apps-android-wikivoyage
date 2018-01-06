@@ -26,51 +26,74 @@ import org.wikipedia.views.FaceAndColorDetectImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnLongClick;
 
 import static org.wikipedia.page.PageActivity.ACTION_LOAD_IN_NEW_TAB;
 import static org.wikipedia.page.PageActivity.EXTRA_HISTORYENTRY;
 import static org.wikipedia.page.PageActivity.EXTRA_PAGETITLE;
 
 public class OnThisDayPagesViewHolder extends RecyclerView.ViewHolder {
+    public interface ItemCallBack {
+        void onActionLongClick(@NonNull HistoryEntry entry);
+    }
+
     @BindView(R.id.page_list_item_title) TextView pageItemTitleTextView;
     @BindView(R.id.page_list_item_description) TextView pageItemDescTextView;
     @BindView(R.id.page_list_item_image) FaceAndColorDetectImageView pageItemImageView;
     @BindView(R.id.parent) View parent;
+
+    @Nullable private ItemCallBack itemCallback;
+
     private WikiSite wiki;
     private RbPageSummary selectedPage;
+    private final boolean isSingleCard;
 
-    OnThisDayPagesViewHolder(@NonNull CardView v, @NonNull WikiSite wiki) {
+    OnThisDayPagesViewHolder(@NonNull CardView v, @NonNull WikiSite wiki, boolean isSingleCard) {
         super(v);
         ButterKnife.bind(this, v);
         v.setCardBackgroundColor(ResourceUtil.getThemedColor(v.getContext(), R.attr.paper_color));
         this.wiki = wiki;
+        this.isSingleCard = isSingleCard;
     }
 
     public void setFields(@NonNull RbPageSummary page) {
         selectedPage = page;
-        pageItemDescTextView.setText(StringUtil.fromHtml(StringUtils.defaultString(page.getExtract())));
+        pageItemDescTextView.setText(StringUtils.capitalize(page.getDescription()));
+        pageItemDescTextView.setVisibility(TextUtils.isEmpty(page.getDescription()) ? View.GONE : View.VISIBLE);
+        pageItemTitleTextView.setMaxLines(TextUtils.isEmpty(page.getDescription()) ? 2 : 1);
         pageItemTitleTextView.setText(StringUtil.fromHtml(StringUtils.defaultString(page.getNormalizedTitle())));
         setImage(page.getThumbnailUrl());
     }
 
     private void setImage(@Nullable String url) {
-        if (!TextUtils.isEmpty(url)) {
-            pageItemImageView.setVisibility(View.VISIBLE);
-            pageItemImageView.loadImage(Uri.parse(url));
-        } else {
-            pageItemImageView.setVisibility(View.GONE);
-        }
+        pageItemImageView.loadImage(url == null ? null : Uri.parse(url));
+    }
+
+    @NonNull public OnThisDayPagesViewHolder setCallback(@Nullable ItemCallBack itemCallback) {
+        this.itemCallback = itemCallback;
+        return this;
     }
 
     @OnClick(R.id.parent) void onBaseViewClicked() {
         Context context = WikipediaApp.getInstance().getApplicationContext();
-        PageTitle pageTitle = new PageTitle(selectedPage.getNormalizedTitle(), wiki);
-        HistoryEntry entry = new HistoryEntry(pageTitle, HistoryEntry.SOURCE_ON_THIS_DAY_LIST);
+        PageTitle pageTitle = new PageTitle(selectedPage.getTitle(), wiki);
+        HistoryEntry entry = new HistoryEntry(pageTitle,
+                isSingleCard ? HistoryEntry.SOURCE_ON_THIS_DAY_CARD : HistoryEntry.SOURCE_ON_THIS_DAY_ACTIVITY);
         Intent intent = new Intent(ACTION_LOAD_IN_NEW_TAB)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .setClass(context, PageActivity.class)
                 .putExtra(EXTRA_HISTORYENTRY, entry)
                 .putExtra(EXTRA_PAGETITLE, pageTitle);
         context.startActivity(intent);
+    }
+
+    @OnLongClick(R.id.parent) boolean showOverflowMenu(View anchorView) {
+        PageTitle pageTitle = new PageTitle(selectedPage.getTitle(), wiki);
+        HistoryEntry entry = new HistoryEntry(pageTitle,
+                isSingleCard ? HistoryEntry.SOURCE_ON_THIS_DAY_CARD : HistoryEntry.SOURCE_ON_THIS_DAY_ACTIVITY);
+
+        itemCallback.onActionLongClick(entry);
+
+        return true;
     }
 }

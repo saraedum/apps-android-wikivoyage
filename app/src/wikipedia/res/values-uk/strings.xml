@@ -313,8 +313,8 @@
   <string name="reading_list_item_delete_undo">Скасувати</string>
   <string name="reading_list_deleted">%s видалено</string>
   <string name="reading_lists_empty">Списки для читання наразі відсутні</string>
-  <string name="reading_lists_empty_message">Зберігайте статті у списки для читання, щоб їх можна було переглянути пізніше, навіть коли Ви перебуваєте поза мережею.</string>
-  <string name="reading_lists_onboarding_intro">Створіть списки з статей, які ви хочете прочитати пізніше, навіть коли ви в автономному режимі!</string>
+  <string name="reading_lists_empty_message" fuzzy="true">Зберігайте статті у списки для читання, щоб їх можна було переглянути пізніше, навіть коли Ви перебуваєте поза мережею.</string>
+  <string name="reading_lists_onboarding_intro" fuzzy="true">Створіть списки з статей, які ви хочете прочитати пізніше, навіть коли ви в автономному режимі!</string>
   <string name="reading_lists_onboarding_for_example">Наприклад</string>
   <string name="reading_lists_onboarding_example1">Місця для відвідування</string>
   <string name="reading_lists_onboarding_example2">Улюблені тварини</string>
@@ -340,7 +340,6 @@
   <string name="reading_lists_confirm_remote_delete_no">Ні</string>
   <string name="reading_list_article_save_in_progress">Стаття завантажується, вона буде доступна в автономному режимі по завершенню.</string>
   <string name="reading_list_already_contains_selection">У списку вже є всі вибрані вами сторінки.</string>
-  <string name="reading_list_added_articles_list_untitled">Додано статей до списку — %d.</string>
   <string name="reading_list_added_articles_list_titled">Додано %1$d статей до %2$s</string>
   <plurals name="reading_list_article_offline_message">
     <item quantity="one">Ця стаття тепер буде доступна автономно.</item>
@@ -375,12 +374,12 @@
   <string name="most_read_list_card_title">Популярне</string>
   <string name="view_static_card_icon_content_description">Значок картки</string>
   <string name="view_card_news_title">У новинах</string>
-  <plurals name="view_continue_reading_card_subtitle">
+  <plurals name="view_continue_reading_card_subtitle" fuzzy="true">
     <item quantity="one">Учора</item>
     <item quantity="few">%d дні тому</item>
     <item quantity="other">%d днів тому</item>
   </plurals>
-  <string name="view_continue_reading_card_subtitle_today">Сьогодні</string>
+  <string name="view_continue_reading_card_subtitle_today" fuzzy="true">Сьогодні</string>
   <string name="view_announcement_card_negative_action">Ні, дякую</string>
   <string name="view_offline_card_text">Вміст не може бути завантажений в автономному режимі.</string>
   <string name="view_featured_article_card_title">Вибрана стаття</string>
@@ -473,7 +472,7 @@
   <string name="onboarding_continue">Продовжити</string>
   <string name="onboarding_get_started">Розпочати</string>
   <string name="onboarding_explore_title">Пізнаємо по-новому</string>
-  <string name="onboarding_explore_text">Відкрийте для себе обрані статті, популярні теми та поради щодо читання в каналі перегляду.</string>
+  <string name="onboarding_explore_text" fuzzy="true">Відкрийте для себе обрані статті, популярні теми та поради щодо читання в каналі перегляду.</string>
   <string name="onboarding_reading_list_sync_title">Синхронізовані списки читання</string>
   <string name="onboarding_reading_list_sync_text">Створіть список читання з статей, які ви хочете читати пізніше, навіть коли ви знаходитесь не в мережі. &lt;a href=\"#login\"&gt;Увійдіть або створіть&lt;/a&gt; ваш обліковий запис у Вікіпедії, щоб підтримувати резервнe копію списків читання.</string>
   <string name="onboarding_analytics_title">Надіслати анонімні дані</string>

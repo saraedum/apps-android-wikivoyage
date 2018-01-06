@@ -146,7 +146,9 @@
   <string name="about_description">Om Wikipedia-appen</string>
   <string name="privacy_policy_description">Integritetspolicy</string>
   <string name="terms_of_use_description">Användarvillkor</string>
+  <string name="about_wikipedia_url">https://sv.m.wikipedia.org/wiki/Wikipedia:Om</string>
   <string name="privacy_policy_url" fuzzy="true">https://wikimediafoundation.org/wiki/Privacy_Policy</string>
+  <string name="offline_reading_and_data_url">https://www.mediawiki.org/wiki/Wikimedia_Apps/Android_FAQ/sv#Läsa_offline_och_data</string>
   <string name="terms_of_use_url">https://wikimediafoundation.org/wiki/Terms_of_Use</string>
   <string name="cc_by_sa_3_url">https://creativecommons.org/licenses/by-sa/3.0/deed.sv</string>
   <string name="cc_0_url">https://creativecommons.org/publicdomain/zero/1.0/deed.sv</string>
@@ -175,6 +177,8 @@
   <string name="edit_summary_tag_other_hint">Andra sätt på vilka du förbättrat sidan</string>
   <string name="find_next">Sök nästa</string>
   <string name="find_previous">Sök föregående</string>
+  <string name="find_first_occurence">Detta är den första förekomsten</string>
+  <string name="find_last_occurence">Detta är den sista förekomsten</string>
   <string name="abusefilter_title_warn">Detta kan vara en icke-konstruktiv redigering. Är du säker på att du vill publicera den?</string>
   <string name="abusefilter_title_disallow">Du kan inte publicera denna redigering. Gå tillbaka och ändra den.</string>
   <string name="abusefilter_text_warn">Ett automatiserat filter har identifierat denna redigering som potentiellt okonstruktiv. Den kan innehålla en eller flera av följande:&lt;br /&gt;&lt;br /&gt;· Text skriven helt med versaler&lt;br /&gt;· Tömmande av artiklar eller spam&lt;br /&gt;· Irrelevanta externa länkar eller bilder&lt;br /&gt;· Upprepade tecken</string>
@@ -286,6 +290,10 @@
   <string name="color_theme_select">Tema</string>
   <string name="color_theme_light">Ljus</string>
   <string name="color_theme_dark">Mörk</string>
+  <string name="color_theme_black">Svart</string>
+  <string name="color_theme_test_title">Exempeltext</string>
+  <string name="color_theme_test_text">Dra i reglaget för att ändra textstorleken som används när du läser artiklar. För att ändra textstorleken i resten av appen måste du ändra textstorleken för ditt system.</string>
+  <string name="preference_title_app_theme">Apptema</string>
   <string name="preference_title_color_theme">Mörkt tema</string>
   <string name="preference_summary_color_theme">Byt till appens mörka färgtema</string>
   <string name="text_size_increase">Öka textstorlek</string>
@@ -326,8 +334,8 @@
   <string name="reading_list_item_delete_undo">Ångra</string>
   <string name="reading_list_deleted">%s raderades</string>
   <string name="reading_lists_empty">Inga läslistor ännu</string>
-  <string name="reading_lists_empty_message">Spara artiklar i läslistor så du kan läsa dem senare, även om du är offline.</string>
-  <string name="reading_lists_onboarding_intro">Skapa läslistor av artiklar du vill läsa senare, även när du inte är uppkopplad.</string>
+  <string name="reading_lists_empty_message" fuzzy="true">Spara artiklar i läslistor så du kan läsa dem senare, även om du är offline.</string>
+  <string name="reading_lists_onboarding_intro" fuzzy="true">Skapa läslistor av artiklar du vill läsa senare, även när du inte är uppkopplad.</string>
   <string name="reading_lists_onboarding_for_example">Till exempel</string>
   <string name="reading_lists_onboarding_example1">Platser att besöka</string>
   <string name="reading_lists_onboarding_example2">Favoritdjur</string>
@@ -353,7 +361,6 @@
   <string name="reading_lists_confirm_remote_delete_no">Nej</string>
   <string name="reading_list_article_save_in_progress">Artikeln laddas ned och kommer att vara tillgänglig offline när den är färdig.</string>
   <string name="reading_list_already_contains_selection">Den valda listan innehåller redan alla markerade sidor.</string>
-  <string name="reading_list_added_articles_list_untitled">Lade till %d artiklar i läslistan.</string>
   <string name="reading_list_added_articles_list_titled">Lade till %1$d artiklar i %2$s</string>
   <plurals name="reading_list_article_offline_message">
     <item quantity="one">Denna artikel kommer nu vara tillgänglig offline.</item>
@@ -399,18 +406,32 @@
   <string name="view_static_card_icon_content_description">Kortikon</string>
   <string name="view_card_news_title">På nyheterna</string>
   <plurals name="view_continue_reading_card_subtitle">
-    <item quantity="one">I går</item>
+    <item quantity="one">igår</item>
     <item quantity="other">%d dagar sedan</item>
   </plurals>
-  <string name="view_continue_reading_card_subtitle_today">I dag</string>
+  <string name="view_continue_reading_card_subtitle_today">Idag</string>
+  <string name="view_continue_reading_card_subtitle_read_date">Läst %s</string>
   <string name="view_announcement_card_negative_action">Nej tack</string>
   <string name="view_offline_card_text">Innehåll kan inte läsas in offline.</string>
   <string name="view_featured_article_card_title">Utmärkt artikel</string>
   <string name="view_featured_article_footer_save_button_label">Spara</string>
   <string name="view_featured_article_footer_saved_button_label">Sparades</string>
   <string name="feed_configure_menu_title">Konfigurera kort</string>
-  <string name="feed_configure_activity_title">Konfigurera utforskningskort</string>
-  <string name="feed_configure_menu_reset">Återställ till standardvärden</string>
+  <string name="feed_configure_activity_title">Anpassa flödet</string>
+  <string name="feed_configure_menu_reset">Återställ standardvyn</string>
+  <string name="feed_configure_menu_select_all">Markera alla</string>
+  <string name="feed_configure_menu_deselect_all">Avmarkera alla</string>
+  <string name="feed_item_type_news">Artiklar om nuvarande händelser</string>
+  <string name="feed_item_type_on_this_day">Händelser i historien på denna dag</string>
+  <string name="feed_item_type_continue_reading">Snabblänk tillbaka för att läsa en öppnad artikel i en av dina flikar</string>
+  <string name="feed_item_type_because_you_read">Förslag baserade på en nyligen läst artikel från din historik</string>
+  <string name="feed_item_type_featured_article">Dagens utmärkta artikel på Wikipedia</string>
+  <string name="feed_item_type_trending">Dagens mest lästa artiklar</string>
+  <string name="feed_item_type_featured_image">Dagens utmärkta bild från Wikimedia Commons</string>
+  <string name="feed_item_type_main_page">Wikipedias huvudsida med dagens utmärkta innehåll</string>
+  <string name="feed_item_type_randomizer">Generera slumpartiklar att läsa</string>
+  <string name="feed_configure_onboarding_action">Anpassa</string>
+  <string name="feed_configure_onboarding_text">&lt;strong&gt;Anpassa ditt utforskningsflöde&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;Du kan nu välja vad som ska visas i ditt flöde och även prioritera dina favoritinnehållstyper.</string>
   <string name="description_edit_text_hint">Titelbeskrivning</string>
   <string name="description_edit_save">Publicera</string>
   <string name="description_edit_add_description">Lägg till titelbeskrivning</string>
@@ -503,26 +524,33 @@
   <string name="onboarding_skip">Hoppa över</string>
   <string name="onboarding_continue">Fortsätt</string>
   <string name="onboarding_get_started">Kom igång</string>
+  <string name="onboarding_welcome_title">Den fria encyklopedin</string>
+  <string name="onboarding_welcome_text">Wikipedia skrivs tillsammans av frivilliga och består av fler än 40 miljoner artiklar på nästan 300 olika språk. &lt;a href=\"#about\"&gt;Läs mer&lt;/a&gt;</string>
   <string name="onboarding_explore_title">Nya sätt att utforska</string>
-  <string name="onboarding_explore_text">Upptäck utmärkta artiklar, populära ämnen och läsförslag i Utforska-flödet.</string>
+  <string name="onboarding_explore_text">Gör en djupdykning i Wikipedia genom att uppdatera utforskningsflödet. &lt;br/&gt; &lt;b&gt;Anpassa&lt;/b&gt; flödet för att möta dina intressen – såvida det handlar om historiska händelser &lt;b&gt;på denna dag&lt;/b&gt; eller kasta tärningen med &lt;b&gt;slumpartikel&lt;/b&gt;.</string>
+  <string name="onboarding_save_to_reading_lists_title">Spara till läslistor</string>
+  <string name="onboarding_save_to_reading_lists_text">Skapa läslistor av artiklar du vill läsa senare, även när du inte är uppkopplad.</string>
   <string name="onboarding_reading_list_sync_title">Läslistor med synkronisering</string>
   <string name="onboarding_reading_list_sync_text">Skapa läslistor från artiklar du vill läsa senare, även när du inte har någon uppkoppling. &lt;a href=\"#login\"&gt;Logga in eller skapa&lt;/a&gt; ditt Wikipedia-konto för att säkerhetskopiera dina läslistor.</string>
   <string name="onboarding_analytics_title">Skicka anonym data</string>
   <string name="onboarding_analytics_text">Hjälp till att göra appen bättre genom att låta oss veta hur du använder den. Data som samlas in är anonym. &lt;a href=\"#privacy\"&gt;Läs mer&lt;/a&gt;</string>
+  <string name="onboarding_analytics_offline_text">Hjälp till att göra appen bättre genom att låta oss veta hur du använder den. Data som samlas in är anonym. &lt;a href=\"#offline\"&gt;Läs mer&lt;/a&gt;</string>
   <string name="onboarding_analytics_switch_title">Skicka användningsdata</string>
   <string name="onboarding_create_account_sync">Synkronisera dina läslistor</string>
   <string name="onboarding_create_account_contributions">Håll koll på dina bidrag</string>
   <string name="onboarding_create_account_preferences">Spara dina inställningar</string>
+  <string name="onboarding_got_it">Jag förstår</string>
   <string name="app_shortcuts_random">Slumpartikel</string>
   <string name="app_shortcuts_continue_reading">Fortsätt läsa</string>
   <string name="app_shortcuts_search">Sök</string>
+  <string name="more_trending_text">Fler som detta</string>
   <string name="all_trending_text">Alla populära artiklar på %1$s</string>
   <string name="top_on_this_day">Populärt på %1$s</string>
   <string name="on_this_day_card_title">På denna dag</string>
-  <string name="more_events_text">Fler historiska händelser på denna dag</string>
-  <string name="events_count_text">%1$s händelser från %2$s - %3$d</string>
-  <string name="on_this_day">På denna dag</string>
+  <string name="more_events_text">Mer på denna dag</string>
+  <string name="events_count_text">%1$s händelser från %2$s–%3$d</string>
   <string name="this_year">Detta år</string>
+  <string name="back_to_top">Tillbaka till början</string>
   <plurals name="diff_years">
     <item quantity="one">Senaste året</item>
     <item quantity="other">%d år sedan</item>

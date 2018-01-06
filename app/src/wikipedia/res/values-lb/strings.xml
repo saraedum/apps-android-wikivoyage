@@ -170,6 +170,8 @@
   <string name="edit_summary_tag_other_hint">Aner Manéier wéi Dir d\'Säit verbessert hutt</string>
   <string name="find_next">Den nächste fannen</string>
   <string name="find_previous">Vireg fannen</string>
+  <string name="find_first_occurence">Dëst ass déi éischte Kéier</string>
+  <string name="find_last_occurence">Dëst ass déi leschte Kéier</string>
   <string name="abusefilter_title_warn">Dëst gesäit no enger net-konstruktiver Ännerung aus. Sidd Dir sécher datt Dir se verëffentleche wëllt?</string>
   <string name="abusefilter_title_disallow">Dir däerft dës Ännerung net verëffentlechen. Gitt w.e.g. zréck an ännert se.</string>
   <string name="abusefilter_text_warn">En automatesche Filter huet dës Ännerung als méiglecherweis net konstruktiv identifizéiert. Et ka sinn dat eent oder méi vun dësen Elementer dra virkommen:&lt;br /&gt;&lt;br /&gt;· Alles ass a grousse Buschtawe geschriwwen&lt;br /&gt; Artikelen eidelmaachen oder Spam drasetzen &lt;br /&gt; Irrelevant extern Linken oder Biller&lt;br /&gt; Zeeche widderhuelen</string>
@@ -268,6 +270,9 @@
   <string name="color_theme_select">Faarfschema</string>
   <string name="color_theme_light">Hell</string>
   <string name="color_theme_dark">Däischter</string>
+  <string name="color_theme_black">Schwaarz</string>
+  <string name="color_theme_test_title">Beispilltext</string>
+  <string name="preference_title_app_theme">Ausgesi vun der App</string>
   <string name="text_size_increase">Gréisst vum Text méi grouss maachen</string>
   <string name="text_size_decrease">Gréisst vum Text méi kleng maachen</string>
   <string name="text_size_percent_default">%s (Standard)</string>
@@ -304,8 +309,8 @@
   <string name="reading_list_item_delete_undo">Réckgängeg maachen</string>
   <string name="reading_list_deleted">%s geläscht</string>
   <string name="reading_lists_empty">Nach keng Lieslëschten!</string>
-  <string name="reading_lists_empty_message">Späichert d\'Artikelen a Lieslëschten esou datt Dir se méi spéit kucke kënnt, esouguer da wann Dir offline sidd.</string>
-  <string name="reading_lists_onboarding_intro">Maacht eng Lieslëscht vun den Artikelen déi Dir spéider liese wëllt, esouguer wann Dir offline sidd!</string>
+  <string name="reading_lists_empty_message" fuzzy="true">Späichert d\'Artikelen a Lieslëschten esou datt Dir se méi spéit kucke kënnt, esouguer da wann Dir offline sidd.</string>
+  <string name="reading_lists_onboarding_intro" fuzzy="true">Maacht eng Lieslëscht vun den Artikelen déi Dir spéider liese wëllt, esouguer wann Dir offline sidd!</string>
   <string name="reading_lists_onboarding_for_example">Zum Beispill</string>
   <string name="reading_lists_onboarding_example1">Plaze fir ze besichen</string>
   <string name="reading_lists_onboarding_example2">Lieblingsdéieren</string>
@@ -328,7 +333,6 @@
   <string name="reading_lists_confirm_remote_delete_yes">Jo</string>
   <string name="reading_lists_confirm_remote_delete_no">Neen</string>
   <string name="reading_list_already_contains_selection">An der erausgesichter Lëscht si schonn all déi erausgesicht Säiten.</string>
-  <string name="reading_list_added_articles_list_untitled">%d Artikelen an d\'Lieslëscht dobäigesat.</string>
   <string name="reading_list_added_articles_list_titled">%1$d Artikel op %2$s dobäigesat</string>
   <plurals name="reading_list_article_offline_message">
     <item quantity="one">Dësen Artikel ass elo offline disponibel.</item>
@@ -356,7 +360,7 @@
   <string name="view_continue_reading_card_title">Virufuere mat Liesen</string>
   <string name="view_because_you_read_card_title">Well Dir liest</string>
   <string name="view_random_card_title">Zoufallsgenerator</string>
-  <string name="view_random_card_subtitle" fuzzy="true">Liest en zoufällegen Artikel vu Wikipedia</string>
+  <string name="view_random_card_subtitle">Duerch zoufälleg Artikele aus der Wikipedia bliederen.</string>
   <string name="view_main_page_card_title">Haut op Wikipedia</string>
   <string name="view_main_page_card_subtitle">Haaptsäit op %s</string>
   <string name="view_main_page_card_action">Haaptsäit weisen</string>
@@ -375,13 +379,18 @@
     <item quantity="one">Gëschter</item>
     <item quantity="other">viru(n) %d Deeg</item>
   </plurals>
-  <string name="view_continue_reading_card_subtitle_today">Haut</string>
+  <string name="view_continue_reading_card_subtitle_today">haut</string>
+  <string name="view_continue_reading_card_subtitle_read_date">%s geliest</string>
   <string name="view_announcement_card_negative_action">Nee, merci</string>
   <string name="view_offline_card_text">Et ka keen INhalt geluede gi wann Dir offline sidd.</string>
   <string name="view_featured_article_footer_save_button_label">Späicheren</string>
   <string name="view_featured_article_footer_saved_button_label">Gespäichert</string>
   <string name="feed_configure_menu_title">Kaarte konfiguréieren</string>
-  <string name="feed_configure_menu_reset">Op de Standard zrécksetzen</string>
+  <string name="feed_configure_menu_reset">Standard- Ausgesinn restauréieren</string>
+  <string name="feed_configure_menu_select_all">Alles uwielen</string>
+  <string name="feed_item_type_news">Artikelen iwwer aktuell Evenementer</string>
+  <string name="feed_item_type_on_this_day">Evenementer an der Vergaangenheet op dësem Dag</string>
+  <string name="feed_configure_onboarding_action">Upassen</string>
   <string name="description_edit_text_hint">Titelbeschreiwung</string>
   <string name="description_edit_save">Verëffentlechen</string>
   <string name="description_edit_add_description">Beschreiwung vum Titel derbäisetzen</string>
@@ -447,16 +456,22 @@
   <string name="onboarding_skip">Iwwersprangen</string>
   <string name="onboarding_continue">Virufueren</string>
   <string name="onboarding_get_started">Fir unzefänken</string>
+  <string name="onboarding_welcome_title">Déi fräi Enzyklopedie</string>
+  <string name="onboarding_save_to_reading_lists_title">Op d\'Lieslëschte späicheren</string>
   <string name="onboarding_reading_list_sync_title">Lieslëschten mat Synchroniséierung</string>
   <string name="onboarding_analytics_title">Anonymiséiert Donnéeë schécken</string>
   <string name="onboarding_create_account_sync">Synchroniséiert Är Lieslëschten</string>
   <string name="onboarding_create_account_preferences">Späichert Är Astellungen</string>
+  <string name="onboarding_got_it">Verstan</string>
   <string name="app_shortcuts_random">Zoufall</string>
   <string name="app_shortcuts_continue_reading">Virufuere mat Liesen</string>
   <string name="app_shortcuts_search">Sichen</string>
+  <string name="more_trending_text">Méi esou wéi dëst</string>
   <string name="on_this_day_card_title">Op dësem Dag</string>
-  <string name="on_this_day">Op dësem Dag</string>
+  <string name="more_events_text">Méi op dësem Dag</string>
+  <string name="events_count_text">%1$s Evenementer vum %2$s bis %3$d</string>
   <string name="this_year">Dëst Joer</string>
+  <string name="back_to_top">Zréck no uewen</string>
   <plurals name="diff_years">
     <item quantity="one">Lescht Joer</item>
     <item quantity="other">Viru(n) %d Joer</item>

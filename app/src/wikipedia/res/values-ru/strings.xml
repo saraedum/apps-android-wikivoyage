@@ -146,7 +146,9 @@
   <string name="about_description">О приложении «Википедия»</string>
   <string name="privacy_policy_description">Политика конфиденциальности</string>
   <string name="terms_of_use_description">Условия использования</string>
+  <string name="about_wikipedia_url">https://ru.m.wikipedia.org/wiki/Википедия:Описание</string>
   <string name="privacy_policy_url">https://m.wikimediafoundation.org/wiki/Privacy_policy</string>
+  <string name="offline_reading_and_data_url">https://www.mediawiki.org/wiki/Wikimedia_Apps/Android_FAQ/ru#Чтение_в_офлайне_и_данные</string>
   <string name="terms_of_use_url">https://wikimediafoundation.org/wiki/Условия_использования</string>
   <string name="cc_by_sa_3_url">https://creativecommons.org/licenses/by-sa/3.0/deed.ru</string>
   <string name="cc_0_url">https://creativecommons.org/publicdomain/zero/1.0/deed.ru</string>
@@ -284,6 +286,8 @@
   <string name="color_theme_select">Оформление</string>
   <string name="color_theme_light">Светлое</string>
   <string name="color_theme_dark">Тёмное</string>
+  <string name="color_theme_black">Чёрная</string>
+  <string name="preference_title_app_theme">Тема приложения</string>
   <string name="preference_title_color_theme">Тёмная тема</string>
   <string name="preference_summary_color_theme">Переключите для использования тёмной темы оформления приложения</string>
   <string name="text_size_increase">Увеличить размер шрифта</string>
@@ -324,8 +328,8 @@
   <string name="reading_list_item_delete_undo">Отменить</string>
   <string name="reading_list_deleted">%s удалено</string>
   <string name="reading_lists_empty">Ещё нет списков для чтения</string>
-  <string name="reading_lists_empty_message">Сохранить статьи в списки для чтения. Вы сможете просмотреть статьи позже, даже в офлайне.</string>
-  <string name="reading_lists_onboarding_intro">Создайте списки для чтения из статей, которые вы хотели бы прочитать позже, даже если вы не подключены к интернету!</string>
+  <string name="reading_lists_empty_message" fuzzy="true">Сохранить статьи в списки для чтения. Вы сможете просмотреть статьи позже, даже в офлайне.</string>
+  <string name="reading_lists_onboarding_intro" fuzzy="true">Создайте списки для чтения из статей, которые вы хотели бы прочитать позже, даже если вы не подключены к интернету!</string>
   <string name="reading_lists_onboarding_for_example">Например</string>
   <string name="reading_lists_onboarding_example1">Места для посещения</string>
   <string name="reading_lists_onboarding_example2">Любимые животные</string>
@@ -368,8 +372,11 @@
   <string name="notification_thanks_title">Вас поблагодарили!</string>
   <string name="notification_thanks">&lt;em&gt;%1$s&lt;/em&gt; поблагодарил вас за вашу правку на странице &lt;strong&gt;%2$s&lt;/strong&gt;</string>
   <string name="notification_channel_name">Синхронизация</string>
+  <string name="notification_channel_description">Прогресс синхронизации</string>
+  <string name="notification_syncing_title">Синхронизация %1$d статей…</string>
+  <string name="notification_syncing_description">Осталось %1$d статей</string>
   <string name="notification_syncing_pause_button">Пауза</string>
-  <string name="notification_syncing_resume_button" fuzzy="true">ПРОДОЛЖИТЬ</string>
+  <string name="notification_syncing_resume_button">Продолжить</string>
   <string name="notification_syncing_cancel_button">Отмена</string>
   <string name="view_continue_reading_card_title">Продолжить чтение</string>
   <string name="view_because_you_read_card_title">Потому что вы читали</string>
@@ -393,16 +400,20 @@
   <string name="view_card_news_title">В новостях</string>
   <plurals name="view_continue_reading_card_subtitle">
     <item quantity="one">%d день назад</item>
-    <item quantity="few">%d дня назад</item>
-    <item quantity="other">%d дней назад</item>
+    <item quantity="other">%d дня назад</item>
   </plurals>
-  <string name="view_continue_reading_card_subtitle_today">Сегодня</string>
+  <string name="view_continue_reading_card_subtitle_today">сегодня</string>
   <string name="view_announcement_card_negative_action">Нет, спасибо</string>
   <string name="view_offline_card_text">Содержимое не может быть загружено в офлайн-режиме.</string>
   <string name="view_featured_article_card_title">Избранная статья</string>
   <string name="view_featured_article_footer_save_button_label">Сохранить</string>
   <string name="view_featured_article_footer_saved_button_label">Сохранено</string>
-  <string name="feed_configure_menu_reset">Сбросить настройки</string>
+  <string name="feed_configure_menu_reset">Восстановить фильтры по умолчанию</string>
+  <string name="feed_configure_menu_select_all">Выбрать все</string>
+  <string name="feed_configure_menu_deselect_all">Отменить Выбор Всех</string>
+  <string name="feed_item_type_on_this_day">Исторические события в этот день</string>
+  <string name="feed_item_type_randomizer">Сгенерировать случайные статьи для чтения</string>
+  <string name="feed_configure_onboarding_action">Настроить</string>
   <string name="description_edit_text_hint">Описание</string>
   <string name="description_edit_save">Сохранить</string>
   <string name="description_edit_add_description">Добавить описание</string>
@@ -479,8 +490,10 @@
   <string name="onboarding_skip">Пропустить</string>
   <string name="onboarding_continue">Продолжить</string>
   <string name="onboarding_get_started">Начать</string>
+  <string name="onboarding_welcome_title">Свободная энциклопедия</string>
   <string name="onboarding_explore_title">Новые способы исследования</string>
-  <string name="onboarding_explore_text">Обозревайте избранные статьи, популярные темы и предложения для чтения в ленте Explore.</string>
+  <string name="onboarding_explore_text" fuzzy="true">Обозревайте избранные статьи, популярные темы и предложения для чтения в ленте Explore.</string>
+  <string name="onboarding_save_to_reading_lists_title">Сохранить в списки для чтения</string>
   <string name="onboarding_reading_list_sync_title">Списки для чтения с синхронизацией</string>
   <string name="onboarding_reading_list_sync_text">Создавайте списки для чтения из статей, которые вы хотите прочитать, даже если вы находитесь в офлайне. &lt;a href=\"#login\"&gt;Авторизуйтесь или создайте учётную запись в Википедии&lt;/a&gt; для сохранения списков для чтения.</string>
   <string name="onboarding_analytics_title">Отправка анонимных данных</string>
@@ -489,10 +502,17 @@
   <string name="onboarding_create_account_sync">Синхронизация списков для чтения</string>
   <string name="onboarding_create_account_contributions">Отслеживание вашего вклада</string>
   <string name="onboarding_create_account_preferences">Сохранение ваших настроек</string>
+  <string name="onboarding_got_it">Понятно</string>
   <string name="app_shortcuts_random">Случайная</string>
   <string name="app_shortcuts_continue_reading">Продолжить чтение</string>
   <string name="app_shortcuts_search">Поиск</string>
   <string name="on_this_day_card_title">В этот день</string>
-  <string name="on_this_day">В этот день</string>
+  <string name="more_events_text">Ещё в этот день</string>
+  <string name="events_count_text">%1$s событий за %2$s—%3$d</string>
   <string name="this_year">Этот год</string>
+  <string name="back_to_top">Вернуться наверх</string>
+  <plurals name="diff_years">
+    <item quantity="one">В прошлом году</item>
+    <item quantity="other">%d года назад</item>
+  </plurals>
 </resources>

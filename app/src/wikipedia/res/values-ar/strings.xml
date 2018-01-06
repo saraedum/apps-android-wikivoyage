@@ -280,6 +280,8 @@
   <string name="color_theme_select">المظهر</string>
   <string name="color_theme_light">فاتح</string>
   <string name="color_theme_dark">غامق</string>
+  <string name="color_theme_black">أسود</string>
+  <string name="color_theme_test_title">مثال للنص</string>
   <string name="preference_title_color_theme">المظهر الداكن</string>
   <string name="preference_summary_color_theme">بدّل لاستخدام المظهر التطبيق داكن اللون</string>
   <string name="text_size_percent_default">%s (افتراضي)</string>
@@ -316,8 +318,8 @@
   <string name="reading_list_item_delete_undo">تراجع</string>
   <string name="reading_list_deleted">أزيلت %s</string>
   <string name="reading_lists_empty">لا توجد قوائم قراءة بعد</string>
-  <string name="reading_lists_empty_message">احفظ المقالات التي تتصفحها في شكل قوائم قراءة حتى تتطلع عليهم لاحقا، حتى وإن كنت غير متصل بالشبكة.</string>
-  <string name="reading_lists_onboarding_intro">أنشئ قوائم مطالعة من المقالات التي ترغب في الاطلاع عليها لاحقا، حتى لو كنت غير متصل بالإنترنت!</string>
+  <string name="reading_lists_empty_message" fuzzy="true">احفظ المقالات التي تتصفحها في شكل قوائم قراءة حتى تتطلع عليهم لاحقا، حتى وإن كنت غير متصل بالشبكة.</string>
+  <string name="reading_lists_onboarding_intro" fuzzy="true">أنشئ قوائم مطالعة من المقالات التي ترغب في الاطلاع عليها لاحقا، حتى لو كنت غير متصل بالإنترنت!</string>
   <string name="reading_lists_onboarding_for_example">على سبيل المثال</string>
   <string name="reading_lists_onboarding_example1">أماكن للزيارة</string>
   <string name="reading_lists_onboarding_example2">الحيوانات المفضلة</string>
@@ -378,16 +380,20 @@
   <string name="most_read_list_card_title">الأكثر زيارة</string>
   <string name="view_static_card_icon_content_description">أيقونة بطاقة</string>
   <string name="view_card_news_title">في الأخبار</string>
-  <plurals name="view_continue_reading_card_subtitle">
+  <plurals name="view_continue_reading_card_subtitle" fuzzy="true">
     <item quantity="one">أمس</item>
     <item quantity="other">قبل %d أيام</item>
   </plurals>
   <string name="view_continue_reading_card_subtitle_today">اليوم</string>
+  <string name="view_continue_reading_card_subtitle_read_date">قرأت %s</string>
   <string name="view_announcement_card_negative_action">لا شكرًا</string>
   <string name="view_offline_card_text">لا يمكن تحميل المحتوى في وضع عدم الاتصال.</string>
   <string name="view_featured_article_card_title">مقالة مختارة</string>
   <string name="view_featured_article_footer_save_button_label">احفظ</string>
   <string name="view_featured_article_footer_saved_button_label">حُفظت</string>
+  <string name="feed_configure_menu_select_all">اختر الكل</string>
+  <string name="feed_item_type_on_this_day">أحداث تاريخية في هذا اليوم</string>
+  <string name="feed_item_type_featured_article">المقالة المختارة يوميًّا على ويكيبيديا</string>
   <string name="description_edit_text_hint">وصف العنوان</string>
   <string name="description_edit_save">انشر</string>
   <string name="description_edit_add_description">إضافة وصف للعنوان</string>
@@ -435,7 +441,7 @@
   <string name="onboarding_continue">استمر</string>
   <string name="onboarding_get_started">ابدأ</string>
   <string name="onboarding_explore_title">طريقة جديدة للاستكشاف</string>
-  <string name="onboarding_explore_text">اكتشف المقالات المختارة، والمواضيع الشائعة، واقتراحات القراءة في خلاصات \"استكشف\".</string>
+  <string name="onboarding_explore_text" fuzzy="true">اكتشف المقالات المختارة، والمواضيع الشائعة، واقتراحات القراءة في خلاصات \"استكشف\".</string>
   <string name="onboarding_reading_list_sync_title">قوائم القراءة مع المزامنة</string>
   <string name="onboarding_reading_list_sync_text">أنشئ قوائم قراءة من المقالات التي تُريد قراءتها لاحقًا، حتى في وضع عدم الاتصال. &lt;a href=\"#login\"&gt;أنشئ حسابًا أو سجل دخولك&lt;/a&gt; لحسابك في ويكيبيديا لإبقاء قوائم قراءتك منسوخةً احتياطيا.</string>
   <string name="onboarding_analytics_title">إرسال بيانات مجهولة المصدر</string>
@@ -450,10 +456,10 @@
   <string name="all_trending_text">المقالات الأكثر زيارةً في %1$s</string>
   <string name="top_on_this_day">الأكثر زيارةً في %1$s</string>
   <string name="on_this_day_card_title">في هذا اليوم</string>
-  <string name="more_events_text">المزيد من الأحداث التاريخية في هذا اليوم</string>
-  <string name="events_count_text">%1$s حدثًا من %2$s - %3$d</string>
-  <string name="on_this_day">في هذا اليوم</string>
+  <string name="more_events_text" fuzzy="true">المزيد من الأحداث التاريخية في هذا اليوم</string>
+  <string name="events_count_text" fuzzy="true">%1$s حدثًا من %2$s - %3$d</string>
   <string name="this_year">هذا العام</string>
+  <string name="back_to_top" fuzzy="true">عودة إلى الأعلى</string>
   <plurals name="diff_years">
     <item quantity="one">السنة الماضية</item>
     <item quantity="other">قبل %d سنة</item>

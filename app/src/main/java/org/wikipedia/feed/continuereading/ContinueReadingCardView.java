@@ -6,12 +6,17 @@ import android.support.annotation.PluralsRes;
 import android.view.View;
 
 import org.wikipedia.R;
+import org.wikipedia.feed.model.Card;
 import org.wikipedia.feed.view.ListCardView;
 import org.wikipedia.history.HistoryEntry;
 import org.wikipedia.views.ItemTouchHelperSwipeAdapter;
 
 public class ContinueReadingCardView extends ListCardView<ContinueReadingCard>
         implements ItemTouchHelperSwipeAdapter.SwipeableView {
+    public interface Callback {
+        void onSelectPageFromExistingTab(@NonNull Card card, @NonNull HistoryEntry entry);
+    }
+
     public ContinueReadingCardView(Context context) {
         super(context);
     }
@@ -32,13 +37,13 @@ public class ContinueReadingCardView extends ListCardView<ContinueReadingCard>
             subtitle = getResources().getQuantityString(subtitlePlural, age, age);
         }
         headerView().setTitle(R.string.view_continue_reading_card_title)
-                .setSubtitle(subtitle)
                 .setImage(R.drawable.ic_arrow_forward_black_24dp)
                 .setImageCircleColor(R.color.base30)
                 .setCard(card)
                 .setCallback(getCallback());
         largeHeaderView().setTitle(card.title())
                 .setImage(card.image())
+                .setSubtitle(subtitle)
                 .onClickListener(new CardClickListener())
                 .setVisibility(VISIBLE);
     }
@@ -47,7 +52,7 @@ public class ContinueReadingCardView extends ListCardView<ContinueReadingCard>
         @Override
         public void onClick(View v) {
             if (getCallback() != null && getCard() != null) {
-                getCallback().onSelectPage(getCard(), new HistoryEntry(getCard().pageTitle(),
+                getCallback().onSelectPageFromExistingTab(getCard(), new HistoryEntry(getCard().pageTitle(),
                         HistoryEntry.SOURCE_FEED_CONTINUE_READING));
             }
         }

@@ -144,7 +144,7 @@
   <string name="settings_item_preferences">ترتیبات</string>
   <string name="settings_activity_title">ترتیبات</string>
   <string name="about_description">ویکیپیڈیا ایپ کے بارے میں</string>
-  <string name="privacy_policy_description">اصول براۓ اخفائے راز</string>
+  <string name="privacy_policy_description">اصول برائے اخفائے راز</string>
   <string name="terms_of_use_description">استعمال کے شرائط</string>
   <string name="cc_by_sa_3_url">https://creativecommons.org/licenses/by-sa/3.0/</string>
   <string name="cc_0_url">https://creativecommons.org/publicdomain/zero/1.0/</string>
@@ -322,8 +322,8 @@
   <string name="reading_list_item_delete_undo">ترمیم رد کریں</string>
   <string name="reading_list_deleted">%s حذف شدہ</string>
   <string name="reading_lists_empty">یہاں اب تک کوئی فہرست مطالعہ موجود نہیں ہے۔</string>
-  <string name="reading_lists_empty_message">جن مضامین کو آپ پڑھتے ہیں انہیں \'مطالعہ کی فہرستوں\' میں شامل کریں تاکہ آپ انہیں آف لائن رہتے ہوئے بھی پڑھ سکیں۔</string>
-  <string name="reading_lists_onboarding_intro">ان مضامین سے مطالعہ کی فہرستیں بنائیں جنہیں آپ بعد میں پڑھنا چاہتے ہیں، خواہ آپ آف لائن ہوں!</string>
+  <string name="reading_lists_empty_message" fuzzy="true">جن مضامین کو آپ پڑھتے ہیں انہیں \'مطالعہ کی فہرستوں\' میں شامل کریں تاکہ آپ انہیں آف لائن رہتے ہوئے بھی پڑھ سکیں۔</string>
+  <string name="reading_lists_onboarding_intro" fuzzy="true">ان مضامین سے مطالعہ کی فہرستیں بنائیں جنہیں آپ بعد میں پڑھنا چاہتے ہیں، خواہ آپ آف لائن ہوں!</string>
   <string name="reading_lists_onboarding_for_example">مثلاً</string>
   <string name="reading_lists_onboarding_example1">دیکھنے کے مقامات</string>
   <string name="reading_lists_onboarding_example2">پسندیدہ جانور</string>
@@ -349,7 +349,6 @@
   <string name="reading_lists_confirm_remote_delete_no">نہیں</string>
   <string name="reading_list_article_save_in_progress">یہ مضمون ڈاؤنلوڈ ہو رہا ہے، مکمل ہونے کے بعد یہ آف لائن دستیاب ہوگا۔</string>
   <string name="reading_list_already_contains_selection">منتخب فہرست میں تمام منتخب صفحات موجود ہیں۔</string>
-  <string name="reading_list_added_articles_list_untitled">فہرست مطالعہ میں %d مضامین شامل کیے گئے۔</string>
   <string name="reading_list_added_articles_list_titled">%2$s میں %1$d مضامین شامل کیے گئے</string>
   <plurals name="reading_list_article_offline_message">
     <item quantity="one">یہ مضمون آف لائن دستیاب ہوگا۔</item>
@@ -394,18 +393,19 @@
   <string name="most_read_list_card_title">مقبول صفحات</string>
   <string name="view_static_card_icon_content_description">کارڈ آئیکون</string>
   <string name="view_card_news_title">خبروں میں</string>
-  <plurals name="view_continue_reading_card_subtitle">
+  <plurals name="view_continue_reading_card_subtitle" fuzzy="true">
     <item quantity="one">گزشتہ کل</item>
     <item quantity="other">%d دن قبل</item>
   </plurals>
   <string name="view_continue_reading_card_subtitle_today">آج</string>
+  <string name="view_continue_reading_card_subtitle_read_date">پڑھیں %s</string>
   <string name="view_announcement_card_negative_action">نہیں، شکریہ!</string>
   <string name="view_offline_card_text">آف لائن ہونے کے دوران میں مواد لوڈ نہیں کیا جا سکتا۔</string>
   <string name="view_featured_article_card_title">منتخب مضمون</string>
   <string name="view_featured_article_footer_save_button_label">محفوظ کریں</string>
   <string name="view_featured_article_footer_saved_button_label">محفوظ ہوگیا</string>
   <string name="feed_configure_menu_title">کارڈز کو خاص ہیئت دیں</string>
-  <string name="feed_configure_activity_title">ایکسپلور کارڈز کو خاص ہیئت دیں</string>
+  <string name="feed_configure_activity_title" fuzzy="true">ایکسپلور کارڈز کو خاص ہیئت دیں</string>
   <string name="description_edit_text_hint">عنوان کی وضاحت</string>
   <string name="description_edit_save">شائع کریں</string>
   <string name="description_edit_add_description">عنوان کی وضاحت درج کریں</string>
@@ -480,7 +480,7 @@
   <string name="onboarding_continue">جاری رکھیں</string>
   <string name="onboarding_get_started">شروع کریں</string>
   <string name="onboarding_explore_title">اکتشاف کی نئی راہیں</string>
-  <string name="onboarding_explore_text">اکتشاف فیڈ میں منتخب مضامین، مقبول عام موضوعات اور مطالعے کی تجویزیں دیکھیں۔</string>
+  <string name="onboarding_explore_text" fuzzy="true">اکتشاف فیڈ میں منتخب مضامین، مقبول عام موضوعات اور مطالعے کی تجویزیں دیکھیں۔</string>
   <string name="onboarding_reading_list_sync_title">مطالعاتی فہرستیں مع مطابقت پزیری</string>
   <string name="onboarding_analytics_title">گمنام ڈیٹا بھیجیں</string>
   <string name="onboarding_analytics_switch_title">استعمال شدہ ڈیٹا بھیجیں</string>

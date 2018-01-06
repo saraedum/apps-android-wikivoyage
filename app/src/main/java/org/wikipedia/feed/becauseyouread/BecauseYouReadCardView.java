@@ -33,13 +33,13 @@ public class BecauseYouReadCardView extends ListCardView<BecauseYouReadCard>
         int age = (int) card.daysOld();
         String subtitle = getSubtitle(age);
         headerView().setTitle(card.title())
-                .setSubtitle(subtitle)
                 .setImage(R.drawable.ic_restore_black_24dp)
                 .setImageCircleColor(R.color.base30)
                 .setCard(card)
                 .setCallback(getCallback());
         largeHeaderView().setTitle(card.pageTitle())
                 .setImage(card.image())
+                .setSubtitle(subtitle)
                 .onClickListener(new SelectPageCallbackAdapter(card))
                 .setVisibility(VISIBLE);
     }
@@ -60,7 +60,7 @@ public class BecauseYouReadCardView extends ListCardView<BecauseYouReadCard>
 
         @Override public void onClick(View view) {
             if (getCallback() != null) {
-                getCallback().onSelectPage(card, new HistoryEntry(card.getPageTitle(),
+                getCallback().onSelectPageFromExistingTab(card, new HistoryEntry(card.getPageTitle(),
                         HistoryEntry.SOURCE_FEED_BECAUSE_YOU_READ));
             }
         }

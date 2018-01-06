@@ -146,8 +146,8 @@
   <string name="reading_list_item_delete_undo">Razveljavi</string>
   <string name="reading_list_deleted">Seznam %s je bil izbrisan</string>
   <string name="reading_lists_empty">Nimate še bralnih seznamov</string>
-  <string name="reading_lists_empty_message">Shranite članke v bralne sezname, da jih lahko preberete kasneje tudi brez povezave</string>
-  <string name="reading_lists_onboarding_intro">Ustvarite bralne sezname iz člankov, ki jih želite prebrati kasneje, tudi brez povezave!</string>
+  <string name="reading_lists_empty_message" fuzzy="true">Shranite članke v bralne sezname, da jih lahko preberete kasneje tudi brez povezave</string>
+  <string name="reading_lists_onboarding_intro" fuzzy="true">Ustvarite bralne sezname iz člankov, ki jih želite prebrati kasneje, tudi brez povezave!</string>
   <string name="reading_lists_onboarding_for_example">Na primer</string>
   <string name="reading_lists_onboarding_example2">Najljubše živali</string>
   <string name="reading_lists_onboarding_example3">Raziskovanje vesolja</string>
@@ -161,7 +161,6 @@
   <string name="reading_list_sync_reminder_action">Vklopi</string>
   <string name="reading_lists_confirm_remote_delete_yes">Da</string>
   <string name="reading_lists_confirm_remote_delete_no">Ne</string>
-  <string name="reading_list_added_articles_list_untitled">%d člankov dodanih na bralni seznam</string>
   <string name="user_option_sync_label">Nastavitve</string>
   <string name="notification_talk_title">Novo sporočilo na Wikipediji</string>
   <string name="view_continue_reading_card_title">Nadaljuj z branjem</string>
@@ -171,11 +170,11 @@
   <string name="view_featured_image_card_title">Slika dneva</string>
   <string name="view_featured_image_card_download">Prenesi</string>
   <string name="menu_feed_overflow_label">Več možnosti</string>
-  <string name="view_continue_reading_card_subtitle_today">Danes</string>
+  <string name="view_continue_reading_card_subtitle_today" fuzzy="true">Danes</string>
   <string name="view_announcement_card_negative_action">Ne, hvala</string>
   <string name="view_featured_article_footer_save_button_label">Shrani</string>
   <string name="view_featured_article_footer_saved_button_label">Shranjeno</string>
-  <string name="feed_configure_menu_reset">Ponastavi na privzeto</string>
+  <string name="feed_configure_menu_reset" fuzzy="true">Ponastavi na privzeto</string>
   <string name="description_edit_cancel_hint">Prekliči</string>
   <string name="description_edit_success_saved">Opis objavljen!</string>
   <string name="description_edit_help_tips_examples">Na primer:</string>

@@ -93,6 +93,11 @@ public abstract class StaticCardView<T extends Card> extends DefaultFeedCardView
                         return getCallback().onRequestDismissCard(getCard());
                     }
                     return false;
+                case R.id.menu_feed_card_customize:
+                    if (getCallback() != null & getCard() != null) {
+                        getCallback().onRequestCustomize(getCard());
+                    }
+                    return true;
                 default:
                     return false;
             }

@@ -324,8 +324,8 @@
   <string name="reading_list_item_delete_undo">Teu tulus</string>
   <string name="reading_list_deleted">%s dipupus</string>
   <string name="reading_lists_empty">Can aya daptar bacaan deui</string>
-  <string name="reading_lists_empty_message">Simpen artikel kana daptar bacaan hambéh engké anjeun bisa nempona deui, malah mah mun anjeun  keur oflén.</string>
-  <string name="reading_lists_onboarding_intro">Jieun daptar bacaan tina artikel anu rék dibaca ku anjeun engké, malah nalika anjeun keur oflén!</string>
+  <string name="reading_lists_empty_message" fuzzy="true">Simpen artikel kana daptar bacaan hambéh engké anjeun bisa nempona deui, malah mah mun anjeun  keur oflén.</string>
+  <string name="reading_lists_onboarding_intro" fuzzy="true">Jieun daptar bacaan tina artikel anu rék dibaca ku anjeun engké, malah nalika anjeun keur oflén!</string>
   <string name="reading_lists_onboarding_for_example">Pikeun conto</string>
   <string name="reading_lists_onboarding_example1">Tempat sorangkeuneun</string>
   <string name="reading_lists_onboarding_example2">Sato karesep</string>
@@ -351,7 +351,6 @@
   <string name="reading_lists_confirm_remote_delete_no">Teu</string>
   <string name="reading_list_article_save_in_progress">Artikel keur diundeur, sarta bakal nyangkaruk sacara oflén nalika geus bérés.</string>
   <string name="reading_list_already_contains_selection">Daptar nu dipilih geus aya eusian sakabéh kaca nu dipilih.</string>
-  <string name="reading_list_added_articles_list_untitled">%d artikel ditambahkeun kana daptar bacaeun.</string>
   <string name="reading_list_added_articles_list_titled">%1$d ditambahkeun ka %2$s</string>
   <plurals name="reading_list_article_offline_message">
     <item quantity="one">Ieu artikel ayeuna bakal sayaga kalawan oflén.</item>
@@ -387,19 +386,19 @@
   <string name="most_read_list_card_title">Keur ngetrén</string>
   <string name="view_static_card_icon_content_description">Ikon kartu</string>
   <string name="view_card_news_title">Dina warta</string>
-  <plurals name="view_continue_reading_card_subtitle">
+  <plurals name="view_continue_reading_card_subtitle" fuzzy="true">
     <item quantity="one">Kamari</item>
     <item quantity="other">%d poé ka tukang</item>
   </plurals>
-  <string name="view_continue_reading_card_subtitle_today">Poé ieu</string>
+  <string name="view_continue_reading_card_subtitle_today" fuzzy="true">Poé ieu</string>
   <string name="view_announcement_card_negative_action">Teu kudu, nuhun</string>
   <string name="view_offline_card_text">Kontén teu bisa dipuat nalika oflén.</string>
   <string name="view_featured_article_card_title">Artikel petingan</string>
   <string name="view_featured_article_footer_save_button_label">Simpen</string>
   <string name="view_featured_article_footer_saved_button_label">Kasimpen</string>
   <string name="feed_configure_menu_title">Konfigurasikeun kartu</string>
-  <string name="feed_configure_activity_title">Konfigurasikeun kartu Langlangan</string>
-  <string name="feed_configure_menu_reset">Balikkeun kana setélan buhun</string>
+  <string name="feed_configure_activity_title" fuzzy="true">Konfigurasikeun kartu Langlangan</string>
+  <string name="feed_configure_menu_reset" fuzzy="true">Balikkeun kana setélan buhun</string>
   <string name="description_edit_text_hint">\nPedaran judul</string>
   <string name="description_edit_save">Medalkeun</string>
   <string name="description_edit_add_description">Tambahkeun pedaran judul</string>
@@ -491,7 +490,7 @@
   <string name="onboarding_continue">Tuluykeun</string>
   <string name="onboarding_get_started">Mitembeyan</string>
   <string name="onboarding_explore_title">Cara anyar pikeun ngalanglang</string>
-  <string name="onboarding_explore_text">Panggihan artikel petingan, jejer nu keur trén, sarta saran artikel di eupan Langlangan.</string>
+  <string name="onboarding_explore_text" fuzzy="true">Panggihan artikel petingan, jejer nu keur trén, sarta saran artikel di eupan Langlangan.</string>
   <string name="onboarding_reading_list_sync_title">Daptar bacaan kalawan singkronisasi</string>
   <string name="onboarding_reading_list_sync_text">Jieun daptar bacaan tina artikel anu ku anjeun rék di baca engké, malah mah mun keur oflén. &lt;a href=\"#login\"&gt;Asup log atawa jieun&lt;/a&gt; akun Wikipédia anjeun supaya daptar bacaan anjeun dicadangkeun.</string>
   <string name="onboarding_analytics_title">Kirim data anonim</string>
@@ -506,9 +505,8 @@
   <string name="all_trending_text">Sakumna artikel nu keur trén dina %1$s</string>
   <string name="top_on_this_day">Keur trén dina %1$s</string>
   <string name="on_this_day_card_title">Dina poé ieu</string>
-  <string name="more_events_text">Kajadian sajarah lianna dina poé ieu</string>
-  <string name="events_count_text">%1$s kajadian ti %2$s - %3$d</string>
-  <string name="on_this_day">Dina poé ieu</string>
+  <string name="more_events_text" fuzzy="true">Kajadian sajarah lianna dina poé ieu</string>
+  <string name="events_count_text" fuzzy="true">%1$s kajadian ti %2$s - %3$d</string>
   <string name="this_year">Taun ieu</string>
   <string name="diff_years">{{PLURAL|one=Taun kamari|%d ka tukang}</string>
 </resources>

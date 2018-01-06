@@ -1,6 +1,7 @@
 package org.wikipedia.feed.onthisday;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.wikipedia.R;
 import org.wikipedia.WikipediaApp;
@@ -8,33 +9,29 @@ import org.wikipedia.dataclient.WikiSite;
 import org.wikipedia.dataclient.restbase.page.RbPageSummary;
 import org.wikipedia.feed.model.Card;
 import org.wikipedia.feed.model.CardType;
-import org.wikipedia.feed.model.UtcDate;
 import org.wikipedia.feed.view.FeedAdapter;
 import org.wikipedia.util.DateUtil;
 
+import java.util.Calendar;
 import java.util.List;
+import java.util.Random;
 
 public class OnThisDayCard extends Card {
     private int nextYear;
-    private UtcDate date;
-    private OnThisDay onThisDay;
+    private Calendar date;
     private FeedAdapter.Callback callback;
     private WikiSite wiki;
     private OnThisDay.Event eventShownOnCard;
     private int age;
 
-    OnThisDayCard(@NonNull OnThisDay onThisDay, @NonNull OnThisDay.Event event, int nextYear, @NonNull UtcDate date, @NonNull WikiSite wiki, int age) {
+    public OnThisDayCard(@NonNull List<OnThisDay.Event> events, @NonNull WikiSite wiki, int age) {
         super();
-        this.onThisDay = onThisDay;
-        eventShownOnCard = event;
-        this.date = date;
-        this.nextYear = nextYear;
+        this.date = DateUtil.getDefaultDateFor(age);
         this.wiki = wiki;
         this.age = age;
-    }
-
-    @NonNull public OnThisDay onthisday() {
-        return onThisDay;
+        int randomIndex = new Random().nextInt(events.size() - 1);
+        eventShownOnCard = events.get(randomIndex);
+        this.nextYear = randomIndex + 1 < events.size() ? events.get(randomIndex + 1).year() : eventShownOnCard.year();
     }
 
     public FeedAdapter.Callback getCallback() {
@@ -43,10 +40,6 @@ public class OnThisDayCard extends Card {
 
     public void setCallback(FeedAdapter.Callback callback) {
         this.callback = callback;
-    }
-
-    @NonNull public List<OnThisDay.Event> events() {
-        return onThisDay.selectedEvents();
     }
 
     @Override @NonNull public CardType type() {
@@ -58,10 +51,14 @@ public class OnThisDayCard extends Card {
     }
 
     @Override @NonNull public String subtitle() {
-        return DateUtil.getFeedCardDateString(date().baseCalendar());
+        return DateUtil.getFeedCardShortDateString(date);
     }
 
-    @NonNull public String text() {
+    @NonNull String dayString() {
+        return DateUtil.getMonthOnlyDateString(date.getTime());
+    }
+
+    @NonNull public CharSequence text() {
         return eventShownOnCard.text();
     }
 
@@ -69,7 +66,7 @@ public class OnThisDayCard extends Card {
         return eventShownOnCard.year();
     }
 
-    @NonNull public UtcDate date() {
+    @NonNull public Calendar date() {
         return date;
     }
 
@@ -81,7 +78,7 @@ public class OnThisDayCard extends Card {
         return wiki;
     }
 
-    @NonNull public List<RbPageSummary> pages() {
+    @Nullable public List<RbPageSummary> pages() {
         return eventShownOnCard.pages();
     }
 
