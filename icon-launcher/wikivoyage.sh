@@ -26,9 +26,18 @@ sizes=(
   ["xxxhdpi"]="192x192"
 )
 
-for flavour in "${!sources[@]}"; do
-    for size in "${!sizes[@]}"; do
+splash_sizes=(
+  ["mdpi"]="128x128"
+  ["hdpi"]="192x192"
+  ["xhdpi"]="256x256"
+  ["xxhdpi"]="384x384"
+  ["xxxhdpi"]="512x512"
+)
+
+for size in "${!sizes[@]}"; do
+    for flavour in "${!sources[@]}"; do
         mkdir -p ../app/src/${targets[$flavour]}/res/mipmap-$size/
         convert -density 1200 -gravity center -crop 75% -background none -resize ${sizes[$size]} ${sources[$flavour]} ../app/src/${targets[$flavour]}/res/mipmap-$size/launcher.png
     done
+    convert -density 1200 -gravity center -crop 75% -background none -resize ${splash_sizes[$size]} wikivoyage.svg ../app/src/wikivoyage/res/drawable-$size/w_nav_mark.png
 done
