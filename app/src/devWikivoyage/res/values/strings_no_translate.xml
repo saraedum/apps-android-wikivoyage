@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- the dev flavour is not registered with hockeyapp -->
+    <string name="hockeyapp_app_id">00000000000000000000000000000000</string>
+</resources>
