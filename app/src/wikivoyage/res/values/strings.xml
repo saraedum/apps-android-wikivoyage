@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name_prod">Travel Wiki</string>
-    <string name="app_name_beta" tools:ignore="UnusedResources">Travel Wiki Beta</string>
-    <string name="app_name_alpha" tools:ignore="UnusedResources">Travel Wiki Alpha</string>
+    <!--
+    I decided to call this app "Voyager Wiki" for the time being.
+    It is my understanding that I cannot call it Wikivoyage because that would be violating the trademark of wikimedia.
+    At the same time, it's very confusing to call it by a completely different name, say Travel Wiki and I also want to
+    make it clear that all that great content was not made by this app but comes from wikivoyage…and in fact that edits
+    go to wikivoyage again. I hope that this is not violating any rights of anybody, otherwise I'd change it of course.
+    -->
+    <string name="app_name_prod">Voyager Wiki</string>
+    <string name="app_name_beta" tools:ignore="UnusedResources">Voyager Wiki Beta</string>
+    <string name="app_name_alpha" tools:ignore="UnusedResources">Voyager Wiki Alpha</string>
 
     <string name="wikimedia">Wikimedia</string>
 
@@ -121,10 +128,10 @@
     <string name="create_account_next">Next</string>
     <string name="create_account_button">Create account</string>
     <string name="preferences_general_heading">General</string>
-    <string name="wikipedia_app_faq">Travel Wiki App FAQ</string>
+    <string name="wikipedia_app_faq">Voyager Wiki App FAQ</string>
     <string name="zero_charged_verbiage">Free access to Wikivoyage is no longer active.</string>
     <string name="zero_warn_when_leaving">Warn if leaving Wikipedia Zero</string>
-    <string name="zero_warn_when_leaving_summary">If your mobile operator waives data access charges for the Travel Wiki app through a Wikipedia Zero partnership, leaving this setting checked helps you know when you are leaving the Travel Wiki app and could be charged.</string>
+    <string name="zero_warn_when_leaving_summary">If your mobile operator waives data access charges for the Voyager Wiki app through a Wikipedia Zero partnership, leaving this setting checked helps you know when you are leaving the Voyager Wiki app and could be charged.</string>
     <string name="zero_webpage_title">Wikipedia Zero FAQ</string>
     <string name="zero_wikipedia_zero_heading">Wikipedia Zero</string>
     <string name="zero_interstitial_title">Leaving Wikipedia Zero</string>
@@ -156,7 +163,7 @@
     <string name="page_protected_can_not_edit_title">This page is protected</string>
     <string name="settings_item_preferences">Settings</string>
     <string name="settings_activity_title">Settings</string>
-    <string name="about_description">About the Travel Wiki app</string>
+    <string name="about_description">About the Voyager Wiki app</string>
     <string name="privacy_policy_description">Privacy policy</string>
     <string name="terms_of_use_description">Terms of use</string>
     <string name="about_wikipedia_url">https://en.m.wikivoyage.org/wiki/Wikivoyage:About</string>
@@ -295,7 +302,7 @@
     <string name="crash_report_dialog_always_send_button">Always send</string>
     <string name="crash_report_dialog_send_button">Send</string>
     <string name="crash_report_activity_title">Application error</string>
-    <string name="crash_report_relaunch_or_quit">We\'re sorry, the Travel Wiki app has experienced an error and was terminated.\n\nWould you like to start over or quit?</string>
+    <string name="crash_report_relaunch_or_quit">We\'re sorry, the Voyager Wiki app has experienced an error and was terminated.\n\nWould you like to start over or quit?</string>
     <string name="crash_report_relaunch">Start over</string>
     <string name="crash_report_quit">Quit</string>
     <!-- /Crash reporter -->
