@@ -28,8 +28,6 @@ public class AlphaUpdateChecker extends RecurringTask {
     private static final long RUN_INTERVAL_MILLI = TimeUnit.DAYS.toMillis(1);
 
     private static final String PREFERENCE_KEY_ALPHA_COMMIT = "alpha_last_checked_commit";
-    private static final String ALPHA_BUILD_APK_URL = "https://android-builds.wmflabs.org/runs/latest/wikipedia.apk";
-    private static final String ALPHA_BUILD_DATA_URL = "https://android-builds.wmflabs.org/runs/latest/meta.json";
     private static final String CHANNEL_ID = "ALPHA_UPDATE_CHECKER_CHANNEL";
     @NonNull private final Context context;
 
@@ -48,7 +46,7 @@ public class AlphaUpdateChecker extends RecurringTask {
         JSONObject config;
         Response response = null;
         try {
-            Request request = new Request.Builder().url(ALPHA_BUILD_DATA_URL).build();
+            Request request = new Request.Builder().url(context.getString(R.string.alpha_update_meta_url)).build();
             response = OkHttpConnectionFactory.getClient().newCall(request).execute();
             config = new JSONObject(response.body().string());
         } catch (IOException | JSONException e) {
@@ -66,7 +64,7 @@ public class AlphaUpdateChecker extends RecurringTask {
     }
 
     private void showNotification() {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(ALPHA_BUILD_APK_URL));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(context.getString(R.string.alpha_update_apk_url)));
         PendingIntent pintent = PendingIntent.getActivity(context, 0, intent, 0);
 
         // Notification channel ( >= API 26 )

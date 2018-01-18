@@ -9,6 +9,8 @@
     <!-- URLs -->
     <string name="zero_webpage_url">https://foundation.m.wikimedia.org/wiki/Wikipedia_Zero_App_FAQ</string>
     <string name="donate_url">https://donate.wikimedia.org/?utm_medium=WikipediaApp&amp;utm_campaign=Android&amp;utm_source=%1$s&amp;uselang=%2$s</string>
+    <string name="alpha_update_apk_url">https://android-builds.wmflabs.org/runs/latest/wikipedia.apk</string>
+    <string name="alpha_update_meta_url">https://android-builds.wmflabs.org/runs/latest/meta.json</string>
 
     <!-- Accounts -->
     <string name="account_name">@string/wikimedia</string>
