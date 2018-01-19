@@ -10,7 +10,7 @@
             android:widgetLayout="@layout/preference_multiline_with_external_link"
             android:title="@string/wikipedia_app_faq">
             <intent android:action="android.intent.action.VIEW"
-                    android:data="https://m.mediawiki.org/wiki/Wikimedia_Apps/Android_FAQ"
+                    android:data="@string/faq_url"
                     />
         </org.wikipedia.settings.PreferenceMultiLine>
         <org.wikipedia.settings.PreferenceMultiLine
