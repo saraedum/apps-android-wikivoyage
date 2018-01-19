@@ -1,7 +1,4 @@
-### Wikipedia Android app
+### Wikivoyage Android app
 
-This repository contains the source code for the official Wikipedia Android app.
-
-### Documentation
-
-All documentation is kept on [our wiki](https://www.mediawiki.org/wiki/Wikimedia_Apps/Team/Wikipedia_Android_app_hacking). Check it out!
+This repository contains a fork of the official [Wikipedia Android app](https://github.com/wikimedia/apps-android-wikipedia).
+It has been adapted to also support [Wikivoyage](https://wikivoyage.org).
