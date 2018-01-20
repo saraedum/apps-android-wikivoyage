@@ -3,7 +3,7 @@ import os
 import sys
 import xml.etree.ElementTree as ET
 
-RES_FOLDER = os.path.abspath(os.path.join(os.path.dirname(__file__), "../app/src/main/res"))
+RES_FOLDER = os.path.abspath(os.path.join(os.path.dirname(__file__), "../app/src/wikipedia/res"))
 EN_STRINGS = os.path.join(RES_FOLDER, "values/strings.xml")
 QQ_STRINGS = os.path.join(RES_FOLDER, "values-qq/strings.xml")
 
