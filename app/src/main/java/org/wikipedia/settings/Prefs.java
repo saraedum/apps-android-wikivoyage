@@ -8,7 +8,6 @@ import android.text.TextUtils;
 
 import com.google.gson.reflect.TypeToken;
 
-import org.wikipedia.Constants;
 import org.wikipedia.R;
 import org.wikipedia.WikipediaApp;
 import org.wikipedia.analytics.SessionData;
