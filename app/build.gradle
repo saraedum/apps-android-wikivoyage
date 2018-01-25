@@ -53,9 +53,11 @@ android {
     }
 
     defaultConfig {
+        applicationId 'org.wikipedia'
         minSdkVersion 19
         targetSdkVersion 28
         versionCode 198
+        testApplicationId 'org.wikipedia.test'
         vectorDrawables.useSupportLibrary = true
 
         javaCompileOptions {
@@ -116,6 +118,7 @@ android {
             versionName computeVersionName('alpha')
             applicationIdSuffix 'alpha'
             signingConfig signingConfigs.debug
+            testInstrumentationRunner 'org.wikipedia.test.AndroidTestRunner'
         }
         beta {
             dimension "deployment"
@@ -152,15 +155,10 @@ android {
 
         wikipedia {
             dimension "backend"
-            applicationId 'org.wikipedia'
-            testApplicationId 'org.wikipedia.test'
-            testInstrumentationRunner 'org.wikipedia.test.AndroidTestRunner'
         }
         wikivoyage {
             dimension "backend"
             applicationId 'tm.info.drugtestbots.wikivoyage'
-            testApplicationId 'tm.info.drugtestbots.wikivoyage.test'
-            testInstrumentationRunner 'tm.info.drugtestbots.wikivoyage.test.AndroidTestRunner'
         }
     }
 
@@ -301,20 +299,4 @@ private static Properties loadProperties(File file) {
         System.err.println "\"${file}\" not found"
     }
     return props
-}
-
-addSyncContentProviderAuthority 'readinglists', 'reading_lists'
-
-private void addSyncContentProviderAuthority(String path, String name) {
-    android.productFlavors.all { ProductFlavor flavor ->
-        String authority = "${appId(flavor)}.sync.${path}"
-        resValue 'string', "${name.toLowerCase()}_authority", authority
-        buildConfigField 'String', "${name.toUpperCase()}_AUTHORITY", "\"$authority\""
-    }
-}
-
-private String appId(ProductFlavor flavor) {
-    String suffix = flavor.applicationIdSuffix
-    String id = android.defaultConfig.applicationId + (suffix ? ".$suffix" : '')
-    return id
 }
