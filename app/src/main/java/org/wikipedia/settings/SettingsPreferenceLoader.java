@@ -12,6 +12,7 @@ import org.wikipedia.BuildConfig;
 import org.wikipedia.R;
 import org.wikipedia.WikipediaApp;
 import org.wikipedia.activity.BaseActivity;
+import org.wikipedia.readinglist.sync.ReadingListSyncAdapter;
 import org.wikipedia.theme.ThemeFittingRoomActivity;
 import org.wikipedia.util.ReleaseUtil;
 import org.wikipedia.util.StringUtil;
@@ -45,13 +46,17 @@ class SettingsPreferenceLoader extends BasePreferenceLoader {
         findPreference(R.string.preference_key_sync_reading_lists)
                 .setOnPreferenceChangeListener(new SyncReadingListsListener());
 
+        Preference eventLoggingOptInPref = findPreference(R.string.preference_key_eventlogging_opt_in);
+        eventLoggingOptInPref.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (!((boolean) newValue)) {
+                Prefs.setAppInstallId(null);
+            }
+            return true;
+        });
+
         Preference offlineLibPref = findPreference(R.string.preference_key_enable_offline_library);
         offlineLibPref.setOnPreferenceChangeListener(new OfflineLibraryEnableListener());
         offlineLibPref.setSummary(StringUtil.fromHtml(getPreferenceHost().getString(R.string.preference_summary_enable_offline_library)));
-        // TODO: remove when offline library sideloading is ready to go.
-        if (!ReleaseUtil.isPreBetaRelease()) {
-            offlineLibPref.setVisible(false);
-        }
 
         loadPreferences(R.xml.preferences_about);
 
@@ -127,7 +132,9 @@ class SettingsPreferenceLoader extends BasePreferenceLoader {
             if (newValue == Boolean.TRUE) {
                 ((SwitchPreferenceCompat) preference).setChecked(true);
                 Prefs.setReadingListSyncEnabled(true);
-                // TODO: kick off initial sync
+                Prefs.setReadingListsRemoteSetupPending(true);
+                Prefs.setReadingListsRemoteDeletePending(false);
+                ReadingListSyncAdapter.manualSync();
             } else {
                 new AlertDialog.Builder(getActivity())
                         .setMessage(R.string.reading_lists_confirm_remote_delete)
@@ -159,8 +166,9 @@ class SettingsPreferenceLoader extends BasePreferenceLoader {
         @Override public void onClick(DialogInterface dialog, int which) {
             ((SwitchPreferenceCompat) preference).setChecked(false);
             Prefs.setReadingListSyncEnabled(false);
+            Prefs.setReadingListsRemoteSetupPending(false);
             Prefs.setReadingListsRemoteDeletePending(true);
-            // TODO: kick off sync
+            ReadingListSyncAdapter.manualSync();
         }
     }
 
@@ -174,7 +182,9 @@ class SettingsPreferenceLoader extends BasePreferenceLoader {
         @Override public void onClick(DialogInterface dialog, int which) {
             ((SwitchPreferenceCompat) preference).setChecked(true);
             Prefs.setReadingListSyncEnabled(true);
+            Prefs.setReadingListsRemoteSetupPending(true);
             Prefs.setReadingListsRemoteDeletePending(false);
+            ReadingListSyncAdapter.manualSync();
         }
     }
 }

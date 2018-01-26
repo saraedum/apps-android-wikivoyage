@@ -19,7 +19,6 @@
   <string name="dialog_title_clear_history">உலவல் வரலாற்றை நீக்கு</string>
   <string name="dialog_message_clear_history_yes">ஆம்</string>
   <string name="dialog_message_clear_history_no">இல்லை</string>
-  <string name="nav_item_saved_pages">சேமிக்கப்பட்ட பக்கங்கள்</string>
   <string name="share_via">இதன் வழியாக பகிரவும்…</string>
   <string name="menu_page_show_tabs">தத்தல்களை காண்பி</string>
   <string name="menu_page_other_languages">மொழியை மாற்று</string>
@@ -66,9 +65,6 @@
   <string name="edit_section_captcha_hint">மேலுள்ள சொற்களை மீண்டும் உள்ளிடவும்</string>
   <string name="title_captcha">CAPTCHAவை உள்ளிடவும்</string>
   <string name="edit_section_captcha_reload">மறுஏற்றம் செய்ய கேப்ட்சாவை தட்டவும்</string>
-  <string name="edit_saved_page_refresh">இந்த சேமிக்கப்பட்ட பக்கம் காலாவதியாகி இருக்கலாம், அதனால் தொகுத்தலை இயக்க புதிப்பிக்கப்பட வேண்டும். பக்கத்தைப் புதிப்பிக்க விரும்புகிறீர்களா?</string>
-  <string name="edit_saved_page_refresh_yes">ஆம்</string>
-  <string name="edit_saved_page_refresh_no">இல்லை</string>
   <string name="nav_item_login">விக்கிப்பீடியாவில் புகுபதிகை செய்</string>
   <string name="login_username_hint">பயனர் பெயர்</string>
   <string name="login_password_hint">கடவுச்சொல்</string>
@@ -160,7 +156,7 @@
   <string name="find_next">அடுத்ததை கண்டுபிடி</string>
   <string name="find_previous">முன்னதைத் தேடு</string>
   <string name="find_first_occurence">இதுதான் முதல் நிகழ்வு</string>
-  <string name="find_last_occurence">இதுதான் கடைசி நிகழ்வு</string>
+  <string name="find_last_occurence">இது கடைசி நிகழ்வு</string>
   <string name="abusefilter_title_warn">இது ஆக்கபூர்வமற்ற தொகுப்பு, நீங்கள் நிச்சயம் வெளியிட வேண்டுமா ?</string>
   <string name="abusefilter_title_disallow">\nநீங்கள் இந்த தொகுப்பை வெளியிட முடியாது. தயவுசெய்து பின் சென்று அதை மாற்றவும்</string>
   <string name="dialog_page_issues">பக்க சிக்கல்கள்</string>
@@ -233,8 +229,6 @@
   <string name="error_page_does_not_exist">இந்தப் பக்கம் இல்லை</string>
   <string name="view_wiki_error_message_offline">இணைய தொடர்பு இல்லை</string>
   <string name="reference_title">மேற்கோள்கள் %s</string>
-  <string name="preference_title_dim_dark_mode_images">இருண்ட தோற்றத்தில் படங்களை மங்கச்செய்க</string>
-  <string name="preference_summary_dim_dark_mode_images">இருண்ட தோற்றம் பயன்படுத்தும்போது படத்தின் ஒளிர்வை குறைக்கவும்</string>
   <string name="preference_title_prefer_offline_content">அணை நிலை உள்ளடக்கங்களுக்கு முன்னுரிமை அளி</string>
   <string name="preference_title_enable_offline_library">அணை நிலை நூலகத்தை இயங்கச்செய்</string>
   <string name="crash_report_dialog_title">மன்னிக்கவும், செயலி போனமுறை நொறுங்கிவிட்டது</string>
@@ -255,7 +249,6 @@
   <string name="color_theme_black">கருப்பு</string>
   <string name="color_theme_test_title">எடுத்துக்காட்டு உரை</string>
   <string name="preference_title_app_theme">செயலி தோற்றம்</string>
-  <string name="preference_title_color_theme">இருண்ட தோற்றம்</string>
   <string name="preference_summary_color_theme">செயலியின் இருண்ட தோற்றத்திற்கு மாறுக</string>
   <string name="text_size_increase">உரை அளவை அதிகப்படுத்தவும்</string>
   <string name="text_size_decrease">உரை அளவை குறைக்கவும்</string>
@@ -267,7 +260,6 @@
   <string name="reading_list_title_exists">%s படிக்கும் பட்டியலில் ஏற்கனவே உள்ளது.</string>
   <string name="reading_list_entry_empty">தயவுசெய்து ஒரு தலைப்பை உள்ளிடு.</string>
   <string name="reading_list_added_to_named">%sக்கு சேர்க்கப்பட்டது.</string>
-  <string name="reading_list_added_to_unnamed">படிக்கும் பட்டியலில் சேர்க்கப்படுகிறது.</string>
   <string name="reading_list_already_exists">அந்தப் பட்டியலில் ஏற்கனவே இந்த கட்டுரை உள்ளது.</string>
   <string name="reading_list_added_view_button">பட்டியலை பார்வையிடுக</string>
   <string name="reading_list_sort">வரிசைபடுத்துக</string>
@@ -290,7 +282,7 @@
   <string name="reading_list_items_deleted">%d கட்டுரைகள் பட்டியலில் இருந்து நீக்கப்பட்டது</string>
   <string name="reading_list_item_delete_undo">மீளமை</string>
   <string name="reading_list_deleted">%s நீக்கப்பட்டுவிட்டது</string>
-  <string name="reading_lists_empty">எந்த படிக்கும் பட்டியலும் இல்லை</string>
+  <string name="saved_list_empty_title">எந்த படிக்கும் பட்டியலும் இல்லை</string>
   <string name="reading_lists_onboarding_for_example">எடுத்துக்காட்டிற்கு</string>
   <string name="reading_lists_onboarding_example1">பார்க்கவேண்டிய இடங்கள்</string>
   <string name="reading_lists_onboarding_example2">அபிமான விலங்குகள்</string>
@@ -307,14 +299,13 @@
   <string name="reading_list_login_reminder_title">படிப்பு பட்டியல்களை ஒருங்குநிகழ் செய்க</string>
   <string name="reading_lists_confirm_remote_delete_yes">ஆம்</string>
   <string name="reading_lists_confirm_remote_delete_no">இல்லை</string>
-  <string name="reading_list_added_articles_list_untitled">%d கட்டுரைகள் படிக்கும் பட்டியலில் சேர்க்கப்பட்டுள்ளது.</string>
   <string name="user_option_sync_label">முன்னுரிமைகள்</string>
   <string name="notification_button_view_user">பயனரிடம் பேசவும்</string>
   <string name="notification_talk_title">விக்கிபீடியாவில் புதிய செய்தி</string>
   <string name="notification_reverted_title">மீளமைக்கப்பட்ட தொகுப்புகள்</string>
   <string name="notification_thanks_title">நீங்கள் நன்றி உரைக்கப்பட்டுள்ளீர்கள்</string>
   <string name="notification_channel_name">ஒருங்குநிகழாக்கப்படுகிறது</string>
-  <string name="notification_channel_description">ஒருங்குநிகழ் நடைபெறுகிறது</string>
+  <string name="notification_channel_description" fuzzy="true">ஒருங்குநிகழ் நடைபெறுகிறது</string>
   <string name="notification_syncing_pause_button">இடைநிறுத்துக</string>
   <string name="notification_syncing_resume_button">தொடர்க</string>
   <string name="notification_syncing_cancel_button">ரத்து செய்க</string>
@@ -330,7 +321,6 @@
   <string name="menu_feed_overflow_label">மேலும் செயல்கள்</string>
   <string name="feed_featured_image_share_subject">விக்கிமீடியா காமன்ஸிலிருந்து சிறப்பு படம்</string>
   <string name="feed">சுற்றிப்பார்</string>
-  <string name="view_card_footer_button">மேலும் காண்க</string>
   <string name="most_read_list_card_title">பிரபலமாகிறது</string>
   <string name="view_static_card_icon_content_description">அட்டை படவுரு</string>
   <string name="view_card_news_title">செய்திகளில்</string>
@@ -340,7 +330,6 @@
   <string name="view_featured_article_card_title">சிறப்பு கட்டுரைகள்</string>
   <string name="view_featured_article_footer_save_button_label">சேமி</string>
   <string name="view_featured_article_footer_saved_button_label">சேமிக்கப்பட்டது</string>
-  <string name="feed_configure_menu_title">அட்டைகளை அமை</string>
   <string name="feed_configure_menu_reset">தானியல்பு தோற்றத்திற்கு மாற்றுக</string>
   <string name="feed_configure_menu_select_all">எல்லாவற்றையும் தேர்வுசெய்யவும்</string>
   <string name="feed_configure_menu_deselect_all">அனைத்தையும் தேர்வுநீக்கம் செய்க</string>
@@ -376,11 +365,8 @@
   <string name="remote_compilations_title">அணை நிலை நூலகம்</string>
   <string name="offline_compilation_detail_button_remove">நீக்குக</string>
   <string name="remote_compilation_download">பதிவிறக்குக</string>
-  <string name="storage_size">%.2f ஜிபி</string>
-  <string name="storage_size_free">%.2f ஜிபி இலவசம்</string>
   <string name="storage_used_by_compilations">அணை நிலை நூலகத்தால் பயன்படுத்தப்படுகிறது</string>
   <string name="storage_other_apps">மற்ற செயலிகள்</string>
-  <string name="offline_compilation_download_progress_text">%1$.2f ஜிபி / %2$.2f ஜிபி</string>
   <plurals name="offline_compilation_download_time_remaining">
     <item quantity="one">1 நிமிடம் மீதி</item>
     <item quantity="other">%d நிமிடங்கள் மீதி</item>
@@ -393,7 +379,6 @@
   <string name="offline_library_title">அணை நிலை நூலகம்</string>
   <string name="offline_library_empty_title">அணை நிலை நூலகத்தில் ஏதும் இல்லை</string>
   <string name="offline_library_empty_search">அணை நிலை நூலகத்தில் தேடவும்</string>
-  <string name="offline_library_onboarding_action">மேலும் கண்டுபிடி</string>
   <string name="offline_library_onboarding_button_done">முடிந்தது</string>
   <string name="offline_library_onboarding_uninterrupted_reading_title">இடையறாமல் படிக்கவும்</string>
   <string name="onboarding_skip">தவிர்</string>

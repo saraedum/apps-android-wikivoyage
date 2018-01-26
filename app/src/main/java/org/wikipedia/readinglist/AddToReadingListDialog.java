@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.wikipedia.Constants;
 import org.wikipedia.R;
 import org.wikipedia.analytics.ReadingListsFunnel;
 import org.wikipedia.concurrency.CallbackTask;
@@ -188,7 +189,13 @@ public class AddToReadingListDialog extends ExtendedBottomSheetDialogFragment {
     private class CreateButtonClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            showCreateListDialog();
+            if (readingLists.size() >= Constants.MAX_READING_LISTS_LIMIT) {
+                String message = getString(R.string.reading_lists_limit_message);
+                dismiss();
+                FeedbackUtil.makeSnackbar(getActivity(), message, FeedbackUtil.LENGTH_DEFAULT).show();
+            } else {
+                showCreateListDialog();
+            }
         }
     }
 
@@ -206,6 +213,14 @@ public class AddToReadingListDialog extends ExtendedBottomSheetDialogFragment {
     }
 
     private void addAndDismiss(final ReadingList readingList, final PageTitle title) {
+
+        if (readingList.pages().size() >= Constants.MAX_READING_LIST_ARTICLE_LIMIT) {
+            String message = String.format(getString(R.string.reading_list_article_limit_message), readingList.title());
+            FeedbackUtil.makeSnackbar(getActivity(), message, FeedbackUtil.LENGTH_DEFAULT).show();
+            dismiss();
+            return;
+        }
+
         CallbackTask.execute(() -> ReadingListDbHelper.instance().pageExistsInList(readingList, title), new CallbackTask.DefaultCallback<Boolean>() {
             @Override
             public void success(Boolean exists) {
@@ -215,24 +230,35 @@ public class AddToReadingListDialog extends ExtendedBottomSheetDialogFragment {
                 String message;
                 if (exists) {
                     message = getString(R.string.reading_list_already_exists);
+                    showViewListSnackBar(readingList, message);
+
                 } else {
-                    message = String.format(getString(R.string.reading_list_added_to_named),
-                            readingList.isDefault() ? getString(R.string.default_reading_list_name) : readingList.title());
+                    message = String.format(getString(R.string.reading_list_added_to_named), readingList.title());
                     new ReadingListsFunnel(title.getWikiSite()).logAddToList(readingList, readingLists.size(), invokeSource);
 
-                    ReadingListDbHelper.instance().addPageToList(readingList, title);
+                    ReadingListDbHelper.instance().addPageToList(readingList, title, true);
+                    showViewListSnackBar(readingList, message);
+
                 }
-                showViewListSnackBar(readingList, message);
                 dismiss();
             }
         });
     }
 
     private void addAndDismiss(final ReadingList readingList, final List<PageTitle> titles) {
+
+        if ((readingList.pages().size() + titles.size()) > Constants.MAX_READING_LIST_ARTICLE_LIMIT) {
+            String message = String.format(getString(R.string.reading_list_article_limit_message), readingList.title());
+            FeedbackUtil.makeSnackbar(getActivity(), message, FeedbackUtil.LENGTH_DEFAULT).show();
+            dismiss();
+            return;
+        }
+
         if (titles.size() == 1) {
             addAndDismiss(readingList, titles.get(0));
             return;
         }
+
         CallbackTask.execute(() -> ReadingListDbHelper.instance().addPagesToListIfNotExist(readingList, titles), new CallbackTask.DefaultCallback<Integer>() {
             @Override
             public void success(Integer numAdded) {
@@ -244,7 +270,7 @@ public class AddToReadingListDialog extends ExtendedBottomSheetDialogFragment {
                     message = getString(R.string.reading_list_already_contains_selection);
                 } else {
                     message = String.format(getString(R.string.reading_list_added_articles_list_titled), numAdded,
-                            readingList.isDefault() ? getString(R.string.default_reading_list_name) : readingList.title());
+                            readingList.title());
                     new ReadingListsFunnel().logAddToList(readingList, readingLists.size(), invokeSource);
                 }
                 showViewListSnackBar(readingList, message);

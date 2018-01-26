@@ -20,7 +20,6 @@
   <string name="dialog_message_clear_history">Dëst läscht Äre kompletten Historique a mécht all Tabs déi elo op sinn zou. Sidd Dir sécher?</string>
   <string name="dialog_message_clear_history_yes">Jo</string>
   <string name="dialog_message_clear_history_no">Neen</string>
-  <string name="nav_item_saved_pages">Gespäichert Säiten</string>
   <string name="share_via">Deelen iwwer</string>
   <string name="search_redirect_from">Virugeleet vu(n) %s</string>
   <string name="menu_page_show_tabs">Tabs weisen</string>
@@ -69,9 +68,6 @@
   <string name="edit_section_captcha_hint">D\'Wierder hei driwwer widderhuelen</string>
   <string name="title_captcha">Captcha aginn</string>
   <string name="edit_section_captcha_reload">CAPTCHA antippe fir nei ze lueden</string>
-  <string name="edit_saved_page_refresh">Dës gespäichert Säit kënnt vereelst sinn a muss aktualiséiert ginn ier d\'Änneren aktivéiert ka ginn. Wëllt Dir d\'Säit aktualiséieren?</string>
-  <string name="edit_saved_page_refresh_yes">Jo</string>
-  <string name="edit_saved_page_refresh_no">Neen</string>
   <string name="nav_item_login">Op Wikipedia aloggen</string>
   <string name="login_username_hint">Benotzernumm</string>
   <string name="login_password_hint">Passwuert</string>
@@ -283,7 +279,6 @@
   <string name="reading_list_title_exists">D\'Lieslëscht \"%s\" gëtt et schonn.</string>
   <string name="reading_list_entry_empty">Gitt w.e.g. en Titel un.</string>
   <string name="reading_list_added_to_named">Bei %s dobäigesat.</string>
-  <string name="reading_list_added_to_unnamed">Op d\'Lieslëscht derbäigesat.</string>
   <string name="reading_list_already_exists">Dësen Artikel ass schonn an där Lëscht.</string>
   <string name="reading_list_added_view_button">Lëscht weisen</string>
   <string name="format_reading_list_statistical_summary_singular">Een Artikel, %1$.2f MB</string>
@@ -308,9 +303,9 @@
   <string name="reading_list_items_deleted">%d Artikele vun der Lëscht erofgeholl</string>
   <string name="reading_list_item_delete_undo">Réckgängeg maachen</string>
   <string name="reading_list_deleted">%s geläscht</string>
-  <string name="reading_lists_empty">Nach keng Lieslëschten!</string>
-  <string name="reading_lists_empty_message" fuzzy="true">Späichert d\'Artikelen a Lieslëschten esou datt Dir se méi spéit kucke kënnt, esouguer da wann Dir offline sidd.</string>
-  <string name="reading_lists_onboarding_intro" fuzzy="true">Maacht eng Lieslëscht vun den Artikelen déi Dir spéider liese wëllt, esouguer wann Dir offline sidd!</string>
+  <string name="saved_list_empty_title">Nach keng Lieslëschten!</string>
+  <string name="reading_lists_empty_message">Setzt Artikelen op eng Lëscht derbäi fir se spéider ze liesen, esouguer da wann Dir offline sidd.</string>
+  <string name="reading_lists_onboarding_intro">Setzt Artikelen op eng Lëscht derbäi fir spéider ze liesen, esouguer wann Dir offline sidd!</string>
   <string name="reading_lists_onboarding_for_example">Zum Beispill</string>
   <string name="reading_lists_onboarding_example1">Plaze fir ze besichen</string>
   <string name="reading_lists_onboarding_example2">Lieblingsdéieren</string>
@@ -334,6 +329,12 @@
   <string name="reading_lists_confirm_remote_delete_no">Neen</string>
   <string name="reading_list_already_contains_selection">An der erausgesichter Lëscht si schonn all déi erausgesicht Säiten.</string>
   <string name="reading_list_added_articles_list_titled">%1$d Artikel op %2$s dobäigesat</string>
+  <string name="default_reading_list_name">Gespäichert</string>
+  <string name="default_reading_list_description">Standard-Lëscht fir Är gespäichert Artikelen</string>
+  <string name="no_user_lists_title">Artikelen a Lëschten organiséieren</string>
+  <string name="reading_list_saved_list_rename">%1$s_(vum Benotzer gemaach)</string>
+  <string name="reading_list_article_limit_message">Net méiglech op dës Lëscht ze setzen. dir hutt d\'Limitt vun 1 000 Artikele pro Lëscht fir \"%s\" erreecht.</string>
+  <string name="reading_lists_limit_message">Et ka soss keng Lëscht ugeluecht ginn. Dir hutt d\'Limitt vun 100 Lieslëschten erreecht.</string>
   <plurals name="reading_list_article_offline_message">
     <item quantity="one">Dësen Artikel ass elo offline disponibel.</item>
     <item quantity="other">Dës Artikele sinn elo offline disponibel.</item>
@@ -351,9 +352,9 @@
   <string name="notification_thanks_title">Dir krut Merci gesot!</string>
   <string name="notification_thanks">&lt;em&gt;%1$s&lt;/em&gt; huet Iech fir Äer Ännerung op der Säit &lt;strong&gt;%2$s&lt;/strong&gt; Merci gesot</string>
   <string name="notification_channel_name">Synchroniséieren</string>
-  <string name="notification_channel_description">Fortschrëtt vun der Synchronisatioun</string>
-  <string name="notification_syncing_title">Synchronisatioun vun %1$d Artikelen ....</string>
-  <string name="notification_syncing_description">%1$d Artikele bleiwen</string>
+  <string name="notification_channel_description">Fortschrëtt vum Eroflueden</string>
+  <string name="notification_syncing_title">Erofluede vun %1$d Artikelen ....</string>
+  <string name="notification_syncing_description">%1$d Artikelen iwwreg</string>
   <string name="notification_syncing_pause_button">Paus</string>
   <string name="notification_syncing_resume_button">Virufueren</string>
   <string name="notification_syncing_cancel_button">Ofbriechen</string>
@@ -371,7 +372,6 @@
   <string name="menu_feed_overflow_label">Méi Optiounen</string>
   <string name="feed_featured_image_share_subject">Qualitéitsbild vu Wikimedia Commons</string>
   <string name="feed">Entdecken</string>
-  <string name="view_card_footer_button">Méi gesinn</string>
   <string name="most_read_list_card_title">Beléift</string>
   <string name="view_static_card_icon_content_description">Kaartesymbol</string>
   <string name="view_card_news_title">An den Neiegkeeten</string>
@@ -385,7 +385,6 @@
   <string name="view_offline_card_text">Et ka keen INhalt geluede gi wann Dir offline sidd.</string>
   <string name="view_featured_article_footer_save_button_label">Späicheren</string>
   <string name="view_featured_article_footer_saved_button_label">Gespäichert</string>
-  <string name="feed_configure_menu_title">Kaarte konfiguréieren</string>
   <string name="feed_configure_menu_reset">Standard- Ausgesinn restauréieren</string>
   <string name="feed_configure_menu_select_all">Alles uwielen</string>
   <string name="feed_item_type_news">Artikelen iwwer aktuell Evenementer</string>
@@ -428,15 +427,16 @@
   <string name="description_edit_revert_history">Wann Dir interesséiert sidd da kuckt d\'&lt;a href=\"%1$s\"&gt;Lëscht vun de Versiounen&lt;/a&gt;.</string>
   <string name="offline_compilations_title">Offline-Bibliothéik</string>
   <string name="offline_compilations_found_count">A menger Offline Bibliothéik (%d)</string>
-  <string name="offline_compilation_detail_date_size">%1$s • %2$.2f GB</string>
-  <string name="offline_compilation_detail_button_download">Eroflueden • %.2f GB</string>
+  <string name="offline_compilation_detail_date_size_v2">%1$s • %2$s</string>
+  <string name="size_gb">%.2f GB</string>
+  <string name="size_mb">%.2f MB</string>
+  <string name="offline_compilation_detail_button_download_v2">Eroflueden •%s</string>
   <string name="offline_compilation_detail_button_remove">Ewechhuelen</string>
   <string name="remote_compilation_download">Eroflueden</string>
-  <string name="storage_size">%.2f GB</string>
-  <string name="storage_size_free">%.2f GB fräi</string>
+  <string name="storage_size_free_v2">%s fräi</string>
   <string name="storage_used_by_compilations">vun der Offline-Bibliothéik benotzt</string>
   <string name="storage_other_apps">Aner Programmen</string>
-  <string name="offline_compilation_download_progress_text">%1$.2f GB vu(n) %2$.2f GB</string>
+  <string name="offline_compilation_download_progress_text_v2">%1$s / %2$s</string>
   <plurals name="offline_compilation_download_time_remaining">
     <item quantity="one">Nach eng Minutt</item>
     <item quantity="other">Nach %d Minutten</item>
@@ -447,7 +447,6 @@
   <string name="compilation_share">Deelen</string>
   <string name="compilation_remove">Ewechhuelen</string>
   <string name="offline_library_title">Offline-Bibliothéik</string>
-  <string name="offline_library_onboarding_action">Méi erausfannen</string>
   <string name="offline_library_onboarding_button_done">Fäerdeg</string>
   <string name="offline_library_onboarding_build_library_title">Setzt Är Offline-Bibliothéik zesummen</string>
   <string name="offline_library_onboarding_build_library_subtitle">Lued elo Päck vu Wikipedia-Artikelen erof fir se méi spéit offline liesen ze kënnen.</string>
@@ -458,7 +457,6 @@
   <string name="onboarding_get_started">Fir unzefänken</string>
   <string name="onboarding_welcome_title">Déi fräi Enzyklopedie</string>
   <string name="onboarding_save_to_reading_lists_title">Op d\'Lieslëschte späicheren</string>
-  <string name="onboarding_reading_list_sync_title">Lieslëschten mat Synchroniséierung</string>
   <string name="onboarding_analytics_title">Anonymiséiert Donnéeë schécken</string>
   <string name="onboarding_create_account_sync">Synchroniséiert Är Lieslëschten</string>
   <string name="onboarding_create_account_preferences">Späichert Är Astellungen</string>

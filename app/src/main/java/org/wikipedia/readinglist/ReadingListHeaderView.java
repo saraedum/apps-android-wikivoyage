@@ -106,10 +106,13 @@ public class ReadingListHeaderView extends FrameLayout {
         for (ReadingListPage page : readingList.pages()) {
             if (!TextUtils.isEmpty(page.thumbUrl())) {
                 thumbUrls.add(page.thumbUrl());
-                if (thumbUrls.size() > imageViews.size()) {
-                    break;
-                }
             }
+            if (thumbUrls.size() > imageViews.size()) {
+                break;
+            }
+        }
+        for (int i = thumbUrls.size(); i < imageViews.size() && i < readingList.pages().size(); i++) {
+            thumbUrls.add("");
         }
         for (int i = 0; i < thumbUrls.size() && i < imageViews.size(); ++i) {
             loadThumbnail(imageViews.get(i), thumbUrls.get(i));

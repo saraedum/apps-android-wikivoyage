@@ -52,6 +52,7 @@ public class ReadingListItemView extends FrameLayout {
     @BindView(R.id.item_description) TextView descriptionView;
     @BindView(R.id.item_overflow_menu)View overflowButton;
 
+    @BindView(R.id.item_thumbnails_container) View thumbnailsContainer;
     @BindView(R.id.item_image_container) View imageContainer;
     @BindView(R.id.default_list_empty_image) ImageView defaultListEmptyView;
     @BindViews({R.id.item_image_1, R.id.item_image_2, R.id.item_image_3, R.id.item_image_4}) List<SimpleDraweeView> imageViews;
@@ -94,7 +95,7 @@ public class ReadingListItemView extends FrameLayout {
         statisticalDescriptionView.setText(text);
 
         updateDetails();
-        if (imageContainer.getVisibility() == VISIBLE) {
+        if (thumbnailsContainer.getVisibility() == VISIBLE) {
             updateThumbnails();
         }
     }
@@ -108,7 +109,7 @@ public class ReadingListItemView extends FrameLayout {
     }
 
     public void setThumbnailVisible(boolean visible) {
-        imageContainer.setVisibility(visible ? VISIBLE : GONE);
+        thumbnailsContainer.setVisibility(visible ? VISIBLE : GONE);
     }
 
     public void setShowDescriptionEmptyHint(boolean show) {
@@ -131,12 +132,11 @@ public class ReadingListItemView extends FrameLayout {
         menu.getMenuInflater().inflate(R.menu.menu_reading_list_item, menu.getMenu());
 
         if (readingList.isDefault()) {
-            MenuItem renameItem = menu.getMenu().findItem(R.id.menu_reading_list_rename);
-            renameItem.setVisible(false);
-            MenuItem deleteItem = menu.getMenu().findItem(R.id.menu_reading_list_delete);
-            deleteItem.setVisible(false);
+            menu.getMenu().findItem(R.id.menu_reading_list_rename).setVisible(false);
+            menu.getMenu().findItem(R.id.menu_reading_list_edit_description).setVisible(false);
+            menu.getMenu().findItem(R.id.menu_reading_list_delete).setVisible(false);
         }
-        menu.setOnMenuItemClickListener(new OverflowMenuClickListener());
+        menu.setOnMenuItemClickListener(new OverflowMenuClickListener(readingList));
         menu.show();
     }
 
@@ -155,10 +155,13 @@ public class ReadingListItemView extends FrameLayout {
         if (readingList == null) {
             return;
         }
-        titleView.setText(readingList.isDefault()
-                ? getString(R.string.default_reading_list_name)
-                : readingList.title());
-        if (TextUtils.isEmpty(readingList.description()) && showDescriptionEmptyHint) {
+        defaultListEmptyView.setVisibility((readingList.isDefault() && readingList.pages().size() == 0) ? VISIBLE : GONE);
+        imageContainer.setVisibility(defaultListEmptyView.getVisibility() == VISIBLE ? GONE : VISIBLE);
+        titleView.setText(readingList.title());
+        if (readingList.isDefault()) {
+            descriptionView.setText(getContext().getString(R.string.default_reading_list_description));
+            descriptionView.setTypeface(descriptionView.getTypeface(), Typeface.NORMAL);
+        } else if (TextUtils.isEmpty(readingList.description()) && showDescriptionEmptyHint) {
             descriptionView.setText(getContext().getString(R.string.reading_list_no_description));
             descriptionView.setTypeface(descriptionView.getTypeface(), Typeface.ITALIC);
         } else {
@@ -170,6 +173,7 @@ public class ReadingListItemView extends FrameLayout {
     private void clearThumbnails() {
         for (SimpleDraweeView view : imageViews) {
             ViewUtil.loadImageUrlInto(view, null);
+            view.getHierarchy().setFailureImage(null);
         }
     }
 
@@ -177,17 +181,18 @@ public class ReadingListItemView extends FrameLayout {
         if (readingList == null) {
             return;
         }
-        defaultListEmptyView.setVisibility((readingList.isDefault() && readingList.pages().size() == 0) ? VISIBLE : GONE);
-        imageContainer.setVisibility(defaultListEmptyView.getVisibility() == VISIBLE ? GONE : VISIBLE);
         clearThumbnails();
         List<String> thumbUrls = new ArrayList<>();
         for (ReadingListPage page : readingList.pages()) {
             if (!TextUtils.isEmpty(page.thumbUrl())) {
                 thumbUrls.add(page.thumbUrl());
-                if (thumbUrls.size() > imageViews.size()) {
-                    break;
-                }
             }
+            if (thumbUrls.size() > imageViews.size()) {
+                break;
+            }
+        }
+        for (int i = thumbUrls.size(); i < imageViews.size() && i < readingList.pages().size(); i++) {
+            thumbUrls.add("");
         }
         for (int i = 0; i < thumbUrls.size() && i < imageViews.size(); ++i) {
             loadThumbnail(imageViews.get(i), thumbUrls.get(i));
@@ -231,35 +236,41 @@ public class ReadingListItemView extends FrameLayout {
     }
 
     private class OverflowMenuClickListener implements PopupMenu.OnMenuItemClickListener {
+        @Nullable private ReadingList list;
+
+        OverflowMenuClickListener(@Nullable ReadingList list) {
+            this.list = list;
+        }
+
         @Override public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.menu_reading_list_rename:
-                    if (callback != null && readingList != null) {
-                        callback.onRename(readingList);
+                    if (callback != null && list != null) {
+                        callback.onRename(list);
                         return true;
                     }
                     break;
                 case R.id.menu_reading_list_edit_description:
-                    if (callback != null && readingList != null) {
-                        callback.onEditDescription(readingList);
+                    if (callback != null && list != null) {
+                        callback.onEditDescription(list);
                         return true;
                     }
                     break;
                 case R.id.menu_reading_list_delete:
-                    if (callback != null && readingList != null) {
-                        callback.onDelete(readingList);
+                    if (callback != null && list != null) {
+                        callback.onDelete(list);
                         return true;
                     }
                     break;
                 case R.id.menu_reading_list_save_all_offline:
-                    if (callback != null && readingList != null) {
-                        callback.onSaveAllOffline(readingList);
+                    if (callback != null && list != null) {
+                        callback.onSaveAllOffline(list);
                         return true;
                     }
                     break;
                 case R.id.menu_reading_list_remove_all_offline:
-                    if (callback != null && readingList != null) {
-                        callback.onRemoveAllOffline(readingList);
+                    if (callback != null && list != null) {
+                        callback.onRemoveAllOffline(list);
                         return true;
                     }
                     break;

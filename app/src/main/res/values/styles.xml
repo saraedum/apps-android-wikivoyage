@@ -227,6 +227,10 @@
         <item name="android:minHeight">36dp</item>
     </style>
 
+    <style name="TransparentButton" parent="@style/Widget.AppCompat.Button.Borderless">
+        <item name="android:textAlignment">center</item>
+    </style>
+
     <style name="OnboardingSwitch">
         <item name="colorControlActivated">@color/accent75</item>
         <item name="colorSwitchThumbNormal">@color/base50</item>
@@ -282,14 +286,6 @@
 
     <style name="IntPreference" parent="LongPreference">
         <item name="android:maxLength">11</item>
-    </style>
-
-    <style name="HexIntPreference" parent="IntPreference">
-        <item name="android:inputType">textVisiblePassword</item>
-        <item name="android:digits">0123456789abcdef</item>
-        <item name="radix">16</item>
-        <item name="summaryFormat">%08x</item>
-        <item name="android:maxLength">8</item>
     </style>
 
     <style name="SimpleDraweeViewPlaceholder">

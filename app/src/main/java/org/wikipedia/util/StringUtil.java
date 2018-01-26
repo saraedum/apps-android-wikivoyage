@@ -12,9 +12,12 @@ import android.text.TextUtils;
 import android.text.style.StyleSpan;
 import android.text.style.TypefaceSpan;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.List;
 
@@ -115,6 +118,23 @@ public final class StringUtil {
                 .replaceAll("\\(\\s*;\\s*", "\\(") // (; -> (    hacky way for IPA remnants
                 .replaceAll("\\s{2,}", " ")
                 .trim();
+    }
+
+    // Compare two strings based on their normalized form, using the Unicode Normalization Form C.
+    // This should be used when comparing or verifying strings that will be exchanged between
+    // different platforms (iOS, desktop, etc) that may encode strings using inconsistent
+    // composition, especially for accents, diacritics, etc.
+    public static boolean normalizedEquals(@Nullable String str1, @Nullable String str2) {
+        if (str1 == null || str2 == null) {
+            return (str1 == null && str2 == null);
+        }
+        return Normalizer.normalize(str1, Normalizer.Form.NFC)
+                .equals(Normalizer.normalize(str2, Normalizer.Form.NFC));
+    }
+
+    public static int accentCaseInsensitiveCompare(@NonNull String str1, @NonNull String str2) {
+        return StringUtils.stripAccents(str1).toLowerCase()
+                .compareTo(StringUtils.stripAccents(str2).toLowerCase());
     }
 
     /**

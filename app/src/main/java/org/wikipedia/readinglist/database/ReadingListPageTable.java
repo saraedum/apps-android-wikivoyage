@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.util.Base64;
 
+import org.wikipedia.Constants;
 import org.wikipedia.R;
 import org.wikipedia.WikipediaApp;
 import org.wikipedia.database.DatabaseTable;
@@ -14,6 +15,7 @@ import org.wikipedia.database.contract.OldReadingListContract;
 import org.wikipedia.database.contract.OldReadingListPageContract;
 import org.wikipedia.database.contract.ReadingListPageContract;
 import org.wikipedia.dataclient.WikiSite;
+import org.wikipedia.events.SplitLargeListsEvent;
 import org.wikipedia.page.PageTitle;
 import org.wikipedia.util.log.L;
 
@@ -77,10 +79,11 @@ public class ReadingListPageTable extends DatabaseTable<ReadingListPage> {
     public void onUpgradeSchema(@NonNull SQLiteDatabase db, int fromVersion, int toVersion) {
         if (toVersion == DB_VER_INTRODUCED) {
             List<ReadingList> currentLists = new ArrayList<>();
+            createDefaultList(db, currentLists);
             if (fromVersion > 0) {
                 importOldLists(db, currentLists);
             }
-            createDefaultList(db, currentLists);
+            renameListsWithIdenticalNameAsDefault(db, currentLists);
             // TODO: add other one-time conversions here.
         }
     }
@@ -124,8 +127,16 @@ public class ReadingListPageTable extends DatabaseTable<ReadingListPage> {
                 return;
             }
         }
-        currentLists.add(ReadingListDbHelper.instance().createList(db, "",
-                WikipediaApp.getInstance().getString(R.string.default_reading_list_description)));
+        currentLists.add(ReadingListDbHelper.instance().createDefaultList(db));
+    }
+
+    private void renameListsWithIdenticalNameAsDefault(SQLiteDatabase db, List<ReadingList> lists) {
+        for (ReadingList list : lists) {
+            if (list.dbTitle().equalsIgnoreCase(WikipediaApp.getInstance().getString(R.string.default_reading_list_name))) {
+                list.title(String.format(WikipediaApp.getInstance().getString(R.string.reading_list_saved_list_rename), list.dbTitle()));
+                ReadingListDbHelper.instance().updateList(db, list, false);
+            }
+        }
     }
 
     // TODO: Remove in Dec 2018
@@ -133,13 +144,13 @@ public class ReadingListPageTable extends DatabaseTable<ReadingListPage> {
         try {
             try (Cursor cursor = db.query(OldReadingListContract.TABLE, null, null, null, null, null, null)) {
                 while (cursor.moveToNext()) {
-                    ReadingList list = new ReadingList(OldReadingListContract.Col.TITLE.val(cursor),
+                    ReadingList list = ReadingListDbHelper.instance().createList(db,
+                            OldReadingListContract.Col.TITLE.val(cursor),
                             OldReadingListContract.Col.DESCRIPTION.val(cursor));
-                    list.atime(OldReadingListContract.Col.ATIME.val(cursor));
-                    list.mtime(OldReadingListContract.Col.MTIME.val(cursor));
                     lists.add(list);
                 }
             }
+            boolean shouldShowLargeSplitMessage = false;
             try (Cursor cursor = db.rawQuery("SELECT * FROM " + OldReadingListPageContract.TABLE_PAGE
                     + " JOIN " + OldReadingListPageContract.TABLE_DISK + " ON ("
                     + OldReadingListPageContract.Col.KEY.qualifiedName() + " = "
@@ -175,16 +186,45 @@ public class ReadingListPageTable extends DatabaseTable<ReadingListPage> {
                         page.offline(true);
                         page.status(ReadingListPage.STATUS_SAVED);
                     }
+                    ReadingList origList = null;
                     for (ReadingList list : lists) {
-                        if (listKeys.contains(getListKey(list.title()))) {
-                            list.pages().add(page);
+                        if (listKeys.contains(getListKey(list.dbTitle()))) {
+                            origList = list;
+                            break;
                         }
                     }
+                    if (origList == null) {
+                        continue;
+                    }
+
+                    int splitListIndex = 0;
+                    ReadingList newList = origList;
+                    while (newList.pages().size() >= Constants.MAX_READING_LIST_ARTICLE_LIMIT) {
+                        shouldShowLargeSplitMessage = true;
+                        newList = null;
+                        String newListName = origList.dbTitle() + " (" + Integer.toString(++splitListIndex) + ")";
+                        for (ReadingList list : lists) {
+                            if (list.dbTitle().equals(newListName)) {
+                                newList = list;
+                                break;
+                            }
+                        }
+                        if (newList == null) {
+                            newList = ReadingListDbHelper.instance().createList(db, newListName, origList.description());
+                            lists.add(newList);
+                        }
+                    }
+
+                    newList.pages().add(page);
                 }
+
                 for (ReadingList list : lists) {
-                    ReadingList tempList = ReadingListDbHelper.instance().createList(db, list.title(), list.description());
-                    ReadingListDbHelper.instance().addPagesToList(db, tempList, list.pages());
+                    ReadingListDbHelper.instance().addPagesToList(db, list, list.pages());
                 }
+            }
+
+            if (shouldShowLargeSplitMessage) {
+                WikipediaApp.getInstance().getBus().post(new SplitLargeListsEvent());
             }
 
             db.execSQL("DROP TABLE IF EXISTS " + OldReadingListContract.TABLE);

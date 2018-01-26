@@ -55,7 +55,7 @@ android {
         applicationId 'org.wikipedia'
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 222
+        versionCode 224
         testApplicationId 'org.wikipedia.test'
         testInstrumentationRunner 'org.wikipedia.test.AndroidTestRunner'
         vectorDrawables.useSupportLibrary = true
@@ -160,6 +160,12 @@ android {
         exclude 'META-INF/maven/com.google.guava/guava/pom.xml'
         exclude 'META-INF/maven/com.google.guava/guava/pom.properties'
     }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 apply from: '../gradle/src/test.gradle'
@@ -208,7 +214,7 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
     implementation 'com.getkeepsafe.taptargetview:taptargetview:1.9.1'
     implementation "com.jakewharton:butterknife:$butterKnifeVersion"
-    implementation "com.mapbox.mapboxsdk:mapbox-android-sdk:5.2.0@aar"
+    implementation "com.mapbox.mapboxsdk:mapbox-android-sdk:5.3.1@aar"
     implementation "com.mapbox.mapboxsdk:mapbox-android-ui:2.2.9"
     implementation 'net.hockeyapp.android:HockeySDK:4.1.3'
     implementation 'org.apache.commons:commons-lang3:3.5'
@@ -230,7 +236,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
     testImplementation mockitoCore
-    testImplementation 'org.robolectric:robolectric:3.3.2'
+    testImplementation 'org.robolectric:robolectric:3.6.1'
     testImplementation "com.squareup.okhttp3:mockwebserver:$okHttpVersion"
 
     androidTestImplementation mockitoCore
@@ -264,4 +270,20 @@ private static Properties loadProperties(File file) {
         System.err.println "\"${file}\" not found"
     }
     return props
+}
+
+addSyncContentProviderAuthority 'readinglists', 'reading_lists'
+
+private void addSyncContentProviderAuthority(String path, String name) {
+    android.productFlavors.all { ProductFlavor flavor ->
+        String authority = "${appId(flavor)}.sync.${path}"
+        resValue 'string', "${name.toLowerCase()}_authority", authority
+        buildConfigField 'String', "${name.toUpperCase()}_AUTHORITY", "\"$authority\""
+    }
+}
+
+private String appId(ProductFlavor flavor) {
+    String suffix = flavor.applicationIdSuffix
+    String id = android.defaultConfig.applicationId + (suffix ? ".$suffix" : '')
+    return id
 }

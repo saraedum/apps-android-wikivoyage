@@ -48,6 +48,7 @@ import org.wikipedia.settings.Prefs;
 import org.wikipedia.util.FeedbackUtil;
 import org.wikipedia.util.ShareUtil;
 import org.wikipedia.util.StringUtil;
+import org.wikipedia.util.log.L;
 import org.wikipedia.views.DefaultViewHolder;
 import org.wikipedia.views.DrawableItemDecoration;
 import org.wikipedia.views.MultiSelectActionModeCallback;
@@ -97,6 +98,7 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
 
     @NonNull private List<ReadingListPage> displayedPages = new ArrayList<>();
     private String currentSearchQuery;
+    private boolean articleLimitMessageShown = false;
 
     @NonNull
     public static ReadingListFragment newInstance(long listId) {
@@ -231,6 +233,11 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
         headerImageView.setReadingList(readingList);
         ReadingList.sort(readingList, Prefs.getReadingListPageSortMode(ReadingList.SORT_BY_NAME_ASC));
         setSearchQuery(currentSearchQuery);
+        if (!articleLimitMessageShown && readingList.pages().size() >= Constants.MAX_READING_LIST_ARTICLE_LIMIT) {
+            String message = String.format(getString(R.string.reading_list_article_limit_message), readingList.title());
+            FeedbackUtil.makeSnackbar(getActivity(), message, FeedbackUtil.LENGTH_DEFAULT).show();
+            articleLimitMessageShown = true;
+        }
     }
 
     private void updateReadingListData() {
@@ -309,15 +316,22 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
         Snackbar snackbar = FeedbackUtil.makeSnackbar(getActivity(), message,
                 FeedbackUtil.LENGTH_DEFAULT);
         snackbar.setAction(R.string.reading_list_item_delete_undo, v -> {
-            ReadingListDbHelper.instance().addPagesToList(readingList, pages);
-            readingList.pages().addAll(pages);
-            update();
+            List<ReadingListPage> newPages = new ArrayList<>();
+            for (ReadingListPage page : pages) {
+                newPages.add(new ReadingListPage(ReadingListPage.toPageTitle(page)));
+            }
+            ReadingListDbHelper.instance().addPagesToList(readingList, newPages, true);
+            readingList.pages().addAll(newPages);
+            updateReadingListData();
         });
         snackbar.show();
     }
 
     private void rename() {
         if (readingList == null) {
+            return;
+        } else if (readingList.isDefault()) {
+            L.w("Attempted to rename default list.");
             return;
         }
 
@@ -331,7 +345,7 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
         ReadingListTitleDialog.readingListTitleDialog(getContext(), readingList.title(), existingTitles,
                 text -> {
                     readingList.title(text.toString());
-                    ReadingListDbHelper.instance().updateList(readingList);
+                    ReadingListDbHelper.instance().updateList(readingList, true);
 
                     update();
                     funnel.logModifyList(readingList, 0);
@@ -340,6 +354,9 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
 
     private void editDescription() {
         if (readingList == null) {
+            return;
+        } else if (readingList.isDefault()) {
+            L.w("Attempted to edit description of default list.");
             return;
         }
         TextInputDialog.newInstance(getContext(), new TextInputDialog.DefaultCallback() {
@@ -353,7 +370,8 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
             public void onSuccess(@NonNull CharSequence text) {
 
                 readingList.description(text.toString());
-                ReadingListDbHelper.instance().updateList(readingList);
+                readingList.dirty(true);
+                ReadingListDbHelper.instance().updateList(readingList, true);
 
                 update();
                 funnel.logModifyList(readingList, 0);
@@ -429,7 +447,7 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
         List<ReadingListPage> selectedPages = getSelectedPages();
         if (!selectedPages.isEmpty()) {
 
-            ReadingListDbHelper.instance().markPagesForDeletion(selectedPages);
+            ReadingListDbHelper.instance().markPagesForDeletion(readingList, selectedPages);
             readingList.pages().removeAll(selectedPages);
 
             funnel.logDeleteItem(readingList, 0);
@@ -475,18 +493,25 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
             return;
         }
         showDeleteItemsUndoSnackbar(readingList, Collections.singletonList(page));
-        ReadingListDbHelper.instance().markPageForDeletion(page);
+        ReadingListDbHelper.instance().markPagesForDeletion(readingList, Collections.singletonList(page));
         readingList.pages().remove(page);
         funnel.logDeleteItem(readingList, 0);
         update();
     }
 
     private void delete() {
-        if (readingList != null) {
-            startActivity(MainActivity.newIntent(getContext())
+        if (readingList == null) {
+            return;
+        }
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+        alert.setMessage(getString(R.string.reading_list_delete_confirm, readingList.title()));
+        alert.setPositiveButton(android.R.string.yes, (dialog, id) -> {
+            startActivity(MainActivity.newIntent(getActivity())
                     .putExtra(Constants.INTENT_EXTRA_DELETE_READING_LIST, readingList.title()));
             getActivity().finish();
-        }
+        });
+        alert.setNegativeButton(android.R.string.no, null);
+        alert.create().show();
     }
 
     @Override
@@ -710,7 +735,7 @@ public class ReadingListFragment extends Fragment implements ReadingListItemActi
 
                 page.touch();
                 CallbackTask.execute(() -> {
-                    ReadingListDbHelper.instance().updateList(readingList);
+                    ReadingListDbHelper.instance().updateList(readingList, false);
                     ReadingListDbHelper.instance().updatePage(page);
                 });
 

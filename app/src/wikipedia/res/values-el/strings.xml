@@ -20,7 +20,6 @@
   <string name="dialog_message_clear_history">Ca va eliminer toute histoire de navigation, et fermer les tabs ouverts en ce moment. Etes Vous sur?</string>
   <string name="dialog_message_clear_history_yes">Oui</string>
   <string name="dialog_message_clear_history_no">Non</string>
-  <string name="nav_item_saved_pages">Αποθηκευμένες σελίδες</string>
   <string name="share_via">Μοιραστείτε μέσω</string>
   <string name="search_redirect_from">Redirige du %s</string>
   <string name="menu_page_show_tabs">Εμφάνιση καρτελών</string>
@@ -71,9 +70,6 @@
   <string name="edit_section_captcha_hint">Επαναλάβετε τις λέξεις από πάνω</string>
   <string name="title_captcha">Εισάγετε CAPTCHA</string>
   <string name="edit_section_captcha_reload">Πατήστε το CAPTCHA για επαναφόρτωση</string>
-  <string name="edit_saved_page_refresh">Αυτή η αποθηκευμένη σελίδα μπορεί να είναι ανενημέρωτη, και πρέπει να ανανεωθεί για να ενεργοποιηθεί η επεξεργασία. Θα θέλατε να ανανεώσετε τη σελίδα;</string>
-  <string name="edit_saved_page_refresh_yes">Oui</string>
-  <string name="edit_saved_page_refresh_no">Non</string>
   <string name="nav_item_login">Σύνδεση στη Wikipedia</string>
   <string name="login_username_hint">Όνομα χρήστη</string>
   <string name="login_password_hint">Κωδικός</string>
@@ -257,8 +253,6 @@
   <string name="error_page_does_not_exist">Cette page n\'existe plus</string>
   <string name="view_wiki_error_message_offline">Pas de connexion d\'Internet</string>
   <string name="reference_title">Reference %s</string>
-  <string name="preference_title_dim_dark_mode_images">Des images dim en font de theme obscure</string>
-  <string name="preference_summary_dim_dark_mode_images">Reduire la luminosite des images, quand Vous utilisez ce theme obscure</string>
   <string name="theme_chooser_dialog_image_dimming_switch_label">Dimmig d\'Images (Font obscure)</string>
   <string name="preference_title_enable_offline_library">Ενεργοποιήστε την Βιβλιοθήκη Offline</string>
   <string name="preference_summary_enable_offline_library">Πηγαίνετε στα πακέτα άρθρων (όπως δείχνεται στους φακέλλους ΖΙΜ)που έχετε κατεβάσει στον υπολογιστή σας για ανάγνωση όταν είστε offline &lt;a href=\'\'https://www.mediawiki.org/wiki/wikiWikimedia_Apps/Offline_support\'\'. Βρείτε περισσότερα &lt;a/&gt;</string>
@@ -292,9 +286,9 @@
   <string name="reading_list_article_not_offline_message" fuzzy="true">Αυτό το άρθρο δεν θα είναι πλέον διαθέσιμο εκτός σύνδεσης.</string>
   <string name="user_option_sync_label">Προτιμήσεις</string>
   <string name="notification_channel_name">Sincroniser</string>
-  <string name="notification_channel_description">Sincronisant progrès</string>
-  <string name="notification_syncing_title">Sincronisant des articles %1$d</string>
-  <string name="notification_syncing_description">%1$d d\'articles laisses</string>
+  <string name="notification_channel_description" fuzzy="true">Sincronisant progrès</string>
+  <string name="notification_syncing_title" fuzzy="true">Sincronisant des articles %1$d</string>
+  <string name="notification_syncing_description" fuzzy="true">%1$d d\'articles laisses</string>
   <string name="notification_syncing_pause_button" fuzzy="true">PAUSE</string>
   <string name="notification_syncing_resume_button" fuzzy="true">RESUMER</string>
   <string name="notification_syncing_cancel_button" fuzzy="true">ANNULER</string>
@@ -306,7 +300,6 @@
   <string name="view_card_news_title">Στις ειδήσεις</string>
   <string name="view_continue_reading_card_subtitle_today">σήμερα</string>
   <string name="view_continue_reading_card_subtitle_read_date">Διαβάστε %s</string>
-  <string name="feed_configure_menu_title">Διαμορφώστε τις κάρτες</string>
   <string name="feed_configure_activity_title" fuzzy="true">Διαμορφώστε τις κάρτες Αναζήτησης</string>
   <string name="feed_configure_menu_reset" fuzzy="true">Βάλτε ξανά στις προ-επιλογές</string>
   <string name="description_edit_help_about_title">Σχετικά</string>
@@ -319,7 +312,6 @@
   <string name="offline_library_packs_hint">Τα πακέτα άρθρων στην βιβλιοθήκη σας παραμένουν διαθέσιμα για ανάγνωση όταν είστε offline. &lt;a href=\'\'https://www.mediawiki.org/wiki/Wikimedia_Apps/Offline_support\'\'Ανακαλύψετε περισσότερα &lt;/a&gt;</string>
   <string name="offline_library_data_usage_hint">Θέλετε να αποθηκεύσετε τα δεδομένα; Επιλέξετε να \'\'Προτιμήστε περιεχόμενο offline\'\' σε Παραμέτρους για να δείξετε διαθέσιμα άρθρα  offline πρώτα, ακόμα και αν είστε online &lt;a href=#settings\'\' &gt; Πηγαίνετε στις Ρυθμίσεις &lt;/a&gt;</string>
   <string name="offline_library_main_page_hint_html">Η Αρχική Σελίδα παρέχει πρόσβαση στα περιεχόμενα αυτών των άρθρων&lt;br/&gt;&lt;br&gt;. Mπορείτε επίσης να εξερευνήσετε τα περιεχόμενα αυτών των άρθρων στην Βιβλιοθήκη Offline αναζητώντας διαθέσιμα άρθρα ενώ είστε offline.</string>
-  <string name="all_trending_text">Όλα τα άρθρα που σχετίζονται με την εμπορική δραστηριότητα στο %1$s</string>
   <string name="top_on_this_day">Εμπορική κίνηση στο %1$s</string>
   <string name="on_this_day_card_title">Αυτήν την μέρα</string>
   <string name="more_events_text" fuzzy="true">ΠΕΡΙΣΣΟΤΕΡΑ ΑΥΤΗΝ ΤΗΝ ΗΜΕΡΑ</string>

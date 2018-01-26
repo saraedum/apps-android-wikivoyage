@@ -12,7 +12,6 @@
   <string name="history_item_delete_undo">Atsaukt</string>
   <string name="dialog_title_clear_history">Dzēst pārlūkošanas vēsturi</string>
   <string name="dialog_message_clear_history" fuzzy="true">Vai tiešām vēlaties notīrīt visu vēsturi?</string>
-  <string name="nav_item_saved_pages">Saglabātās lapas</string>
   <string name="share_via">Dalīties, izmantojot</string>
   <string name="search_redirect_from">Pāradresēts no %s</string>
   <string name="menu_page_show_tabs">Rādīt cilnes</string>
@@ -176,6 +175,7 @@
   <string name="reading_lists_onboarding_got_it">Sapratu</string>
   <string name="reading_list_remove_from_list">Noņemt no %s</string>
   <string name="reading_list_sync_reminder_action">Ieslēgt</string>
+  <string name="default_reading_list_name">Saglabāts</string>
   <string name="user_option_sync_label">Izvēles</string>
   <string name="notification_reverted_title">Atcelts labojums</string>
   <string name="view_continue_reading_card_title">Turpini lasīt</string>
@@ -192,7 +192,6 @@
   <string name="menu_feed_card_dismiss" fuzzy="true">Paslēpt šo ierosinājumu</string>
   <string name="menu_feed_card_dismissed" fuzzy="true">Ieteikums slēpts.</string>
   <string name="menu_feed_overflow_label">Vairāk iespēju</string>
-  <string name="view_card_footer_button">Skatīt vairāk</string>
   <string name="view_card_news_title">Ziņās</string>
   <plurals name="view_continue_reading_card_subtitle" fuzzy="true">
     <item quantity="one">Vakardien</item>
@@ -215,7 +214,6 @@
   <string name="description_edit_help_about_title">Par</string>
   <string name="description_edit_help_tips_examples">Piemēram:</string>
   <string name="description_edit_help_more_info">Vairāk informācijas</string>
-  <string name="storage_size">%.2f GB</string>
   <string name="onboarding_skip">Izlaist</string>
   <string name="onboarding_continue">Turpināt</string>
   <string name="onboarding_got_it">Sapratu</string>

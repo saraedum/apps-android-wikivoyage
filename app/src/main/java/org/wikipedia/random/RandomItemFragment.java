@@ -35,10 +35,8 @@ public class RandomItemFragment extends Fragment {
     @BindView(R.id.view_featured_article_card_extract) TextView extractView;
     @BindView(R.id.random_item_error_view) WikiErrorView errorView;
 
-
     @Nullable private RbPageSummary summary;
     private int pagerPosition = -1;
-    private View view;
 
     @NonNull
     public static RandomItemFragment newInstance() {
@@ -53,6 +51,10 @@ public class RandomItemFragment extends Fragment {
         return pagerPosition;
     }
 
+    public boolean isLoadComplete() {
+        return summary != null;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,31 +65,31 @@ public class RandomItemFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-
-        if (view == null) {
-            view = inflater.inflate(R.layout.fragment_random_item, container, false);
-            ButterKnife.bind(this, view);
-            imageView.setLegacyVisibilityHandlingEnabled(true);
-            setContents(null);
-            errorView.setBackClickListener(v -> getActivity().finish());
-            errorView.setRetryClickListener(v -> {
-                progressBar.setVisibility(View.VISIBLE);
-                getRandomPage();
-            });
+        View view = inflater.inflate(R.layout.fragment_random_item, container, false);
+        ButterKnife.bind(this, view);
+        imageView.setLegacyVisibilityHandlingEnabled(true);
+        errorView.setBackClickListener(v -> getActivity().finish());
+        errorView.setRetryClickListener(v -> {
+            progressBar.setVisibility(View.VISIBLE);
+            getRandomPage();
+        });
+        updateContents();
+        if (summary == null) {
             getRandomPage();
         }
         return view;
     }
 
     private void getRandomPage() {
-
         new RandomSummaryClient().request(WikipediaApp.getInstance().getWikiSite(), new RandomSummaryClient.Callback() {
             @Override
             public void onSuccess(@NonNull Call<RbPageSummary> call, @NonNull RbPageSummary pageSummary) {
+                summary = pageSummary;
                 if (!isAdded()) {
                     return;
                 }
-                setContents(pageSummary);
+                updateContents();
+                parent().onChildLoaded();
             }
 
             @Override
@@ -114,14 +116,10 @@ public class RandomItemFragment extends Fragment {
         }
     }
 
-    public void setContents(@Nullable RbPageSummary pageSummary) {
+    public void updateContents() {
         errorView.setVisibility(View.GONE);
-        containerView.setVisibility(pageSummary == null ? View.GONE : View.VISIBLE);
-        progressBar.setVisibility(pageSummary == null ? View.VISIBLE : View.GONE);
-        if (summary == pageSummary) {
-            return;
-        }
-        summary = pageSummary;
+        containerView.setVisibility(summary == null ? View.GONE : View.VISIBLE);
+        progressBar.setVisibility(summary == null ? View.VISIBLE : View.GONE);
         if (summary == null) {
             return;
         }

@@ -65,7 +65,11 @@ public class RandomFragment extends Fragment {
         randomPager.setPageTransformer(true, new RandomPagerTransformer());
         randomPager.addOnPageChangeListener(viewPagerListener);
 
+        updateSaveShareButton();
         updateBackButton(0);
+        if (savedInstanceState != null && randomPager.getCurrentItem() == 0 && getTopTitle() != null) {
+            updateSaveShareButton(getTopTitle());
+        }
 
         funnel = new RandomizerFunnel(WikipediaApp.getInstance(), WikipediaApp.getInstance().getWikiSite(),
                 getActivity().getIntent().getIntExtra(RandomActivity.INVOKE_SOURCE_EXTRA, 0));
@@ -158,18 +162,36 @@ public class RandomFragment extends Fragment {
         });
     }
 
+    @SuppressWarnings("magicnumber")
+    public void updateSaveShareButton() {
+        RandomItemFragment f = getTopChild();
+        boolean enable = f != null && f.isLoadComplete();
+        saveButton.setClickable(enable);
+        saveButton.setAlpha(enable ? 1f : 0.5f);
+    }
+
+    public void onChildLoaded() {
+        updateSaveShareButton();
+    }
+
     @Nullable private PageTitle getTopTitle() {
+        RandomItemFragment f = getTopChild();
+        return f == null ? null : f.getTitle();
+    }
+
+    @Nullable private RandomItemFragment getTopChild() {
         FragmentManager fm = getFragmentManager();
         for (Fragment f : fm.getFragments()) {
             if (f instanceof RandomItemFragment
                     && ((RandomItemFragment) f).getPagerPosition() == randomPager.getCurrentItem()) {
-                return ((RandomItemFragment) f).getTitle();
+                return ((RandomItemFragment) f);
             }
         }
         return null;
     }
 
-    private class RandomItemAdapter extends FragmentPagerAdapter {
+    private class RandomItemAdapter extends FragmentPagerAdapter{
+
         RandomItemAdapter(AppCompatActivity activity) {
             super(activity.getSupportFragmentManager());
         }
@@ -244,6 +266,7 @@ public class RandomFragment extends Fragment {
             }
             nextPageSelectedAutomatic = false;
             prevPosition = position;
+            updateSaveShareButton();
         }
 
         @Override

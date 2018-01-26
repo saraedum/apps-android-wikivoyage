@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,9 +20,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.otto.Subscribe;
 
+import org.apache.commons.lang3.StringUtils;
 import org.wikipedia.Constants;
 import org.wikipedia.R;
 import org.wikipedia.WikipediaApp;
@@ -33,11 +38,13 @@ import org.wikipedia.onboarding.OnboardingView;
 import org.wikipedia.readinglist.database.ReadingList;
 import org.wikipedia.readinglist.database.ReadingListDbHelper;
 import org.wikipedia.readinglist.database.ReadingListPage;
+import org.wikipedia.readinglist.sync.ReadingListSyncAdapter;
 import org.wikipedia.readinglist.sync.ReadingListSyncEvent;
 import org.wikipedia.settings.Prefs;
 import org.wikipedia.settings.SettingsActivity;
 import org.wikipedia.util.FeedbackUtil;
 import org.wikipedia.util.ReleaseUtil;
+import org.wikipedia.util.log.L;
 import org.wikipedia.views.DrawableItemDecoration;
 import org.wikipedia.views.SearchEmptyView;
 import org.wikipedia.views.TextInputDialog;
@@ -49,13 +56,19 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+import static org.wikipedia.util.ResourceUtil.getThemedAttributeId;
+
 public class ReadingListsFragment extends Fragment {
     private Unbinder unbinder;
     @BindView(R.id.reading_list_content_container) ViewGroup contentContainer;
     @BindView(R.id.reading_list_list) RecyclerView readingListView;
     @BindView(R.id.empty_container) View emptyContainer;
+    @BindView(R.id.empty_title) TextView emptyTitle;
+    @BindView(R.id.empty_image) ImageView emptyImage;
+    @BindView(R.id.empty_message) TextView emptyMessage;
     @BindView(R.id.search_empty_view) SearchEmptyView searchEmptyView;
     @BindView(R.id.reading_list_onboarding_container) ViewGroup onboardingContainer;
+    @BindView(R.id.reading_list_swipe_refresh) SwipeRefreshLayout swipeRefreshLayout;
 
     private List<ReadingList> readingLists = new ArrayList<>();
 
@@ -96,6 +109,13 @@ public class ReadingListsFragment extends Fragment {
         WikipediaApp.getInstance().getBus().register(eventBusMethods);
 
         contentContainer.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+
+        swipeRefreshLayout.setColorSchemeResources(getThemedAttributeId(getContext(), R.attr.colorAccent));
+        swipeRefreshLayout.setOnRefreshListener(ReadingListSyncAdapter::manualSyncWithRefresh);
+        // TODO: remove when ready.
+        if (!ReleaseUtil.isPreBetaRelease()) {
+            swipeRefreshLayout.setEnabled(false);
+        }
         return view;
     }
 
@@ -179,7 +199,9 @@ public class ReadingListsFragment extends Fragment {
                 if (getActivity() == null) {
                     return;
                 }
-                readingLists = lists;
+                swipeRefreshLayout.setRefreshing(false);
+                readingLists = applySearchQuery(searchQuery, lists);
+                maybeShowListLimitMessage();
                 sortLists();
                 updateEmptyState(searchQuery);
                 maybeDeleteListFromIntent();
@@ -187,15 +209,54 @@ public class ReadingListsFragment extends Fragment {
         });
     }
 
+    @NonNull
+    private List<ReadingList> applySearchQuery(@Nullable String searchQuery, @NonNull List<ReadingList> lists) {
+        List<ReadingList> newList = new ArrayList<>();
+        if (TextUtils.isEmpty(searchQuery)) {
+            newList.addAll(lists);
+            return newList;
+        }
+        String normalizedQuery = StringUtils.stripAccents(searchQuery).toLowerCase();
+        for (ReadingList list : lists) {
+            if (StringUtils.stripAccents(list.title()).toLowerCase().contains(normalizedQuery)) {
+                newList.add(list);
+            }
+        }
+        return newList;
+    }
+
+    private void maybeShowListLimitMessage() {
+        if (getUserVisibleHint() && readingLists.size() >= Constants.MAX_READING_LISTS_LIMIT) {
+            String message = getString(R.string.reading_lists_limit_message);
+            FeedbackUtil.makeSnackbar(getActivity(), message, FeedbackUtil.LENGTH_DEFAULT).show();
+        }
+    }
+
     private void updateEmptyState(@Nullable String searchQuery) {
         if (TextUtils.isEmpty(searchQuery)) {
             searchEmptyView.setVisibility(View.GONE);
-            emptyContainer.setVisibility(readingLists.isEmpty() ? View.VISIBLE : View.GONE);
+            if (readingLists.size() == 1) {
+                emptyContainer.setVisibility(View.VISIBLE);
+                setUpEmptyContainer();
+            }
+            emptyContainer.setVisibility(readingLists.size() == 1 ? View.VISIBLE : View.GONE);
         } else {
             searchEmptyView.setVisibility(readingLists.isEmpty() ? View.VISIBLE : View.GONE);
             emptyContainer.setVisibility(View.GONE);
         }
         contentContainer.setVisibility(readingLists.isEmpty() ? View.GONE : View.VISIBLE);
+    }
+
+    private void setUpEmptyContainer() {
+        if (!readingLists.get(0).pages().isEmpty()) {
+            emptyTitle.setText(getString(R.string.no_user_lists_title));
+            emptyMessage.setText(getString(R.string.no_user_lists_msg));
+            emptyImage.setImageDrawable(ContextCompat.getDrawable(emptyImage.getContext(), R.drawable.ic_no_user_lists));
+        } else {
+            emptyTitle.setText(getString(R.string.saved_list_empty_title));
+            emptyMessage.setText(getString(R.string.reading_lists_empty_message));
+            emptyImage.setImageDrawable(ContextCompat.getDrawable(emptyImage.getContext(), R.drawable.no_lists));
+        }
     }
 
     private class ReadingListItemHolder extends RecyclerView.ViewHolder {
@@ -254,6 +315,10 @@ public class ReadingListsFragment extends Fragment {
 
         @Override
         public void onRename(@NonNull ReadingList readingList) {
+            if (readingList.isDefault()) {
+                L.w("Attempted to rename default list.");
+                return;
+            }
             List<String> existingTitles = new ArrayList<>();
             for (ReadingList list : readingLists) {
                 existingTitles.add(list.title());
@@ -262,7 +327,9 @@ public class ReadingListsFragment extends Fragment {
             ReadingListTitleDialog.readingListTitleDialog(getContext(), readingList.title(),
                     existingTitles, text -> {
                         readingList.title(text.toString());
-                        ReadingListDbHelper.instance().updateList(readingList);
+                        readingList.dirty(true);
+                        ReadingListDbHelper.instance().updateList(readingList, true);
+                        ReadingListSyncAdapter.manualSync();
 
                         updateLists();
                         funnel.logModifyList(readingList, readingLists.size());
@@ -271,6 +338,10 @@ public class ReadingListsFragment extends Fragment {
 
         @Override
         public void onEditDescription(@NonNull ReadingList readingList) {
+            if (readingList.isDefault()) {
+                L.w("Attempted to edit description of default list.");
+                return;
+            }
             TextInputDialog.newInstance(getContext(), new TextInputDialog.DefaultCallback() {
                 @Override
                 public void onShow(@NonNull TextInputDialog dialog) {
@@ -281,7 +352,9 @@ public class ReadingListsFragment extends Fragment {
                 @Override
                 public void onSuccess(@NonNull CharSequence text) {
                     readingList.description(text.toString());
-                    ReadingListDbHelper.instance().updateList(readingList);
+                    readingList.dirty(true);
+                    ReadingListDbHelper.instance().updateList(readingList, true);
+
                     updateLists();
                     funnel.logModifyList(readingList, readingLists.size());
                 }
@@ -290,7 +363,11 @@ public class ReadingListsFragment extends Fragment {
 
         @Override
         public void onDelete(@NonNull ReadingList readingList) {
-            deleteList(readingList);
+            AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+            alert.setMessage(getString(R.string.reading_list_delete_confirm, readingList.title()));
+            alert.setPositiveButton(android.R.string.yes, (dialog, id) -> deleteList(readingList));
+            alert.setNegativeButton(android.R.string.no, null);
+            alert.create().show();
         }
 
         @Override
@@ -330,10 +407,14 @@ public class ReadingListsFragment extends Fragment {
 
     private void deleteList(@Nullable ReadingList readingList) {
         if (readingList != null) {
+            if (readingList.isDefault()) {
+                L.w("Attempted to delete default list.");
+                return;
+            }
             showDeleteListUndoSnackbar(readingList);
 
             ReadingListDbHelper.instance().deleteList(readingList);
-            ReadingListDbHelper.instance().markPagesForDeletion(readingList.pages());
+            ReadingListDbHelper.instance().markPagesForDeletion(readingList, readingList.pages(), false);
 
             funnel.logDeleteList(readingList, readingLists.size());
             updateLists();
@@ -345,9 +426,12 @@ public class ReadingListsFragment extends Fragment {
                 String.format(getString(R.string.reading_list_deleted), readingList.title()),
                 FeedbackUtil.LENGTH_DEFAULT);
         snackbar.setAction(R.string.reading_list_item_delete_undo, v -> {
-
             ReadingList newList = ReadingListDbHelper.instance().createList(readingList.title(), readingList.description());
-            ReadingListDbHelper.instance().addPagesToList(newList, readingList.pages());
+            List<ReadingListPage> newPages = new ArrayList<>();
+            for (ReadingListPage page : readingList.pages()) {
+                newPages.add(new ReadingListPage(ReadingListPage.toPageTitle(page)));
+            }
+            ReadingListDbHelper.instance().addPagesToList(newList, newPages, true);
             updateLists();
         });
         snackbar.show();
