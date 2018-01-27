@@ -10,6 +10,7 @@ import org.jsoup.select.Elements;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.wikipedia.BuildConfig;
 import org.wikipedia.util.log.L;
 
 import java.io.File;
@@ -39,7 +40,7 @@ import static org.junit.Assert.fail;
  */
 @RunWith(RobolectricTestRunner.class) @SuppressWarnings("checkstyle:magicnumber")
 public class TranslationTests {
-    private static File RES_BASE = new File("src/main/res/");
+    private static File RES_BASE = new File(String.format("src/%s/res/", BuildConfig.FLAVOR_backend));
 
     /** Add more if needed, but then also add some tests. */
     private static final String[] POSSIBLE_PARAMS = new String[] {"%s", "%1$s", "%2$s", "%d",
