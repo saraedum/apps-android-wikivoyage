@@ -6,17 +6,19 @@ import org.robolectric.RobolectricTestRunner;
 import org.wikipedia.json.GsonMarshaller;
 import org.wikipedia.json.GsonUnmarshaller;
 import org.wikipedia.page.PageTitle;
+import org.wikipedia.settings.Prefs;
 import org.wikipedia.test.TestParcelUtil;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.startsWith;
 
 @RunWith(RobolectricTestRunner.class) public class WikiSiteTest {
     @Test public void testSupportedAuthority() {
-        assertThat(WikiSite.supportedAuthority("fr.wikipedia.org"), is(true));
-        assertThat(WikiSite.supportedAuthority("fr.m.wikipedia.org"), is(true));
-        assertThat(WikiSite.supportedAuthority("roa-rup.wikipedia.org"), is(true));
+        assertThat(WikiSite.supportedAuthority(String.format("fr.%s", Prefs.getMediaWikiBaseUri().getAuthority())), is(true));
+        assertThat(WikiSite.supportedAuthority(String.format("fr.m.%s", Prefs.getMediaWikiBaseUri().getAuthority())), is(true));
+        assertThat(WikiSite.supportedAuthority(String.format("roa-rup.%s", Prefs.getMediaWikiBaseUri().getAuthority())), is(true));
 
         assertThat(WikiSite.supportedAuthority("google.com"), is(false));
     }
@@ -28,7 +30,7 @@ import static org.hamcrest.Matchers.not;
 
     @Test public void testForLanguageCodeAuthority() {
         WikiSite subject = WikiSite.forLanguageCode("test");
-        assertThat(subject.authority(), is("test.wikipedia.org"));
+        assertThat(subject.authority(), is(String.format("test.%s", Prefs.getMediaWikiBaseUri().getAuthority())));
     }
 
     @Test public void testForLanguageCodeLanguage() {
@@ -43,12 +45,12 @@ import static org.hamcrest.Matchers.not;
 
     @Test public void testForLanguageCodeNoLanguageAuthority() {
         WikiSite subject = WikiSite.forLanguageCode("");
-        assertThat(subject.authority(), is("wikipedia.org"));
+        assertThat(subject.authority(), is(Prefs.getMediaWikiBaseUri().getAuthority()));
     }
 
     @Test public void testForLanguageCodeLanguageAuthority() {
         WikiSite subject = WikiSite.forLanguageCode("zh-hans");
-        assertThat(subject.authority(), is("zh.wikipedia.org"));
+        assertThat(subject.authority(), is(String.format("zh.%s", Prefs.getMediaWikiBaseUri().getAuthority())));
         assertThat(subject.languageCode(), is("zh-hans"));
     }
 
@@ -130,7 +132,7 @@ import static org.hamcrest.Matchers.not;
 
     @Test public void testMobileAuthorityLanguage() {
         WikiSite subject = WikiSite.forLanguageCode("fiu-vro");
-        assertThat(subject.mobileAuthority(), is("fiu-vro.m.wikipedia.org"));
+        assertThat(subject.mobileAuthority(), is(String.format("fiu-vro.m.%s", Prefs.getMediaWikiBaseUri().getAuthority())));
     }
 
     @Test public void testMobileAuthorityNoLanguage() {
@@ -190,7 +192,7 @@ import static org.hamcrest.Matchers.not;
 
     @Test public void testUrlPath() {
         WikiSite subject = WikiSite.forLanguageCode("test");
-        assertThat(subject.url("Segment"), is("https://test.wikipedia.org/w/Segment"));
+        assertThat(subject.url("Segment"), is(String.format("https://test.%s/w/Segment", Prefs.getMediaWikiBaseUri().getAuthority())));
     }
 
     @Test public void testLanguageCode() {
@@ -225,6 +227,6 @@ import static org.hamcrest.Matchers.not;
     }
 
     @Test public void testNormalization() {
-        assertThat("bm.wikipedia.org", is(WikiSite.forLanguageCode("bm").authority()));
+        assertThat(String.format("bm.%s", Prefs.getMediaWikiBaseUri().getAuthority()), is(WikiSite.forLanguageCode("bm").authority()));
     }
 }

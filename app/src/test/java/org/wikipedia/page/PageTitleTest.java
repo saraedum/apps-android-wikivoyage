@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.wikipedia.dataclient.WikiSite;
+import org.wikipedia.settings.Prefs;
 import org.wikipedia.staticdata.MainPageNameData;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -53,9 +54,9 @@ import static org.mockito.Mockito.when;
     @Test public void testCanonicalURL() throws Throwable {
         WikiSite enwiki = WikiSite.forLanguageCode("en");
 
-        assertThat(enwiki.titleForInternalLink("/wiki/India").getCanonicalUri(), is("https://en.wikipedia.org/wiki/India"));
-        assertThat(enwiki.titleForInternalLink("/wiki/India Gate").getCanonicalUri(), is("https://en.wikipedia.org/wiki/India_Gate"));
-        assertThat(enwiki.titleForInternalLink("/wiki/India's Gate").getCanonicalUri(), is("https://en.wikipedia.org/wiki/India%27s_Gate"));
+        assertThat(enwiki.titleForInternalLink("/wiki/India").getCanonicalUri(), is(String.format("https://en.%s/wiki/India", Prefs.getMediaWikiBaseUri().getAuthority())));
+        assertThat(enwiki.titleForInternalLink("/wiki/India Gate").getCanonicalUri(), is(String.format("https://en.%s/wiki/India_Gate", Prefs.getMediaWikiBaseUri().getAuthority())));
+        assertThat(enwiki.titleForInternalLink("/wiki/India's Gate").getCanonicalUri(), is(String.format("https://en.%s/wiki/India%%27s_Gate", Prefs.getMediaWikiBaseUri().getAuthority())));
     }
 
     @Test public void testWikiSite() throws Throwable {
