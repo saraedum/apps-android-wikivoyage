@@ -1,0 +1,25 @@
+image: jsonfry/android-sdk:latest
+
+before_script:
+  - locale-gen "en_US.UTF-8"
+  - export LC_ALL=en_US.UTF-8
+  - export LANG=en_US.UTF-8
+  - export LANGUAGE=en_US.UTF-8
+
+stages:
+  - build
+  - test
+
+buildAlpha:
+  stage: build
+  script:
+    - ./gradlew assembleAlpha
+  artifacts:
+    paths:
+    - app/build/outputs/
+
+unitTest:
+  stage: test
+  script:
+    - ./gradlew testAlphaWikipediaReleaseUnitTest
+    - ./gradlew testAlphaWikivoyageReleaseUnitTest
