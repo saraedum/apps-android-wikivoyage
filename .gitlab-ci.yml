@@ -7,8 +7,18 @@ before_script:
   - export LANGUAGE=en_US.UTF-8
 
 stages:
+  - check
   - build
   - test
+
+checkstyle:
+  stage: check
+  script:
+    - ./gradlew checkstyle
+  artifacts:
+    paths:
+    - app/build/reports/checkstyle
+    when: on_failure
 
 buildAlpha:
   stage: build

@@ -12,7 +12,6 @@ import org.wikipedia.test.TestParcelUtil;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.startsWith;
 
 @RunWith(RobolectricTestRunner.class) public class WikiSiteTest {
     @Test public void testSupportedAuthority() {
