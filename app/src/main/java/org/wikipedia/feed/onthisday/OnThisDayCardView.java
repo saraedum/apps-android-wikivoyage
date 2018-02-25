@@ -70,7 +70,9 @@ public class OnThisDayCardView extends DefaultFeedCardView<OnThisDayCard> implem
         inflate(getContext(), R.layout.view_card_on_this_day, this);
         ButterKnife.bind(this);
         initRecycler();
-        setGradientAndTextColor();
+        this.post(() -> {
+            setGradientAndTextColor();
+        });
     }
 
     private void setGradientAndTextColor() {

@@ -1,35 +1,51 @@
-image: jsonfry/android-sdk:latest
-
-before_script:
-  - locale-gen "en_US.UTF-8"
-  - export LC_ALL=en_US.UTF-8
-  - export LANG=en_US.UTF-8
-  - export LANGUAGE=en_US.UTF-8
-
 stages:
-  - check
-  - build
-  - test
+- check
+- build
+- test
+
+cache:
+  paths:
+  - /root/.gradle/caches/
+
+# shared bits of all gradle based jobs
+.gradle: &gradle
+  image: saraedum/android-sdk
+  artifacts:
+    when: always
+    paths:
+    - app/build/outputs/
+    - app/build/reports/
 
 checkstyle:
+  << : *gradle
   stage: check
   script:
     - ./gradlew checkstyle
-  artifacts:
-    paths:
-    - app/build/reports/checkstyle
-    when: on_failure
 
 buildAlpha:
+  << : *gradle
   stage: build
   script:
-    - ./gradlew assembleAlpha
-  artifacts:
-    paths:
-    - app/build/outputs/
+  - ./gradlew assembleAlpha
 
 unitTest:
+  << : *gradle
   stage: test
   script:
-    - ./gradlew testAlphaWikipediaReleaseUnitTest
-    - ./gradlew testAlphaWikivoyageReleaseUnitTest
+  - ./gradlew testAlphaWikipediaReleaseUnitTest
+  - ./gradlew testAlphaWikivoyageReleaseUnitTest
+
+instrumentationTest:
+  << : *gradle
+  stage: test
+  tags:
+  # The host needs to expose /dev/kvm for the emulator by setting 'devices = ["/dev/kvm"]' in [runners.docker]
+  - kvm
+  # The host needs VMX for the emulator, i.e., Haswell or later and VMX enabled in the BIOS.
+  - vmx
+  script:
+  - echo "no" | avdmanager create avd -n test -k "system-images;android-25;google_apis;x86" --tag google_apis
+  - emulator64-x86 -avd test -no-window -no-boot-anim -noaudio -accel on &
+  - /android-wait-for-emulator
+  - ./gradlew grantPermissionAlphaWikivoyageDebug connectedAlphaWikivoyageDebugAndroidTest
+  - ./gradlew grantPermissionAlphaWikipediaDebug connectedAlphaWikipediaDebugAndroidTest

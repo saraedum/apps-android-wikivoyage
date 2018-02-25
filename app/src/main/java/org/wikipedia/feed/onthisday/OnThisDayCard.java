@@ -55,7 +55,7 @@ public class OnThisDayCard extends WikiSiteCard {
         return DateUtil.getFeedCardShortDateString(date);
     }
 
-    @NonNull String dayString() {
+    @NonNull public String dayString() {
         return DateUtil.getMonthOnlyDateString(date.getTime());
     }
 
@@ -71,7 +71,7 @@ public class OnThisDayCard extends WikiSiteCard {
         return date;
     }
 
-    int nextYear() {
+    public int nextYear() {
         return nextYear;
     }
 
