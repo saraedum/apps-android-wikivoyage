@@ -1,7 +1,11 @@
 stages:
 - check
 - build
+- lint
 - test
+
+variables:
+  CI_FLAVOURS: "AlphaWikipediaDebug AlphaWikivoyageDebug AlphaWikipediaRelease AlphaWikivoyageRelease"
 
 cache:
   paths:
@@ -26,14 +30,19 @@ buildAlpha:
   << : *gradle
   stage: build
   script:
-  - ./gradlew assembleAlpha
+  - for flavour in ${CI_FLAVOURS};do ./gradlew assemble${flavour}; done
+
+lint:
+  << : *gradle
+  stage: lint
+  script:
+  - for flavour in ${CI_FLAVOURS};do ./gradlew lint${flavour}; done
 
 unitTest:
   << : *gradle
   stage: test
   script:
-  - ./gradlew testAlphaWikipediaReleaseUnitTest
-  - ./gradlew testAlphaWikivoyageReleaseUnitTest
+  - for flavour in ${CI_FLAVOURS};do ./gradlew test${flavour}UnitTest; done
 
 instrumentationTest:
   << : *gradle
@@ -47,5 +56,4 @@ instrumentationTest:
   - echo "no" | avdmanager create avd -n test -k "system-images;android-25;google_apis;x86" --tag google_apis
   - emulator64-x86 -avd test -no-window -no-boot-anim -noaudio -accel on &
   - /android-wait-for-emulator
-  - ./gradlew grantPermissionAlphaWikivoyageDebug connectedAlphaWikivoyageDebugAndroidTest
-  - ./gradlew grantPermissionAlphaWikipediaDebug connectedAlphaWikipediaDebugAndroidTest
+  - for flavour in ${CI_FLAVOURS};do ./gradlew grantPermission${flavour} connected${flavour}AndroidTest; done
