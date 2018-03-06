@@ -3,7 +3,7 @@ set -e
 
 cd "$(dirname "$0")"
 
-declare -A sources targets sizes
+declare -A sources targets sizes splash_sizes
 sources=(
   ["dev"]="wikivoyage_dev.svg"
   ["alpha"]="wikivoyage_alpha.svg"
