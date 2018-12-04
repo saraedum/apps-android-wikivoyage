@@ -39,5 +39,6 @@ for size in "${!sizes[@]}"; do
         mkdir -p ../app/src/${targets[$flavour]}/res/mipmap-$size/
         convert -density 1200 -gravity center -crop 75% -background none -resize ${sizes[$size]} ${sources[$flavour]} ../app/src/${targets[$flavour]}/res/mipmap-$size/launcher.png
     done
+    mkdir -p ../app/src/wikivoyage/res/drawable-$size
     convert -density 1200 -gravity center -crop 75% -background none -resize ${splash_sizes[$size]} wikivoyage.svg ../app/src/wikivoyage/res/drawable-$size/w_nav_mark.png
 done

@@ -56,7 +56,7 @@ android {
         applicationId 'org.wikipedia'
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 198
+        versionCode 265
         testApplicationId 'org.wikipedia.test'
         vectorDrawables.useSupportLibrary = true
 
@@ -143,6 +143,14 @@ android {
             manifestPlaceholders = [customChannel:getProperty('customChannel').toString()]
             signingConfig signingConfigs.prod
         }
+
+        wikipedia {
+            dimension "backend"
+        }
+        wikivoyage {
+            dimension "backend"
+            applicationId 'tm.info.drugtestbots.wikivoyage'
+        }
     }
 
     splits {
@@ -151,14 +159,6 @@ android {
             reset()
             include 'x86', 'x86_64', 'arm64-v8a', 'armeabi-v7a'
             universalApk true
-        }
-
-        wikipedia {
-            dimension "backend"
-        }
-        wikivoyage {
-            dimension "backend"
-            applicationId 'tm.info.drugtestbots.wikivoyage'
         }
     }
 
@@ -299,4 +299,19 @@ private static Properties loadProperties(File file) {
         System.err.println "\"${file}\" not found"
     }
     return props
+}
+
+addSyncContentProviderAuthority 'readinglists', 'reading_lists'
+private void addSyncContentProviderAuthority(String path, String name) {
+    android.productFlavors.all { ProductFlavor flavor ->
+        String authority = "${appId(flavor)}.sync.${path}"
+        resValue 'string', "${name.toLowerCase()}_authority", authority
+        buildConfigField 'String', "${name.toUpperCase()}_AUTHORITY", "\"$authority\""
+    }
+}
+
+private String appId(ProductFlavor flavor) {
+    String suffix = flavor.applicationIdSuffix
+    String id = android.defaultConfig.applicationId + (suffix ? ".$suffix" : '')
+    return id
 }

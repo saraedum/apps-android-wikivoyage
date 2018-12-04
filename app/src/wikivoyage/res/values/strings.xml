@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- TODO: Move wikipedia's strings to a shared place and override only the relevant bits here. -->
     <!--
     I decided to call this app "Voyager Wiki" for the time being.
     It is my understanding that I cannot call it Wikivoyage because that would be violating the trademark of wikimedia.
@@ -104,6 +105,7 @@
     <string name="login_activity_title">Log in to Wikivoyage</string>
     <string name="login_in_progress_dialog_message">Logging you in…</string>
     <string name="login_success_toast">Logged in successfully!</string>
+    <string name="reset_password_title">Set your password</string>
     <string name="preference_title_logout">Log out</string>
     <string name="toast_logout_complete">Logged out</string>
     <string name="history_empty_title">No recently viewed articles</string>
@@ -351,6 +353,8 @@
     <string name="reading_list_sort_by_name_desc">Sort by name (reverse)</string>
     <string name="reading_list_sort_by_recent">Sort by most recent</string>
     <string name="reading_list_sort_by_recent_desc">Sort by least recent</string>
+    <string name="reading_list_sort_by_created">Sort by date created (newest)</string>
+    <string name="reading_list_sort_by_created_desc">Sort by date created (oldest)</string>
     <string name="reading_list_menu_delete">Delete list</string>
     <string name="reading_list_menu_rename">Rename</string>
     <string name="reading_list_menu_edit_description">Edit description</string>
@@ -419,13 +423,64 @@
     <string name="notification_reverted"><![CDATA[Your edit to the article <strong>%2$s</strong> was reverted by <em>%1$s</em>.]]></string>
     <string name="notification_thanks_title">You\'ve been thanked!</string>
     <string name="notification_thanks"><![CDATA[<em>%1$s</em> thanked you for your edit on the page <strong>%2$s</strong>]]></string>
-    <string name="notification_channel_name">Syncing</string>
-    <string name="notification_channel_description">Syncing progress</string>
-    <string name="notification_syncing_title">Syncing %1$d articles&#8230;</string>
-    <string name="notification_syncing_description">%1$d articles left</string>
+    <string name="notification_channel_description">Download progress</string>
     <string name="notification_syncing_pause_button">Pause</string>
     <string name="notification_syncing_resume_button">Resume</string>
     <string name="notification_syncing_cancel_button">Cancel</string>
+    <string name="notification_syncing_reading_list_channel_name">Syncing Reading List(s)</string>
+    <string name="notification_syncing_reading_list_channel_description">Syncing Reading Lists progress</string>
+    <plurals name="notification_channel_name">
+        <item quantity="one">Downloading article</item>
+        <item quantity="other">Downloading articles</item>
+    </plurals>
+    <plurals name="notification_syncing_title">
+        <item quantity="one">Downloading %1$d article&#8230;</item>
+        <item quantity="other">Downloading %1$d articles&#8230;</item>
+    </plurals>
+    <plurals name="notification_syncing_description">
+        <item quantity="one">%1$d article left</item>
+        <item quantity="other">%1$d articles left</item>
+    </plurals>
+    <plurals name="notification_syncing_reading_list_channel_name">
+        <item quantity="one">Syncing Reading List</item>
+        <item quantity="other">Syncing Reading Lists</item>
+    </plurals>
+    <plurals name="notification_syncing_reading_list_title">
+        <item quantity="one">Syncing %1$d list&#8230;</item>
+        <item quantity="other">Syncing %1$d lists&#8230;</item>
+    </plurals>
+    <plurals name="notification_syncing_reading_list_description">
+        <item quantity="one">%1$d list left</item>
+        <item quantity="other">%1$d lists left</item>
+    </plurals>
+    <string name="notification_echo_channel_description">Wikivoyage notifications</string>
+    <string name="notifications_activity_title">Notifications</string>
+    <string name="notifications_activity_title_archived">Notifications (archived)</string>
+    <string name="notifications_search">Search notifications</string>
+    <string name="notifications_view_unread">View unread</string>
+    <string name="notifications_view_archived">View archived</string>
+    <string name="notifications_prefs">Notification preferences</string>
+    <string name="notifications_archive">Mark read and archive</string>
+    <plurals name="notification_archive_message">
+        <item quantity="one">Notification archived</item>
+        <item quantity="other">%d notifications archived</item>
+    </plurals>
+    <string name="notifications_poll_enable_title">Enable notifications</string>
+    <string name="notifications_poll_enable_positive">Enable</string>
+    <string name="notifications_poll_enable_negative">Not now</string>
+    <string name="notifications_empty_message">You\'re all caught up on notifications!</string>
+    <string name="notifications_view_archived_button_text">View archived notifications</string>
+    <string name="notification_preferences_title">Notification preferences</string>
+    <string name="notifications_mark_unread">Mark as unread</string>
+    <string name="preference_title_notification_poll">Poll notifications</string>
+    <string name="preference_summary_notification_poll">Allow the app to use data to check for new notifications in the background.</string>
+    <string name="preference_category_notification_types">In-app notification types</string>
+    <string name="preference_title_notification_welcome">Welcome</string>
+    <string name="preference_summary_notification_welcome">An account is created</string>
+    <string name="preference_title_notification_milestone">Milestone</string>
+    <string name="preference_summary_notification_milestone">Certain edit counts are reached</string>
+    <string name="preference_title_notification_thanks">Thanks</string>
+    <string name="preference_summary_notification_thanks">Someone thanks you for an edit</string>
     <!-- /Notifications -->
 
     <!-- The Feed -->
@@ -629,4 +684,27 @@
     </plurals>
     <!-- /On This Day -->
 
+    <!-- MultiLingual -->
+    <string name="languages_list_activity_title">Add a language</string>
+    <string name="languages_list_suggested_text">Suggested</string>
+    <string name="languages_list_all_text">All languages</string>
+    <string name="wikipedia_languages_title">Wikivoyage languages</string>
+    <string name="wikipedia_languages_your_languages_text">Your languages</string>
+    <string name="wikipedia_languages_add_language_text">Add language</string>
+    <string name="wikipedia_languages_remove_text">Remove language</string>
+    <string name="wikipedia_languages_remove_action_mode_title">Remove language</string>
+    <plurals name="wikipedia_languages_remove_dialog_title">
+        <item quantity="one">Remove selected language?</item>
+        <item quantity="other">Remove selected languages?</item>
+    </plurals>
+    <string name="wikipedia_languages_remove_dialog_content">You will only see content on the Explore feed and quick search filters for remaining Wikipedia languages.</string>
+    <string name="wikipedia_languages_remove_warning_dialog_title">Can\'t remove all languages</string>
+    <string name="wikipedia_languages_remove_warning_dialog_content">Keep at least one Wikivoyage language from which to search and read content.</string>
+    <string name="more_language_options">more</string>
+    <string name="add_wikipedia_languages_text">Add Wikivoyage languages</string>
+    <string name="dialog_of_remove_chinese_variants_from_app_lang_title">Remove a Chinese variant from your app languages?</string>
+    <string name="dialog_of_remove_chinese_variants_from_app_lang_text">You currently have both Traditional and Simplified Chinese variants set in your app languages. Update your app languages settings?</string>
+    <string name="dialog_of_remove_chinese_variants_from_app_lang_edit">Edit languages</string>
+    <string name="dialog_of_remove_chinese_variants_from_app_lang_no">No thanks</string>
+    <!-- /MultiLingual -->
 </resources>
